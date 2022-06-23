@@ -6,8 +6,8 @@ import com.github.scaruby.SFile
 
 class FileBasedProgramSpec extends SpecHelper {
   val directory = new SFile("test-programs")
-  describe(s"run Klassic programs under ${directory}") {
-    for(program <- directory.listFiles{file => file.name.endsWith(".kl")}) {
+  describe(s"run Nihongo programs under ${directory}") {
+    for(program <- directory.listFiles{file => file.name.endsWith(".ni")}) {
       it(s"program ${program} runs successfully") {
         try {
           E.evaluateFile(program)
