@@ -448,7 +448,9 @@ class Parser extends Processor[String, Program, InteractiveSession] {
         case id ~ ids => ids.foldLeft(id.name) { case (a, d ~ e) => a + d + e.name }
       }
 
-      lazy val component: Parser[String] = """[A-Za-z_][a-zA-Z0-9_]*""".r
+      lazy val component: Parser[String] = (
+        """[A-Za-z_][A-Za-z_0-9]*|「([A-Za-z_]|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})(\w|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})*」""".r
+      )
 
       lazy val placeholder: Parser[Placeholder] = ((%% ~ UNDERSCORE) ^^ { case location ~ _ => Placeholder(location) }) << SPACING_WITHOUT_LF
 
