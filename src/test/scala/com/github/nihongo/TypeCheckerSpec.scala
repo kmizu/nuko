@@ -32,8 +32,8 @@ class TypeCheckerSpec extends SpecHelper {
   describe("valid function type") {
     val expectations: List[(String, Value)] = List(
       """
-        |関数 add(x: Int, y: Int): Int は x + y
-        |変数 f: (Int, Int) => Int は add
+        |関数 add(x: 整数, y: 整数): 整数 は x + y
+        |変数 f: (整数, 整数) => 整数 は add
         |f(2, 3)
       """.stripMargin -> BoxedInt(5))
 
@@ -50,7 +50,7 @@ class TypeCheckerSpec extends SpecHelper {
         |変数aは1
         |a = 2
         |foreach(b in [1, 2, 3]) {
-        |  (b :> Int) + 3
+        |  (b :> 整数) + 3
         |}
       """.stripMargin -> UnitValue
     )

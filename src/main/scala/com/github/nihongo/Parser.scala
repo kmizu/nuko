@@ -211,7 +211,7 @@ class Parser extends Processor[String, Program, InteractiveSession] {
           case name ~ None => TConstructor(name, Nil)
         } | kwToken("Byte") ^^ { _ => TByte }
           | kwToken("Short") ^^ { _ => TShort }
-          | kwToken("Int") ^^ { _ => TInt }
+          | kwToken("整数") ^^ { _ => TInt }
           | kwToken("Long") ^^ { _ => TLong }
           | kwToken("Float") ^^ { _ => TFloat }
           | kwToken("Double") ^^ { _ => TDouble }
