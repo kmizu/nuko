@@ -135,7 +135,7 @@ class ExpressionSpec extends SpecHelper {
             """
               |変数newListはnew java.util.ArrayList
               |foreach(a in [1, 2, 3, 4, 5]) {
-              |  newList->add((a :> Int) * 2)
+              |  newList->add((a :> 整数) * 2)
               |}
               |newList
             """.stripMargin))(ObjectValue(listOf(2, 4, 6, 8, 10)))
