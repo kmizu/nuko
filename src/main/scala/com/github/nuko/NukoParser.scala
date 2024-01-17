@@ -145,7 +145,8 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val DEF: Parser[String] = kwToken("関数")
       val VARIABLE: Parser[String] = kwToken("変数")
       val EQ: Parser[String] = kwToken("=")
-      val JP_EQ: Parser[String] = kwToken("は")
+      val JP_HA: Parser[String] = kwToken("は")
+      val JP_KIND_OF: Parser[String] = kwToken("の種類は")
       val PLUSEQ: Parser[String] = kwToken("+=")
       val MINUSEQ: Parser[String] = kwToken("-=")
       val ASTEREQ: Parser[String] = kwToken("*=")
@@ -177,7 +178,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
 
       lazy val KEYWORDS: Set[String] = tokenNames.toSet
 
-      lazy val typeAnnotation: Parser[Type] = COLON >> typeDescription
+      lazy val typeAnnotation: Parser[Type] = (JP_KIND_OF | COLON) >> typeDescription
 
       lazy val castType: Parser[Type] = typeDescription
 
@@ -458,11 +459,11 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         (!KEYWORDS(m)) && (!KEYWORDS(n))
       } ^^ { case location ~ m ~ _ ~ n => Selector(location, m, n) }) << SPACING_WITHOUT_LF)
 
-      lazy val qident: Parser[String] = (regularExpression("""'[A-Za-z_][a-zA-Z0-9_]*""".r).filter { n =>
+      lazy val qident: Parser[String] = (string("'") ~> component).filter { n =>
         !KEYWORDS(n)
-      }) << SPACING_WITHOUT_LF
+      } << SPACING_WITHOUT_LF
 
-      lazy val sident: Parser[String] = (regularExpression("""[A-Za-z_][a-zA-Z0-9_]*""".r).filter { n =>
+      lazy val sident: Parser[String] = (component.filter { n =>
         !KEYWORDS(n)
       }) << SPACING_WITHOUT_LF
 
@@ -487,7 +488,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       })
 
       // valDeclaration ::= "変数" ident "は" expression
-      lazy val valDeclaration: Parser[ValDeclaration] = rule((%% ~ CL(VARIABLE ^^ { _ => false })) ~ commit(ident ~ (typeAnnotation.? << CL(JP_EQ)) ~ expression) ^^ {
+      lazy val valDeclaration: Parser[ValDeclaration] = rule((%% ~ CL(VARIABLE ^^ { _ => false })) ~ commit(ident ~ (typeAnnotation.? << CL(JP_HA)) ~ expression) ^^ {
         case location ~ immutable ~ (valName ~ optionalType ~ value) => ValDeclaration(location, valName.name, optionalType, value, immutable)
       })
 
@@ -539,7 +540,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
 
       // methodDefinition ::= "def" ident  ["(" [param {"," param}] ")"] "=" expression
       lazy val methodDefinition: Parser[MethodDefinition] = rule {
-        (%% << CL(DEF)) ~ commit(ident ~ (CL(LPAREN) >> (ident ~ typeAnnotation.?).repeat0By(CL(COMMA)) << CL(RPAREN)).? ~ (typeAnnotation.? << CL(JP_EQ)) ~ expression) ^^ {
+        (%% << CL(DEF)) ~ commit(ident ~ (CL(LPAREN) >> (ident ~ typeAnnotation.?).repeat0By(CL(COMMA)) << CL(RPAREN)).? ~ (typeAnnotation.? << CL(JP_HA)) ~ expression) ^^ {
           case location ~ (functionName ~ params ~ optionalType ~ body) =>
             val ps = params match {
               case Some(xs) =>
@@ -559,7 +560,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
 
       // functionDefinition ::= "def" ident  ["(" [param {"," param}] ")"] "=" expression
       lazy val functionDefinition: Parser[FunctionDefinition] = rule {
-        (%% << CL(DEF)) ~ commit(ident ~ (CL(LPAREN) >> (ident ~ typeAnnotation.?).repeat0By(CL(COMMA)) << CL(RPAREN)).? ~ (typeAnnotation.? << CL(JP_EQ)) ~ expression) ^^ {
+        (%% << CL(DEF)) ~ commit(ident ~ (CL(LPAREN) >> (ident ~ typeAnnotation.?).repeat0By(CL(COMMA)) << CL(RPAREN)).? ~ (typeAnnotation.? << CL(JP_HA)) ~ expression) ^^ {
           case location ~ (functionName ~ params ~ optionalType ~ body) =>
             val ps = params match {
               case Some(xs) =>
