@@ -47,7 +47,7 @@ object Main {
   }
 
   def parseCommandLine(args: Array[String]): Option[(String, String)] = {
-    val paser = new Parser
+    val paser = new NukoParser
     args match {
       case Array(fileName) if fileName.endsWith("kl") =>
         Some("-f"-> fileName)

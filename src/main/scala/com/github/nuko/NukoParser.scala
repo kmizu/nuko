@@ -12,7 +12,7 @@ import scala.collection.mutable
 /**
  * @author Kota Mizushima
  */
-class Parser extends Processor[String, Program, InteractiveSession] {
+class NukoParser extends Processor[String, Program, InteractiveSession] {
   object Core extends SCombinator {
     object Klassic {
       def publicLocations: mutable.Map[Int, scomb.Location] = locations
@@ -144,12 +144,8 @@ class Parser extends Processor[String, Program, InteractiveSession] {
       val DOT: Parser[String] = kwToken(".")
       val DEF: Parser[String] = kwToken("関数")
       val VARIABLE: Parser[String] = kwToken("変数")
-      val JP_CLEANUP: Parser[String] = kwToken("後始末")
       val EQ: Parser[String] = kwToken("=")
       val JP_EQ: Parser[String] = kwToken("は")
-      val RULE: Parser[String] = kwToken("rule")
-      val BEGIN_MSTR: Parser[String] = kwToken("<<<")
-      val END_MSTR: Parser[String] = kwToken(">>>")
       val PLUSEQ: Parser[String] = kwToken("+=")
       val MINUSEQ: Parser[String] = kwToken("-=")
       val ASTEREQ: Parser[String] = kwToken("*=")
@@ -543,8 +539,8 @@ class Parser extends Processor[String, Program, InteractiveSession] {
 
       // methodDefinition ::= "def" ident  ["(" [param {"," param}] ")"] "=" expression
       lazy val methodDefinition: Parser[MethodDefinition] = rule {
-        (%% << CL(DEF)) ~ commit(ident ~ (CL(LPAREN) >> (ident ~ typeAnnotation.?).repeat0By(CL(COMMA)) << CL(RPAREN)).? ~ (typeAnnotation.? << CL(JP_EQ)) ~ expression ~ (JP_CLEANUP >> expression).?) ^^ {
-          case location ~ (functionName ~ params ~ optionalType ~ body ~ cleanup) =>
+        (%% << CL(DEF)) ~ commit(ident ~ (CL(LPAREN) >> (ident ~ typeAnnotation.?).repeat0By(CL(COMMA)) << CL(RPAREN)).? ~ (typeAnnotation.? << CL(JP_EQ)) ~ expression) ^^ {
+          case location ~ (functionName ~ params ~ optionalType ~ body) =>
             val ps = params match {
               case Some(xs) =>
                 xs.map {
@@ -556,16 +552,15 @@ class Parser extends Processor[String, Program, InteractiveSession] {
             MethodDefinition(
               location,
               functionName.name,
-              Lambda(body.location, ps, optionalType, body),
-              cleanup
+              Lambda(body.location, ps, optionalType, body)
             )
         }
       }
 
       // functionDefinition ::= "def" ident  ["(" [param {"," param}] ")"] "=" expression
       lazy val functionDefinition: Parser[FunctionDefinition] = rule {
-        (%% << CL(DEF)) ~ commit(ident ~ (CL(LPAREN) >> (ident ~ typeAnnotation.?).repeat0By(CL(COMMA)) << CL(RPAREN)).? ~ (typeAnnotation.? << CL(JP_EQ)) ~ expression ~ (CL(JP_CLEANUP) >> expression).?) ^^ {
-          case location ~ (functionName ~ params ~ optionalType ~ body ~ cleanup) =>
+        (%% << CL(DEF)) ~ commit(ident ~ (CL(LPAREN) >> (ident ~ typeAnnotation.?).repeat0By(CL(COMMA)) << CL(RPAREN)).? ~ (typeAnnotation.? << CL(JP_EQ)) ~ expression) ^^ {
+          case location ~ (functionName ~ params ~ optionalType ~ body) =>
             val ps = params match {
               case Some(xs) =>
                 xs.map {
@@ -578,7 +573,6 @@ class Parser extends Processor[String, Program, InteractiveSession] {
               location,
               functionName.name,
               Lambda(body.location, ps, optionalType, body),
-              cleanup
             )
         }
       }

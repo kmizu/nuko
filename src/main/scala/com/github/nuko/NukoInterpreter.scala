@@ -12,7 +12,7 @@ import scala.runtime.BoxedUnit
 /**
  * @author Kota Mizushima
  */
-class Interpreter extends Processor[TypedAst.Program, Value, InteractiveSession] {interpreter =>
+class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSession] {interpreter =>
   def reportError(message: String): Nothing = {
     throw InterpreterException(message)
   }
@@ -463,18 +463,12 @@ class Interpreter extends Processor[TypedAst.Program, Value, InteractiveSession]
   private def performFunction(node: TypedAst.FunctionCall, env: RuntimeEnvironment): Value = node match {
     case TypedAst.FunctionCall(type_, location, function, params) =>
       evaluate(function, env) match {
-        case FunctionValue(TypedAst.FunctionLiteral(type_, location, fparams, optionalType, proc), cleanup, cenv) =>
+        case FunctionValue(TypedAst.FunctionLiteral(type_, location, fparams, optionalType, proc), cenv) =>
           val local = new RuntimeEnvironment(cenv)
           (fparams zip params).foreach{ case (fp, ap) =>
             local(fp.name) = evaluate(ap, env)
           }
-          try {
-            evaluate(proc, local)
-          } finally {
-            cleanup.foreach { expression =>
-              evaluate(expression, local)
-            }
-          }
+          evaluate(proc, local)
         case NativeFunctionValue(body) =>
           val actualParams = params.map{p => evaluate(p, env)}
           if(body.isDefinedAt(actualParams)) {
@@ -705,9 +699,9 @@ class Interpreter extends Processor[TypedAst.Program, Value, InteractiveSession]
         case TypedAst.Assignment(type_, location, vr, value) =>
           env.set(vr, evalRecursive(value))
         case literal@TypedAst.FunctionLiteral(type_, location, _, _, _) =>
-          FunctionValue(literal, None, Some(env))
-        case TypedAst.LetFunctionDefinition(type_, location, name, body, cleanup, expression) =>
-          env(name) = FunctionValue(body, cleanup, Some(env)): Value
+          FunctionValue(literal, Some(env))
+        case TypedAst.LetFunctionDefinition(type_, location, name, body, expression) =>
+          env(name) = FunctionValue(body, Some(env)): Value
           evalRecursive(expression)
         case TypedAst.MethodCall(type_, location, self, name, params) =>
           evalRecursive(self) match {

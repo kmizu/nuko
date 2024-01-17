@@ -69,7 +69,7 @@ object TypedAst {
     override def toString: String = s"""${params.mkString(", ")} => ${optionalType.getOrElse("?")}"""
   }
 
-  case class LetFunctionDefinition(type_ : Type, location: Location, name: String, body: FunctionLiteral, cleanup: Option[TypedNode], expression: TypedNode) extends TypedNode
+  case class LetFunctionDefinition(type_ : Type, location: Location, name: String, body: FunctionLiteral, expression: TypedNode) extends TypedNode
 
   case class FunctionCall(type_ : Type, location: Location, func: TypedNode, params: List[TypedNode]) extends TypedNode
 
