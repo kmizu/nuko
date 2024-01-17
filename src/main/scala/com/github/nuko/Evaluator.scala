@@ -6,11 +6,11 @@ import com.github.nuko.Ast.Program
 import com.github.scaruby.SFile
 
 class Evaluator extends (String => Value) {
-  val parser = new Parser
+  val parser = new NukoParser
   val typer = new Typer
   val placeholderDesugerer = new PlaceholderDesugerer
   val rewriter = new SyntaxRewriter
-  val interpreter = new Interpreter
+  val interpreter = new NukoInterpreter
   override final def apply(program: String): Value = {
     evaluateString(program)
   }
@@ -23,7 +23,7 @@ class Evaluator extends (String => Value) {
     }
   def evaluateString(program: String, fileName: String = "<no file>"): Value = {
     val session = new InteractiveSession
-    val parser = new Parser
+    val parser = new NukoParser
     val parsedProgram = parser.process(program, session)
     val placeHolderIsDesugaredProgram = placeholderDesugerer.process(parsedProgram, session)
     val rewrittenProgram = rewriter.process(placeHolderIsDesugaredProgram, session)

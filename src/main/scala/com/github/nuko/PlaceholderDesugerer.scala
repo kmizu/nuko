@@ -44,7 +44,7 @@ class PlaceholderDesugerer extends Processor[Ast.Program, Ast.Program, Interacti
             xValue
           }
           x.copy(value = init) :: rewriteBlock(xs)
-        case (x@FunctionDefinition(loation, name, expression, cleanup)) :: xs =>
+        case (x@FunctionDefinition(loation, name, expression)) :: xs =>
           val xExpression = doRewrite(expression)
           val xBody: Ast.Node = if(manager.hasPlaceholder) {
             val formalParameters = manager.placeholders.map{name => FormalParameterOptional(name, None)}
@@ -54,7 +54,7 @@ class PlaceholderDesugerer extends Processor[Ast.Program, Ast.Program, Interacti
           } else {
             xExpression
           }
-          x.copy(body = xBody.asInstanceOf[Ast.Lambda], cleanup  = x.cleanup.map{doRewrite}) :: xs
+          x.copy(body = xBody.asInstanceOf[Ast.Lambda]) :: xs
         case x :: xs =>
           doRewrite(x) :: rewriteBlock(xs)
         case Nil =>
@@ -152,8 +152,8 @@ class PlaceholderDesugerer extends Processor[Ast.Program, Ast.Program, Interacti
       x.copy(body = doRewrite(body))
     case x@Let(location, variable, type_, value, body, immutable) =>
       x.copy(value = doRewrite(x.value), body = doRewrite(x.body))
-    case x@LetRec(location, name, function, cleanup, body) =>
-      x.copy(function = x.function.copy(body = doRewrite(x.function.body)), cleanup = x.cleanup.map{doRewrite}, body = doRewrite(body))
+    case x@LetRec(location, name, function, body) =>
+      x.copy(function = x.function.copy(body = doRewrite(x.function.body)), body = doRewrite(body))
     case x@TernaryExpression(_, _, _, _) =>
       x.copy(condition = doRewrite(x.condition), thenExpression = doRewrite(x.thenExpression), elseExpression = doRewrite(x.elseExpression))
     case Placeholder(location) =>

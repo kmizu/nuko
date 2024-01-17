@@ -24,8 +24,8 @@ class SyntaxRewriter extends Processor[Ast.Program, Ast.Program, InteractiveSess
       def rewriteBlock(es: List[Ast.Node]): List[Ast.Node] = es match {
         case ValDeclaration(location, variable, type_, value, immutable) :: xs =>
           List(Let(location, variable, type_, doRewrite(value), Block(location, rewriteBlock(xs)), immutable))
-        case FunctionDefinition(loation, name, expression, cleanup) :: xs =>
-          List(LetRec(location, name, doRewrite(expression).asInstanceOf[Ast.Lambda], cleanup.map(doRewrite), Block(location, rewriteBlock(xs))))
+        case FunctionDefinition(loation, name, expression) :: xs =>
+          List(LetRec(location, name, doRewrite(expression).asInstanceOf[Ast.Lambda], Block(location, rewriteBlock(xs))))
         case (x@EnumDeclaration(_, _, _, _)) :: xs =>
           List(EnumIn(x.location, x, Block(location, rewriteBlock(xs))))
         case x :: xs =>
@@ -140,8 +140,8 @@ class SyntaxRewriter extends Processor[Ast.Program, Ast.Program, InteractiveSess
     case Casting(location, target, to) => Casting(location, doRewrite(target), to)
     case TernaryExpression(location, cond, th, el) => TernaryExpression(location, doRewrite(cond), doRewrite(th), doRewrite(el))
     case x@(EnumDeclaration(_, _, _, _) | EnumIn(_, _, _)
-      |  FunctionDefinition(_, _, _, _) | Let(_, _, _, _, _, _)
-      |  LetRec(_, _, _, _, _) | MethodDefinition(_, _, _, _) | Placeholder(_)) =>
+      |  FunctionDefinition(_, _, _) | Let(_, _, _, _, _, _)
+      |  LetRec(_, _, _, _) | MethodDefinition(_, _, _) | Placeholder(_)) =>
       throw new RewriterPanic(x.toString)
   }
 

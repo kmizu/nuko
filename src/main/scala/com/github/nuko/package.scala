@@ -20,7 +20,7 @@ package object nuko {
     scala.util.control.Exception.allCatch(resource.close())
   }
 
-  val p = new Parser
+  val p = new NukoParser
   val t = new Typer
   val e = new Evaluator
 

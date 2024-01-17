@@ -191,7 +191,7 @@ class ExpressionSpec extends SpecHelper {
         assertResult(
           E(
             """
-              |関数 none() は 24 後始末 "none"
+              |関数 none() は 24
               |none()
             """.stripMargin))(BoxedInt(24))
         assertResult(
@@ -200,8 +200,6 @@ class ExpressionSpec extends SpecHelper {
               |関数 hello() は {
               |  "Hello"
               |  0
-              |} 後始末 {
-              |  "World"
               |}
               |hello()
             """.stripMargin))(BoxedInt(0))

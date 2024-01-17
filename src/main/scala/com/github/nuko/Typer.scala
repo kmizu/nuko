@@ -764,7 +764,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         }
         val (typedBody, s) = doType(body, newEnv, t, s2)
         (TypedAst.LetDeclaration(typedBody.type_, location, variable, declaredType, typedValue, typedBody, immutable), s)
-      case Ast.LetRec(location, variable, value, cleanup, body) =>
+      case Ast.LetRec(location, variable, value, body) =>
         if(env.variables.contains(variable)) {
           throw new InterruptedException(s"${location.format} function ${variable} is already defined")
         }
@@ -774,11 +774,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val s2 = unify(a, b, s1)
         val (typedE2, s3) = doType(body, env.updateImmuableVariable(variable, generalize(s2.replace(a), s2(env.variables))), t, s2)
         val x = newTypeVariable()
-        val (typedCleanup, s) = cleanup.map{c => doType(c, env, x, s3)} match {
-          case Some((c, s)) => (Some(c), s)
-          case None => (None, s3)
-        }
-        (TypedAst.LetFunctionDefinition(typedE2.type_, location, variable, typedE1.asInstanceOf[TypedAst.FunctionLiteral], typedCleanup, typedE2), s)
+        val s = s3
+        (TypedAst.LetFunctionDefinition(typedE2.type_, location, variable, typedE1.asInstanceOf[TypedAst.FunctionLiteral], typedE2),  s)
       case Ast.FunctionCall(location, e1, ps) =>
         val t2 = ps.map{_ => newTypeVariable()}
         val (typedTarget, s1) = doType(e1, env, TFunction(t2, t), s0)

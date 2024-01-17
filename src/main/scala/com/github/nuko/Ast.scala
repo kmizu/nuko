@@ -102,14 +102,14 @@ object Ast {
     }
   }
 
-  case class FunctionDefinition(location: Location, name: String, body: Lambda, cleanup: Option[Ast.Node]) extends Node
+  case class FunctionDefinition(location: Location, name: String, body: Lambda) extends Node
 
-  case class MethodDefinition(location: Location, name: String, body: Lambda, cleanup: Option[Ast.Node]) extends Node
+  case class MethodDefinition(location: Location, name: String, body: Lambda) extends Node
 
-  case class LetRec(location: Location, name: String, function: Lambda, cleanup: Option[Ast.Node], body: Ast.Node) extends Node
+  case class LetRec(location: Location, name: String, function: Lambda, body: Ast.Node) extends Node
   object LetRec {
     def apply(name: String, function: Lambda, body: Ast.Node): LetRec = {
-      LetRec(NoLocation, name, function, None, body)
+      LetRec(NoLocation, name, function, body)
     }
   }
 
