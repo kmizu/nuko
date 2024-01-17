@@ -1,4 +1,4 @@
-# 日本語プログラミング言語Nuko  [![Build Status](https://github.com/kmizu/nuko/actions/workflows/scala.yml/badge.svg?branch=master)](https://github.com/kmizu/nuko/actions)
+# 日本語プログラミング言語Nuko  [![Build Status](https://github.com/kmizu/nuko/actions/workflows/scala.yml/badge.svg?branch=main)](https://github.com/kmizu/nuko/actions)
 
 Nukoは日本語ぽい記法で記述できるプログラミング言語です。
 
