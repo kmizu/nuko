@@ -10,14 +10,14 @@ publishMavenStyle := true
 
 val scaladocBranch = settingKey[String]("branch name for scaladoc -doc-source-url")
 
-scaladocBranch := "master"
+scaladocBranch := "main"
 
-scalacOptions in (Compile, doc) ++= { Seq(
+Compile / doc / scalacOptions  ++= { Seq(
   "-sourcepath", baseDirectory.value.getAbsolutePath,
   "-doc-source-url", s"https://github.com/kmizu/nuko/tree/${scaladocBranch.value}€{FILE_PATH}.scala"
 )}
 
-testOptions in Test += Tests.Argument("-oI")
+Test / testOptions += Tests.Argument("-oI")
 
 fork := true
 
@@ -39,6 +39,7 @@ libraryDependencies ++= Seq(
   "junit" % "junit" % "4.13" % "test",
   "org.scalatest" %% "scalatest" %  "3.1.1"
 )
+
 libraryDependencies ++= Seq(
   "com.pi4j" % "pi4j-core" % "1.2",
   "com.pi4j" % "pi4j-device" % "1.2",
@@ -47,11 +48,11 @@ libraryDependencies ++= Seq(
   "com.pi4j" % "pi4j-native" % "1.2" pomOnly()
 )
 
-assemblyJarName in assembly := "nuko.jar"
+assembly / assemblyJarName := "nuko.jar"
 
-mainClass in assembly := Some("com.github.nuko.Main")
+assembly / mainClass := Some("com.github.nuko.Main")
 
-initialCommands in console += {
+console / initialCommands += {
   Iterator(
     "com.github.nuko._",
     "com.github.nuko.Ast._",
