@@ -1,4 +1,4 @@
-関数 myFoldLeft(list) は (z) => (f) => {
+ブロック myFoldLeft(list) は (z) => (f) => {
   もし (isEmpty(list)) z でなければ myFoldLeft(tail(list))(f(z, head(list)))(f)
 }
 assertResult(10)(myFoldLeft([1 2 3 4])(0)((x, y) => x + y))

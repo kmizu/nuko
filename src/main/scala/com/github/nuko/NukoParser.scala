@@ -142,7 +142,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val IN: Parser[String] = kwToken("in")
       val COMMA: Parser[String] = kwToken(",")
       val DOT: Parser[String] = kwToken(".")
-      val DEF: Parser[String] = kwToken("関数")
+      val DEF: Parser[String] = kwToken("ブロック")
       val VARIABLE: Parser[String] = kwToken("変数")
       val EQ: Parser[String] = kwToken("=")
       val JP_HA: Parser[String] = kwToken("は")

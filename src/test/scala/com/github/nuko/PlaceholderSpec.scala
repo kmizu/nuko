@@ -62,7 +62,7 @@ class PlaceholderSpec extends TestSuiteHelper {
   test("function declaration has one placeholder") {
     val result = E(
       """
-        |関数 f(x) は _
+        |ブロック f(x) は _
         |map([1])(f(1))
       """.stripMargin
     )

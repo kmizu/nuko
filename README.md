@@ -8,14 +8,15 @@ Nukoは日本語ぽい記法で記述できるプログラミング言語です�
 変数 挨拶 は　(時間 < 12) ならば "おはようございます" でなければ "こんにちは"
 ```
 
-プログラミング言語Nukoは、日本語プログラミング言語を作ってみたくなって思い立って作ったものです。元々は拙作の
-プログラミング言語[Klassic](https://klassic/klassic)が元になってるため、Klassicで使えた言語の機能はほとんど利用できます。
+プログラミング言語Nukoは、日本語プログラミング言語を作ってみたくなって思い立って作ったものです。日本語らしさを維持しつつどこまで使いやすい言語にできるかの実験作でもあります。
 
 以下はNukoの特徴です：
 
-* Hindley-Milnerぽい型システム
+* Hindley-Milnerベースの型システム
 * レキシカルスコープ変数
-* ファーストクラス関数（いわゆるラムダ式も含む）
+* ファーストクラスブロック
+  * いわゆるファーストクラス関数のこと
+  * Nukoでは関数のことをブロックと呼びます
 * 文字列補間
   * Ruby, Scala, Kotlinなど最近の言語には大体あるやつです
 * ループ
@@ -72,16 +73,16 @@ Hello, World!
 
 変数`one`を宣言し、その初期値を`1`とします。セミコロンは省略することができます。
 
-### 関数リテラル
+### 無名ブロック
 
 ```
 変数 add は (x, y) => x + y
 ```
 
-変数`add`を宣言し、その初期値を`(x, y) => x + y`とします。このように、関数リテラルは
-`(引数) => 式`という形で書きます。関数リテラルは、関数オブジェクトを生成します。
+変数`add`を宣言し、その初期値を`(x, y) => x + y`とします。無名ブロックは
+`(引数) => 式`という形で書きます。無名ブロックは、ブロックオブジェクトを生成します。
 
-関数リテラルが複数の式に渡る場合以下のように書くことができます：
+無名ブロックの本体が複数の式に渡る場合、以下のように書けます：
 
 ```
 変数 printAndAdd は (x, y) => {
@@ -91,12 +92,12 @@ Hello, World!
 }
 ```
 
-### 関数定義
+### ブロック定義
 
-名前のついた関数を定義したいこともあるでしょう。その場合は、以下のように書きます：
+名前のついたブロックを定義したいこともあるでしょう。その場合は、以下のように書きます：
 
 ```
-関数 fact(n) は もし(n < 2) 1 でなければ n * fact(n - 1)
+ブロック fact(n) は もし(n < 2) 1 でなければ n * fact(n - 1)
 fact(0) // 1
 fact(1) // 1
 fact(2) // 2
@@ -119,14 +120,14 @@ println(list)
 
 現在の実装ではJavaのオブジェクトに対するメソッド呼び出しのみ可能です。プリミティブ型のボクシングは自動的に行われます。
 
-### 関数呼び出し
+### ブロック呼び出し
 
 ```
 変数 add は (x, y) => x + y
 println(add(1, 2))
 ```
 
-関数呼び出しは`fun(p1, p2, ..., pn)`のように書けます。`fun`の評価結果は関数オブジェクトでなければなりません。
+ブロック呼び出しは`fun(p1, p2, ..., pn)`のように書けます。`fun`の評価結果はブロックオブジェクトでなければなりません。
 
 ### リストリテラル
 
@@ -212,7 +213,7 @@ println(i)
 
 ### 数値リテラル
 
-Nukoではいくつかの数値リテラルがサポートされています。
+Nukoではいくつかの数値リテラルがサポートされています。現時点では、`Int`、`Byte`、`Short`、`Long`、`Double`、`Float`のリテラルがサポートされています。
 
 ### Int
 
@@ -222,13 +223,11 @@ println(200)
 println(300)
 ```
 
-The max value of Int literals is `Int.MaxValue` in Scala and the min value of integer literals is 
-`Int.MinValue` in Scala.
+`Int`リテラルの最大値はScalaの`Int.MaxValue`で、最小値は`Int.MinValue`です。
 
 ### Byte
 
-The suffix of byte literal is `BY`.  The max value of long literals is `Byte.MaxValue` in Scala and 
-the min value of long literals is `Byte.MinValue` in Scala.
+`Byte`リテラルのサフィックスは`BY`です。`Byte`リテラルの最大値はScalaの`Byte.MaxValue`で、最小値は`Byte.MinValue`です。
 
 ```
 println(127BY)
@@ -238,8 +237,7 @@ println(100BY)
 
 ### Short
 
-The suffix of short literal is `S`.  The max value of long literals is `Short.MaxValue` in Scala and 
-the min value of long literals is `Short.MinValue` in Scala.
+`Short`リテラルのサフィックスは`S`です。`Short`リテラルの最大値はScalaの`Short.MaxValue`で、最小値は`Short.MinValue`です。
 
 ```
 println(100S)
@@ -249,14 +247,14 @@ println(300S)
 
 ### Long
 
+`Long`リテラルのサフィックスは`L`です。`Long`リテラルの最大値はScalaの`Long.MaxValue`で、最小値は`Long.MinValue`です。
+
 ```
 println(100L)
 println(200L)
 println(300L)
 ```
 
-The suffix of long literal is `L`.  The max value of long literals is `Long.MaxValue` in Scala and 
-the min value of long literals is `Long.MinValue` in Scala.
 
 ### Double
 
@@ -265,8 +263,7 @@ println(1.0)
 println(1.5)
 ```
 
-The max value of double literal is `Double.MaxValue` in Scala and the min value of double literal is `Double.MinValue`
-in Scala.
+`Double`型の最大値はScalaの`Double.MaxValue`で、最小値は`Double.MinValue`です。
 
 ### Float
 
@@ -275,24 +272,24 @@ println(1.0F)
 println(1.5F)
 ```
 
-The max value of float literal is `Float.MaxValue` in Scala and the min value of float literal is `Float.MinValue`
-in Scala.
+`Float`型の最大値はScalaの`Float.MaxValue`で、最小値は`Float.MinValue`です。
+
 
 ### コメント
 
 Nukoでは二種類のコメントを提供しています。
 
-### ネスト可能なブロックコメント
+### ネスト可能な複数行コメント
 
 ```
-1 + /* nested
-  /* comment */ here */ 2 // => 3
+1 + /* ネスト
+  /* した */ コメント */ 2 // => 3
 ```
 
 ### 行コメント
 
 ```
-1 + // comment
+1 + // コメント
     2 // => 3
 ```
 
@@ -305,156 +302,175 @@ Nukoは静的型付き関数型プログラミング言語です。Nukoの型シ
 Nukoの型推論はHindley-Milner型推論に基づいています。そのため、型注釈は多くの場合省略することができます：
 
 ```
-関数 fold_left(list) は (z) => (f) => {
+ブロック fold_left(list) は (z) => (f) => {
   もし (isEmpty(list)) z でなければ　fold_left(tail(list))(f(z, head(list)))(f)
 }
 // The result of type inference: List<'a> => 'b => (('b, 'a) => 'b) => 'b
 ```
 
-### 型キャスト
+### 強制型変換
 
-In some cases, escape hatches from type system are required. In such cases,
-user can insert cast explicitly.
+場合によっては型システムからの脱出口が必要なこともあります。このようなケースでユーザーは型変換を強制することで問題を解決できます。
 
 ```
-変数 s: * は (100 :> *) // 100 is casted to dynamic type ( `*` )
+変数 s: * は (100 :> *) // 100 は強制的に動的型`*`に変換される。
 ```
 
-## 組み込み関数
+## 組み込みブロック
 
-Nukoではいくつかの組み込み関数を提供しています。
+Nukoではいくつかの組み込みブロックを提供しています。
 
-### 標準入出力関数
+### 標準入出力ブロック
 
 - `println: (param:Any) => Any`  
-    display the `param` into the standard output.  
-    ```
-    println("Hello, World!")
-    ```
+  `param`を標準出力に表示します。
+ 
+```
+println("Hello, World!")
+```
 
 - `printlnError: (param:Any) => Any`  
-    display the `param` into the standard error.  
-    ```
-    printlnError("Hello, World!")
-    ```
+  `param`を標準エラー出力に表示します。
 
-### 文字列関数
+```
+printlnError("Hello, World!")
+```
+
+### 文字列操作ブロック
 
 - `substring: (s:String, begin:Int, end:Int) => String`  
-    Returns a substring of the String `s`. The substring begins at the index `begin` and ends at the index `end` - 1.  
-    ```
-    substring("FOO", 0, 1) // => "F"
-    ```
+   文字列`s`の部分文字列を返します。部分文字列はインデックス`begin`からインデックス`end` - 1までを切り取った文字列です。
+
+```
+substring("FOO", 0, 1) // => "F"
+```
 
 - `at: (s:String, index:Int) => String`  
-    Returns a String with a character value at the index `index` of the String `s`.  
-    ```
-    at("BAR", 2) // => "R"
-    ```
+  文字列`s`のインデックス`index`番目にある文字を返します。
+
+```
+at("BAR", 2) // => "R"
+```
 
 - `matches: (s:String, regex:String) => Boolean`  
-    Returns true if the String `s` matches the regular expression `regex`, false otherwise.  
-    ```
-    変数 pattern は "[0-9]+"
-    matches("199", pattern) // => true
-    matches("a", pattern)   // => false
-    ```
+  文字列`s`が正規表現`regex`にマッチした場合`true`を、そうでない場合`false`を返します。
 
-### 数値関係の関数
+```
+変数 pattern は "[0-9]+"
+matches("199", pattern) // => true
+matches("a", pattern)   // => false
+```
+
+### 数値関係のブロック
 
 - `sqrt: (value:Double) => Double`  
-    Returns the square root of the Double `value`.
-    ```
-    sqrt(2.0) // => 1.4142135623730951
-    sqrt(9.0) // => 3.0
-    ```
+   `value`の平方根を返します。
+ 
+```
+sqrt(2.0) // => 1.4142135623730951
+sqrt(9.0) // => 3.0
+```
+  
 - `int: (vaue:Double) => Int`  
-    Returns the Double `value` as the Int value.
-    ```
-    int(3.14159265359) // => 3
-    ```
+ 
+`Double`型の値`value`を`Int`型に変換します。小数点以下は切り捨てられます。
+
+```
+int(3.14159265359) // => 3
+```
 
 - `double: (value:Int) => Double`  
-    Returns the Int `value` as the Double value.  
-    ```
-    double(10) // => 10.0
-    ```
+   `value`を`Double`型に変換します。
+
+```
+double(10) // => 10.0
+```
 
 - `floor: (value:Double) => Int`  
-    `value`を切り下げた値を返します。
-    ```
-    floor(1.5) // => 1
-    floor(-1.5) // => -1
-    ```
+  `value`を切り下げた値を返します。
+
+```
+floor(1.5) // => 1
+floor(-1.5) // => -1
+```
 
 - `ceil: (value:Double) => Int`  
-    `value`を切り上げた値を返します。
-      ```
-      ceil(4.4)  // => 5
-      ceil(4.5)  // => 5
-      ceil(-4.4) // => -4
-      ceil(-4.5) // => -4
-      ```
+   `value`を切り上げた値を返します。
+ 
+```
+ceil(4.4)  // => 5
+ceil(4.5)  // => 5
+ceil(-4.4) // => -4
+ceil(-4.5) // => -4
+```
 
 - `abs: (value:Double) => Double`  
     `value`の絶対値を返します。
-    ```
-    abs(10.5)  // => 10.5
-    abs(-10.5) // => 10.5
-    ```
+ 
+```
+abs(10.5)  // => 10.5
+abs(-10.5) // => 10.5
+```
 
-### リスト関係の関数
+### リスト関係のブロック
 
 - `map: (list:List<'a>) => (fun:('a) => 'b) => List<'b>`  
-    Returns a new List consisting of the results of applying the given function `fun` to the elements of the given List `list`.
-    ```
-    map([1 2 3])((x) => x + 1) // => [2 3 4]
-    map([2 3 4]){x => x + 1}   // => [3 4 5]
-    ```
+   ブロック`fun`を与えられたリスト`list`のすべての要素に適用した結果からなる新しいリストを返します。
+ 
+```
+map([1 2 3])((x) => x + 1) // => [2 3 4]
+map([2 3 4]){x => x + 1}   // => [3 4 5]
+ ```
 
 - `head: (list:List<'a>) => List<'a>`  
-  Returns the first element of the List `list`.
-  ```
-  head([1 2 3 4]) // => 1
-  ```
+  `list`の最初の要素を返します。
+ 
+```
+head([1 2 3 4]) // => 1
+```
 
 - `tail: (list:List<'a>) => List<'a>`  
-    Returns a new List consisting of the elements of the given List `list` except for the first element.
-    ```
-    tail([1 2 3 4]) // => [2 3 4]
-    ```
+   `list`の最初の要素を除いた新しいリストを返します。
+ 
+```
+tail([1 2 3 4]) // => [2 3 4]
+```
 
 - `cons: (value:'a) => (list:List<'a>) => List<'a>`  
-    Creates a new List, the head of which is `value` and the tail of which is `list`.  
-    ```
-    cons(1)([2 3 4]) // => [1 2 3 4]
-    ```
+    `value`と`list`を結合した新しいリストを返します。
+ 
+```
+cons(1)([2 3 4]) // => [1 2 3 4]
+```
 
 - `size: (list:List<'a>) => Int`  
-    Returns the size of the List `list`.  
-    ```
-    size([1 2 3 4 5]) // => 5
-    ```
+   リスト`list`の要素数を返します。
+ 
+```
+size([1 2 3 4 5]) // => 5
+```
 
-- `isEmpty: (list:List<'a>) => Boolean`  
-    Returns true if the List `list` is empty, false otherwise.  
-    ```
-    isEmpty([])       // => true
-    isEmpty([1 2 3])  // => false
-    ```
+- `isEmpty: (list:List<'a>) => Boolean`
+   もし`list`が空ならばtrueを、そうでなければfalseを返します。
+ 
+```
+isEmpty([])       // => true
+isEmpty([1 2 3])  // => false
+```
 
 - `foldLeft: (list:List<'a>) => (acc:'b) => (fun:('b, 'a) => 'b) => 'b`  
-    Applies a function `fun` to a start value `acc` and all elements of the List `list`, going left to right.
-    ```
-    foldLeft([1 2 3 4])(0)((x, y) => x + y)         // => 10
-    foldLeft([1.0 2.0 3.0 4.0])(0.0){x, y => x + y} // => 10.0
-    foldLeft([1.0 2.0 3.0 4.0])(1.0){x, y => x * y} // => 24.0
-    ```
+    ブロック`fun`を開始値`acc`とリスト`list`のすべての要素に左から右に適用します。
+ 
+```
+foldLeft([1 2 3 4])(0)((x, y) => x + y)         // => 10
+foldLeft([1.0 2.0 3.0 4.0])(0.0){x, y => x + y} // => 10.0
+foldLeft([1.0 2.0 3.0 4.0])(1.0){x, y => x * y} // => 24.0
+```
 
-### スレッド関係の関数
+### スレッド関係のブロック
 
 - `thread: (fun:() => Unit) => Unit` 
-    新しいスレッドを作成し、引数の関数 `fun` を非同期に実行します。
+    新しいスレッドを作成し、ブロック `fun` を非同期に実行します。
     ```
     thread(() => {
       sleep(1000)
@@ -471,25 +487,27 @@ Nukoではいくつかの組み込み関数を提供しています。
     sleep(1000)
     ```
 
-### ユーティリティ関数
+### ユーティリティブロック
 
 - `stopwatch: (fun:() => Unit) => Int`  
-    Returns the time in milliseconds taken to evaluate the passed argument function `fun`.
-    ```
-    変数 time は stopwatch( => {
-      sleep(1000)
-      println("1")
-    })
-    println("it took #{time} milli seconds")
-    ```
+   引数で渡された関数`fun`の評価にかかった時間をミリ秒単位で返します。
+ 
+```
+変数 time は stopwatch( => {
+  sleep(1000)
+  println("1")
+})
+println("it took #{time} milli seconds")
+```
 
 - `ToDo: () => Unit`  
-    Throws `nuko.runtime.NotImplementedError` when evaluated.
-    ```
-    ToDo()  // => throw NotImplementedError
-    ```
+    評価されると `nuko.runtime.NotImplementedError` を投げます。
 
-### アサーション関数
+ ```
+ToDo()  // => throw NotImplementedError
+```
+
+### アサーションブロック
 
 - `assert: (condition:Boolean) => Unit`  
     Asserts that the `condtion` should be true, and throws `nuko.runtime.AssertionError` if the `condition` is false.
@@ -499,31 +517,34 @@ Nukoではいくつかの組み込み関数を提供しています。
   ```
 
 - `assertResult: (expected:Any)(actual:Any) => Unit`  
-    Asserts that the `actual` value should be equal to the `expected` value, and throws `nuko.runtime.AssertionError` if the `actual` value is not equal to the `expected` value.
-    ```
-    変数 add は (x, y) => {
-      x + y
-    }
-    assertResult(5)(add(2, 3))  // => OK
-    assertResult(2)(add(1, 2))  // => NG: AssertionError
-    ```
 
-### Interoperating Functions
+    Asserts that the `actual` value should be equal to the `expected` value, and throws `nuko.runtime.AssertionError` if the `actual` value is not equal to the `expected` value.
+ 
+```
+変数 add は (x, y) => {
+  x + y
+}
+assertResult(5)(add(2, 3))  // => OK
+assertResult(2)(add(1, 2))  // => NG: AssertionError
+```
+
+### Java関係のブロック
 
 - `url: (value:String) => java.net.URL`  
-    Creates new `java.net.URL` object from a String `value`.
+    引数`value`から新しい`java.net.URL`オブジェクトを作ります。
     ```
     url("https://github.com/kmizu/nuko")
     ```
 
 - `uri: (value:String) => java.net.URI`  
-    Creates new `java.net.URI` object from a String `value`.
+    引数`value`から新しい `java.net.URI` オブジェクトを作ります。
     ```
     uri("https://github.com/kmizu/nuko")
     ```
 
-- `desktop: () => java.awt.Desktop`  
-    Returns the Desktop instance of the current browser context via Java Desktop API.
-    ```
-    desktop()->browse(uri("https://github.com/kmizu/nuko"))
-    ```
+- `desktop: () => java.awt.Desktop`
+  Java Desktop APIを使って、現在のブラウザコンテキストの`java.awt.Desktop`インスタンスを返します。
+ 
+```
+desktop()->browse(uri("https://github.com/kmizu/nuko"))
+```
