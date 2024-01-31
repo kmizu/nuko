@@ -1,4 +1,4 @@
-関数 fact(n) は もし (n < 2) 1 でなければ n * fact(n - 1)
+ブロック fact(n) は もし (n < 2) 1 でなければ n * fact(n - 1)
 
 assertResult(1)(fact(0))
 assertResult(1)(fact(1))
