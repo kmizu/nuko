@@ -128,6 +128,7 @@ class SyntaxRewriter extends Processor[Ast.Program, Ast.Program, InteractiveSess
       )
     case ValDeclaration(location, variable, optionalType, value, immutable) => ValDeclaration(location, variable, optionalType, doRewrite(value), immutable)
     case Lambda(location, params, optionalType, proc) => Lambda(location, params, optionalType, doRewrite(proc))
+    case Show(location, expression) => Show(location, expression)
     case FunctionCall(location, func, params) => FunctionCall(location, doRewrite(func), params.map{doRewrite})
     case ListLiteral(location, elements) =>  ListLiteral(location, elements.map{doRewrite})
     case SetLiteral(location, elements) =>  SetLiteral(location, elements.map{doRewrite})

@@ -128,6 +128,8 @@ class PlaceholderDesugerer extends Processor[Ast.Program, Ast.Program, Interacti
       Lambda(location, params, optionalType, doRewrite(proc))
     case FunctionCall(location, func, params) =>
       FunctionCall(location, doRewrite(func), params.map{doRewrite})
+    case Show(location, expression) =>
+      Show(location, expression)
     case ListLiteral(location, elements) =>
       ListLiteral(location, elements.map{doRewrite})
     case SetLiteral(location, elements) =>

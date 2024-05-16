@@ -691,6 +691,10 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
           (tparam::tparams, sx)
         }
         (TypedAst.FunctionCall(s.replace(t), location, typedTarget, tparams.reverse), s)
+      case Ast.Show(location, e) =>
+        val a = newTypeVariable()
+        val (typedE, s) = doType(e, env, a, s0)
+        (TypedAst.Show(a, location, e), s)
       case Ast.ListLiteral(location, elements) =>
         val a = newTypeVariable()
         val listOfA = listOf(a)

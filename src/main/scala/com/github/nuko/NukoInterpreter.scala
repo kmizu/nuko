@@ -622,6 +622,8 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           }
         case call@TypedAst.FunctionCall(type_, location, function, params) =>
           performFunction(call, env)
+        case show@TypedAst.Show(type_, location, expression) =>
+          ASTVisualizer.visualize(expression)
         case TypedAst.Casting(type_, location, target, to) =>
           evalRecursive(target)
         case TypedAst.ValueNode(value) =>
