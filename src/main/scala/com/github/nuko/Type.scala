@@ -17,13 +17,7 @@ object Type {
 
   case object TInt extends Type("Int")
 
-  case object TShort extends Type("Short")
-
   case object TByte extends Type("Byte")
-
-  case object TLong extends Type("Long")
-
-  case object TFloat extends Type("Float")
 
   case object TDouble extends Type("Double")
 

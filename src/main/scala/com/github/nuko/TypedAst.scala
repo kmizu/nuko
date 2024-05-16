@@ -43,19 +43,13 @@ object TypedAst {
 
   case class StringNode(type_ : Type, location: Location, value: String) extends TypedNode
 
-  case class IntNode(type_ : Type, location: Location, value: Int) extends TypedNode
-
-  case class LongNode(type_ : Type, location: Location, value: Long) extends TypedNode
-
-  case class ShortNode(type_ : Type, location: Location, value: Short) extends TypedNode
+  case class IntNode(type_ : Type, location: Location, value: BigInt) extends TypedNode
 
   case class ByteNode(type_ : Type, location: Location, value: Byte) extends TypedNode
 
   case class BooleanNode(type_ : Type, location: Location, value: Boolean) extends TypedNode
 
   case class DoubleNode(type_ : Type, location: Location, value: Double) extends TypedNode
-
-  case class FloatNode(type_ : Type, location: Location, value: Float) extends TypedNode
 
   case class Id(type_ : Type, location: Location, name: String) extends TypedNode
 

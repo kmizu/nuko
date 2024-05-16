@@ -207,10 +207,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
           case name ~ Some(args) => TConstructor(name, args)
           case name ~ None => TConstructor(name, Nil)
         } | kwToken("Byte") ^^ { _ => TByte }
-          | kwToken("Short") ^^ { _ => TShort }
           | kwToken("整数") ^^ { _ => TInt }
-          | kwToken("Long") ^^ { _ => TLong }
-          | kwToken("Float") ^^ { _ => TFloat }
           | kwToken("Double") ^^ { _ => TDouble }
           | kwToken("Boolean") ^^ { _ => TBoolean }
           | kwToken("Unit") ^^ { _ => TUnit }
@@ -401,16 +398,13 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       }
 
       //integerLiteral ::= ["1"-"9"] {"0"-"9"}
-      lazy val integerLiteral: Parser[Ast.Node] = (%% ~ """[1-9][0-9]*|0""".r ~ ("BY" ^^ { _ => ByteSuffix } | "L" ^^ { _ => LongSuffix } | "S" ^^ { _ => ShortSuffix }).? ^^ {
+      lazy val integerLiteral: Parser[Ast.Node] = (%% ~ """[1-9][0-9]*|0""".r ~ ("BY" ^^ { _ => ByteSuffix }).?  ^^ {
         case location ~ value ~ None => IntNode(location, value.toLong.toInt)
-        case location ~ value ~ Some(LongSuffix) => LongNode(location, value.toLong)
-        case location ~ value ~ Some(ShortSuffix) => ShortNode(location, value.toShort)
         case location ~ value ~ Some(ByteSuffix) => ByteNode(location, value.toByte)
       }) << SPACING_WITHOUT_LF
 
-      lazy val floatLiteral: Parser[Ast.Node] = ((%% ~ "([1-9][0-9]*|0)\\.[0-9]*".r ~ ("F" ^^ { _ => FloatSuffix }).?) ^^ {
-        case location ~ value ~ None => DoubleNode(location, value.toDouble)
-        case location ~ value ~ Some(FloatSuffix) => FloatNode(location, value.toFloat)
+      lazy val floatLiteral: Parser[Ast.Node] = (%% ~ "([1-9][0-9]*|0)\\.[0-9]*".r  ^^ {
+        case location ~ value => DoubleNode(location, value.toDouble)
       }) << SPACING_WITHOUT_LF
 
       lazy val booleanLiteral: Parser[Ast.Node] = %% ~ (TRUE ^^ { _ => true } | FALSE ^^ { _ => false }) ^^ {

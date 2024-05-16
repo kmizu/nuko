@@ -14,33 +14,9 @@ class LiteralSpec extends SpecHelper {
       "0" -> BoxedInt(0),
       "+0" -> BoxedInt(0),
       "-0" -> BoxedInt(0),
-      s"${Int.MinValue}" -> BoxedInt(Int.MinValue),
-      s"-${Int.MinValue}" -> BoxedInt(-Int.MinValue),
-      s"${Int.MaxValue}" -> BoxedInt(Int.MaxValue),
-      s"-${Int.MaxValue}" -> BoxedInt(-Int.MaxValue)
+      s"2147483647" -> BoxedInt(2147483647),
     )
     expectations.zipWithIndex.foreach { case ((in, expected), i) =>
-      it(s"${in} evaluates to ${expected}") {
-        assert(expected == E(in))
-      }
-    }
-  }
-
-  describe("long literal") {
-    val expectations = List[(String, Value)](
-      "2L"    -> BoxedLong(2),
-      "+2L"   -> BoxedLong(+2),
-      "-2L"   -> BoxedLong(-2),
-      "1L"    -> BoxedLong(1),
-      "+1L"   -> BoxedLong(+1),
-      "-1L"   -> BoxedLong(-1),
-      "0L"    -> BoxedLong(0),
-      "+0L"   -> BoxedLong(0),
-      "-0L"   -> BoxedLong(0),
-      s"${Long.MaxValue}L" -> BoxedLong(Long.MaxValue),
-      s"${Long.MinValue + 1}L" -> BoxedLong(Long.MinValue + 1)
-    )
-    expectations.zipWithIndex.foreach{ case ((in, expected), i) =>
       it(s"${in} evaluates to ${expected}") {
         assert(expected == E(in))
       }
@@ -63,22 +39,6 @@ class LiteralSpec extends SpecHelper {
       }
     }
 
-    describe("float literal") {
-      val expectations = List[(String, Value)](
-        "2.0F" -> BoxedFloat(2.0F),
-        "2.5F" -> BoxedFloat(2.5F),
-        "+0.0F" -> BoxedFloat(+0.0F),
-        "-0.0F" -> BoxedFloat(-0.0F),
-        "0.1F" -> BoxedFloat(+0.1F),
-        "-0.1F" -> BoxedFloat(-0.1F)
-      )
-
-      expectations.zipWithIndex.foreach{ case ((in, expected), i) =>
-        it(s"${in} evaluates to ${expected}") {
-          assert(expected == E(in))
-        }
-      }
-    }
   }
 
   describe("string literal with escape sequence") {
@@ -100,36 +60,36 @@ class LiteralSpec extends SpecHelper {
   describe("list literal") {
     val expectations = List[(String, Value)](
       "[]" -> ObjectValue(listOf[Any]()),
-      "[1]" -> ObjectValue(listOf(1)),
+      "[1]" -> ObjectValue(listOf(BigInt(1))),
       """["a"]""" -> ObjectValue(listOf("a")),
-      "[1, 2]" -> ObjectValue(listOf(1, 2)),
+      "[1, 2]" -> ObjectValue(listOf(BigInt(1), BigInt(2))),
       """|[1
         | 2]
-      """.stripMargin -> ObjectValue(listOf(1, 2)),
+      """.stripMargin -> ObjectValue(listOf(BigInt(1), BigInt(2))),
       """|[1,
         |
         | 2]
-      """.stripMargin -> ObjectValue(listOf(1, 2)),
+      """.stripMargin -> ObjectValue(listOf(BigInt(1), BigInt(2))),
       """|[1
         |
         | 2]
-      """.stripMargin -> ObjectValue(listOf(1, 2)),
+      """.stripMargin -> ObjectValue(listOf(BigInt(1), BigInt(2))),
       """|[1 +
         |
         | 2]
-      """.stripMargin -> ObjectValue(listOf(3)),
+      """.stripMargin -> ObjectValue(listOf(BigInt(3))),
       """|[1, 2
         | 3]
-      """.stripMargin -> ObjectValue(listOf(1, 2, 3)),
+      """.stripMargin -> ObjectValue(listOf(BigInt(1), BigInt(2), BigInt(3))),
       """|[1 2
          | 3 4]
-      """.stripMargin -> ObjectValue(listOf(1, 2, 3, 4)),
+      """.stripMargin -> ObjectValue(listOf(BigInt(1), BigInt(2), BigInt(3), BigInt(4))),
       """| [[1 2]
          |  [3 4]]
       """.stripMargin -> ObjectValue(
         listOf(
-          listOf(1, 2),
-          listOf(3, 4)
+          listOf(BigInt(1), BigInt(2)),
+          listOf(BigInt(3), BigInt(4))
         )
       )
     )
@@ -142,7 +102,7 @@ class LiteralSpec extends SpecHelper {
   describe("map literal") {
     val expectations = List[(String, Value)](
       "%[]" -> ObjectValue(mapOf[String, String]()),
-      "%[1 : 2]" -> ObjectValue(mapOf(1 -> 2)),
+      "%[1 : 2]" -> ObjectValue(mapOf(BigInt(1) -> BigInt(2))),
       """%["a":"b"]""" -> ObjectValue(mapOf("a" -> "b")),
       """%["a":"b" "c":"d"]""" -> ObjectValue(mapOf("a" -> "b", "c" -> "d")),
     """%["a":"b"

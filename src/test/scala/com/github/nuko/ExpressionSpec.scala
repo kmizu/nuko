@@ -138,7 +138,7 @@ class ExpressionSpec extends SpecHelper {
               |  newList->add((a :> 整数) * 2)
               |}
               |newList
-            """.stripMargin))(ObjectValue(listOf(2, 4, 6, 8, 10)))
+            """.stripMargin))(ObjectValue(listOf(BigInt(2), BigInt(4), BigInt(6), BigInt(8), BigInt(10))))
       }
     }
 

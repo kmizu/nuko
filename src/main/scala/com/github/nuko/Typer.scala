@@ -138,13 +138,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       unify(u, t, s)
     case (TInt, TInt) =>
       s
-    case (TShort, TShort) =>
-      s
     case (TByte, TByte) =>
-      s
-    case (TLong, TLong) =>
-      s
-    case (TFloat, TFloat) =>
       s
     case (TDouble, TDouble) =>
       s
@@ -249,18 +243,9 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       case Ast.IntNode(location, value) =>
         val newSub = unify(t, TInt, s0)
         (TypedAst.IntNode(newSub.replace(t), location, value), newSub)
-      case Ast.ShortNode(location, value) =>
-        val newSub = unify(t, TShort, s0)
-        (TypedAst.ShortNode(newSub.replace(t), location, value), newSub)
       case Ast.ByteNode(location, value) =>
         val newSub = unify(t, TByte, s0)
         (TypedAst.ByteNode(newSub.replace(t), location, value), newSub)
-      case Ast.LongNode(location, value) =>
-        val newSub = unify(t, TLong, s0)
-        (TypedAst.LongNode(newSub.replace(t), location, value), newSub)
-      case Ast.FloatNode(location, value) =>
-        val newSub = unify(t, TFloat, s0)
-        (TypedAst.FloatNode(newSub.replace(t), location, value), newSub)
       case Ast.DoubleNode(location, value) =>
         val newSub = unify(t, TDouble, s0)
         (TypedAst.DoubleNode(newSub.replace(t), location, value), newSub)
@@ -308,13 +293,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
           case (TInt, TInt) =>
             (TBoolean, s2)
-          case (TLong, TLong) =>
-            (TBoolean, s2)
-          case (TShort, TShort) =>
-            (TBoolean, s2)
           case (TByte, TByte) =>
-            (TBoolean, s2)
-          case (TFloat, TFloat) =>
             (TBoolean, s2)
           case (TDouble, TDouble) =>
             (TBoolean, s2)
@@ -351,13 +330,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
           case (TInt, TInt) =>
             (TBoolean, s2)
-          case (TLong, TLong) =>
-            (TBoolean, s2)
-          case (TShort, TShort) =>
-            (TBoolean, s2)
           case (TByte, TByte) =>
-            (TBoolean, s2)
-          case (TFloat, TFloat) =>
             (TBoolean, s2)
           case (TDouble, TDouble) =>
             (TBoolean, s2)
@@ -381,13 +354,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
           case (TInt, TInt) =>
             (TBoolean, s2)
-          case (TLong, TLong) =>
-            (TBoolean, s2)
-          case (TShort, TShort) =>
-            (TBoolean, s2)
           case (TByte, TByte) =>
-            (TBoolean, s2)
-          case (TFloat, TFloat) =>
             (TBoolean, s2)
           case (TDouble, TDouble) =>
             (TBoolean, s2)
@@ -411,13 +378,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
           case (TInt, TInt) =>
             (TBoolean, s2)
-          case (TLong, TLong) =>
-            (TBoolean, s2)
-          case (TShort, TShort) =>
-            (TBoolean, s2)
           case (TByte, TByte) =>
-            (TBoolean, s2)
-          case (TFloat, TFloat) =>
             (TBoolean, s2)
           case (TDouble, TDouble) =>
             (TBoolean, s2)
@@ -441,13 +402,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
           case (TInt, TInt) =>
             (TBoolean, s2)
-          case (TLong, TLong) =>
-            (TBoolean, s2)
-          case (TShort, TShort) =>
-            (TBoolean, s2)
           case (TByte, TByte) =>
-            (TBoolean, s2)
-          case (TFloat, TFloat) =>
             (TBoolean, s2)
           case (TDouble, TDouble) =>
             (TBoolean, s2)
@@ -471,14 +426,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
           case (TInt, TInt) =>
             (TInt, s2)
-          case (TLong, TLong) =>
-            (TLong, s2)
-          case (TShort, TShort) =>
-            (TShort, s2)
           case (TByte, TByte) =>
             (TByte, s2)
-          case (TFloat, TFloat) =>
-            (TFloat, s2)
           case (TDouble, TDouble) =>
             (TDouble, s2)
           case (TDynamic, TDynamic) =>
@@ -509,14 +458,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
           case (TInt, TInt) =>
             (TInt, s2)
-          case (TLong, TLong) =>
-            (TLong, s2)
-          case (TShort, TShort) =>
-            (TShort, s2)
           case (TByte, TByte) =>
             (TByte, s2)
-          case (TFloat, TFloat) =>
-            (TFloat, s2)
           case (TDouble, TDouble) =>
             (TDouble, s2)
           case (TDynamic, TDynamic) =>
@@ -539,14 +482,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
           case (TInt, TInt) =>
             (TInt, s2)
-          case (TLong, TLong) =>
-            (TLong, s2)
-          case (TShort, TShort) =>
-            (TShort, s2)
           case (TByte, TByte) =>
             (TByte, s2)
-          case (TFloat, TFloat) =>
-            (TFloat, s2)
           case (TDouble, TDouble) =>
             (TDouble, s2)
           case (TDynamic, TDynamic) =>
@@ -568,14 +505,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
           case (TInt, TInt) =>
             (TInt, s2)
-          case (TLong, TLong) =>
-            (TLong, s2)
-          case (TShort, TShort) =>
-            (TShort, s2)
           case (TByte, TByte) =>
             (TByte, s2)
-          case (TFloat, TFloat) =>
-            (TFloat, s2)
           case (TDouble, TDouble) =>
             (TDouble, s2)
           case (TDynamic, TDynamic) =>
@@ -597,10 +528,6 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
           case (TInt, TInt) =>
             (TInt, s2)
-          case (TLong, TLong) =>
-            (TLong, s2)
-          case (TShort, TShort) =>
-            (TShort, s2)
           case (TByte, TByte) =>
             (TByte, s2)
           case (TDynamic, TDynamic) =>
@@ -622,10 +549,6 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
           case (TInt, TInt) =>
             (TInt, s2)
-          case (TLong, TLong) =>
-            (TLong, s2)
-          case (TShort, TShort) =>
-            (TShort, s2)
           case (TByte, TByte) =>
             (TByte, s2)
           case (TDynamic, TDynamic) =>
@@ -647,10 +570,6 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
           case (TInt, TInt) =>
             (TInt, s2)
-          case (TLong, TLong) =>
-            (TLong, s2)
-          case (TShort, TShort) =>
-            (TShort, s2)
           case (TByte, TByte) =>
             (TByte, s2)
           case (TDynamic, TDynamic) =>
@@ -672,14 +591,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s) = s1.replace(a) match {
           case TInt  =>
             (TInt, s1)
-          case TLong =>
-            (TLong, s1)
-          case TShort =>
-            (TShort, s1)
           case TByte =>
             (TByte, s1)
-          case TFloat  =>
-            (TFloat, s1)
           case TDouble =>
             (TDouble, s1)
           case TDynamic =>
@@ -695,14 +608,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val (resultType, s) = s1.replace(a) match {
           case TInt  =>
             (TInt, s1)
-          case TLong =>
-            (TLong, s1)
-          case TShort =>
-            (TShort, s1)
           case TByte =>
             (TByte, s1)
-          case TFloat  =>
-            (TFloat, s1)
           case TDouble =>
             (TDouble, s1)
           case TDynamic =>
