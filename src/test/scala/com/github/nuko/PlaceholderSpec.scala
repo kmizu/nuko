@@ -12,7 +12,7 @@ class PlaceholderSpec extends TestSuiteHelper {
         |map(xs)(_ + 1)
       """.stripMargin
     )
-    assertResult(result)(ObjectValue(listOf(2, 3, 4)))
+    assertResult(result)(ObjectValue(listOf(BigInt(2), BigInt(3), BigInt(4))))
   }
 
   test("binary expression has two placeholder (1)") {
@@ -40,7 +40,7 @@ class PlaceholderSpec extends TestSuiteHelper {
         |map([1 2 3])(- _)
       """.stripMargin
     )
-    assertResult(result)(ObjectValue(listOf(-1, -2, -3)))
+    assertResult(result)(ObjectValue(listOf(BigInt(-1), BigInt(-2), BigInt(-3))))
   }
   test("unary expression + has one placeholder") {
     val result = E(
@@ -48,7 +48,7 @@ class PlaceholderSpec extends TestSuiteHelper {
         |map([1 2 3])(+ _)
       """.stripMargin
     )
-    assertResult(result)(ObjectValue(listOf(1, 2, 3)))
+    assertResult(result)(ObjectValue(listOf(BigInt(1), BigInt(2), BigInt(3))))
   }
   test("variable declaration has one placeholder") {
     val result = E(
@@ -57,7 +57,7 @@ class PlaceholderSpec extends TestSuiteHelper {
         |map([1])(id)
       """.stripMargin
     )
-    assertResult(result)(ObjectValue(listOf(1)))
+    assertResult(result)(ObjectValue(listOf(BigInt(1))))
   }
   test("function declaration has one placeholder") {
     val result = E(
@@ -66,6 +66,6 @@ class PlaceholderSpec extends TestSuiteHelper {
         |map([1])(f(1))
       """.stripMargin
     )
-    assertResult(result)(ObjectValue(listOf(1)))
+    assertResult(result)(ObjectValue(listOf(BigInt(1))))
   }
 }

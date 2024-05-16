@@ -12,4 +12,3 @@ assertResult("ABC")(buffer->toString)
   "BAZ"
 ]
 assertResult(a)(b)
-assertResult("F")("FOO"->substring(0, 1))

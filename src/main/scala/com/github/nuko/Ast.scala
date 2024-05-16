@@ -43,19 +43,13 @@ object Ast {
 
   case class StringNode(location: Location, value: String) extends Node
 
-  case class IntNode(location: Location, value: Int) extends Node
-
-  case class LongNode(location: Location, value: Long) extends Node
-
-  case class ShortNode(location: Location, value: Short) extends Node
+  case class IntNode(location: Location, value: BigInt) extends Node
 
   case class ByteNode(location: Location, value: Byte) extends Node
 
   case class BooleanNode(location: Location, value: Boolean) extends Node
 
   case class DoubleNode(location: Location, value: Double) extends Node
-
-  case class FloatNode(location: Location, value: Float) extends Node
 
   case class Id(location: Location, name: String) extends Node
   object Id {

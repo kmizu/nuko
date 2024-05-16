@@ -28,10 +28,10 @@ class ListSpec extends SpecHelper {
       """.stripMargin -> ObjectValue(listOf()),
       """
         |tail([2 1])
-      """.stripMargin -> ObjectValue(listOf(1)),
+      """.stripMargin -> ObjectValue(listOf(BigInt(1))),
       s"""
         |tail([3 2 1])
-      """.stripMargin -> ObjectValue(listOf(2, 1))
+      """.stripMargin -> ObjectValue(listOf(BigInt(2), BigInt(1)))
     )
     expectations.zipWithIndex.foreach{ case ((in, expected), i) =>
       it(s"${in} evaluates to ${expected}") {
@@ -44,16 +44,17 @@ class ListSpec extends SpecHelper {
     val expectations: List[(String, Value)] = List(
       """
          | cons(1)([])
-      """.stripMargin -> ObjectValue(listOf(1)),
+      """.stripMargin -> ObjectValue(listOf(BigInt(1))),
       """
          | cons(2)([1])
-      """.stripMargin -> ObjectValue(listOf(2, 1)),
+      """.stripMargin -> ObjectValue(listOf(BigInt(2), BigInt(1))),
       """
         | cons(3)([2, 1])
-      """.stripMargin -> ObjectValue(listOf(3, 2, 1)),
+      """.stripMargin -> ObjectValue(listOf(BigInt(3), BigInt(2), BigInt(1))),
+
       """
         | 3 #cons (2 #cons (1 #cons []))
-      """.stripMargin -> ObjectValue(listOf(3, 2, 1))
+      """.stripMargin -> ObjectValue(listOf(BigInt(3), BigInt(2), BigInt(1)))
     )
 
     expectations.zipWithIndex.foreach { case ((in, expected), i) =>
