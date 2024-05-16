@@ -43,7 +43,6 @@ object ASTVisualizer {
         treeNode.add(createTreeNode(collection))
         treeNode.add(createTreeNode(body))
       case Ast.BinaryExpression(_, operator, lhs, rhs) =>
-        treeNode.add(new DefaultMutableTreeNode(s"Operator: $operator"))
         treeNode.add(createTreeNode(lhs))
         treeNode.add(createTreeNode(rhs))
       case Ast.TernaryExpression(_, condition, thenExpr, elseExpr) =>
@@ -123,7 +122,7 @@ object ASTVisualizer {
       case Ast.Block(_, _) => "Block"
       case Ast.IfExpression(_, _, _, _) => "IfExpression"
       case Ast.ForeachExpression(_, name, _, _) => s"ForeachExpression: $name"
-      case Ast.BinaryExpression(_, operator, _, _) => s"BinaryExpression: $operator"
+      case Ast.BinaryExpression(_, operator, _, _) => s"${operator.descriptor}"
       case Ast.TernaryExpression(_, _, _, _) => "TernaryExpression"
       case Ast.WhileExpression(_, _, _) => "WhileExpression"
       case Ast.MinusOp(_, _) => "MinusOp"
