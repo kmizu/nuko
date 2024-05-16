@@ -11,14 +11,6 @@ object Ast {
 
   case object ByteSuffix extends IntegerSuffix
 
-  case object ShortSuffix extends IntegerSuffix
-
-  case object LongSuffix extends IntegerSuffix
-
-  sealed trait FloatSuffix
-
-  case object FloatSuffix extends FloatSuffix
-
   case class Program(location: Location, imports: List[Import], block: Block)
 
   case class Import(location: Location, simpleName: String, fqcn: String)
@@ -120,4 +112,6 @@ object Ast {
   case class MethodCall(location: Location, self: Ast.Node, name: String, params: List[Ast.Node]) extends Node
 
   case class Casting(location: Location, target: Ast.Node, to: Type) extends Node
+
+  case class Show(location: Location, target: Ast.Node) extends Node
 }

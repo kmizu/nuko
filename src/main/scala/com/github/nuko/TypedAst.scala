@@ -67,6 +67,8 @@ object TypedAst {
 
   case class FunctionCall(type_ : Type, location: Location, func: TypedNode, params: List[TypedNode]) extends TypedNode
 
+  case class Show(type_ : Type, location: Location, expression: Ast.Node) extends TypedNode
+
   case class ListLiteral(type_ : Type, location: Location, elements: List[TypedNode]) extends TypedNode
 
   case class SetLiteral(type_ : Type, location: Location, elements: List[TypedNode]) extends TypedNode

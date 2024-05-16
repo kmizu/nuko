@@ -130,6 +130,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val RBRACKET: Parser[String] = kwToken("]")
       val SHARP: Parser[String] = kwToken("#")
       val IF: Parser[String] = kwToken("もし")
+      val SHOW: Parser[String] = kwToken("表示")
       val ELSE: Parser[String] = kwToken("でなければ")
       val THEN: Parser[String] = kwToken("ならば")
       val WHILE: Parser[String] = kwToken("のあいだ")
@@ -380,6 +381,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       lazy val primary: Parser[Ast.Node] = rule {
         (
           selector
+            | (%% ~< SHOW ~< CL(LBRACE)) ~ expression ~< CL(RBRACE) ^^ { case location ~ expression => Show(location, expression) }
             | booleanLiteral
             | placeholder
             | ident
