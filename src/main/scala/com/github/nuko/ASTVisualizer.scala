@@ -83,8 +83,8 @@ object ASTVisualizer {
         treeNode
       case Ast.BinaryExpression(_, operator, lhs, rhs) =>
         val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
-        treeNode.add(createTreeNode(lhs))
-        treeNode.add(createTreeNode(rhs))
+        treeNode.add(createTreeNode(lhs, Some("左辺")))
+        treeNode.add(createTreeNode(rhs, Some("右辺")))
         treeNode
       case Ast.TernaryExpression(_, condition, thenExpr, elseExpr) =>
         val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
@@ -201,10 +201,10 @@ object ASTVisualizer {
       case Ast.MinusOp(_, _) => "+"
       case Ast.PlusOp(_, _) => "-"
       case Ast.StringNode(_, value) => s"\"$value\""
-      case Ast.IntNode(_, value) => s"整数($value)"
-      case Ast.ByteNode(_, value) => s"バイト($value)"
-      case Ast.BooleanNode(_, value) => s"真偽値(${if(value) "真" else "偽"})"
-      case Ast.DoubleNode(_, value) => s"小数($value)"
+      case Ast.IntNode(_, value) => s"$value"
+      case Ast.ByteNode(_, value) => s"$value"
+      case Ast.BooleanNode(_, value) => if(value) "真" else "偽"
+      case Ast.DoubleNode(_, value) => s"$value"
       case Ast.Id(_, name) => name
       case Ast.Placeholder(_) => "Placeholder"
       case Ast.Selector(_, module, name) => s"Selector: $module.$name"
