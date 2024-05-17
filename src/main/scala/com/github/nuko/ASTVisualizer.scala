@@ -62,107 +62,108 @@ object ASTVisualizer {
   }
 
   // ASTノードをJTreeノードに変換するヘルパー関数
-  private def createTreeNode(node: Ast.Node): DefaultMutableTreeNode = {
+  private def createTreeNode(node: Ast.Node, labelOpt: Option[String] = None): DefaultMutableTreeNode = {
+    val label = labelOpt.map{l => s"$l: "}.getOrElse("")
     node match {
       case Ast.Block(_, expressions) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         expressions.foreach(expr => treeNode.add(createTreeNode(expr)))
         treeNode
       case Ast.IfExpression(_, condition, thenExpr, elseExpr) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
-        treeNode.add(createTreeNode(condition))
-        treeNode.add(createTreeNode(thenExpr))
-        treeNode.add(createTreeNode(elseExpr))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
+        treeNode.add(createTreeNode(condition, Some("条件")))
+        treeNode.add(createTreeNode(thenExpr, Some("ならば")))
+        treeNode.add(createTreeNode(elseExpr, Some("でなければ")))
         treeNode
       case Ast.ForeachExpression(_, name, collection, body) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(new DefaultMutableTreeNode(s"Variable: $name"))
         treeNode.add(createTreeNode(collection))
         treeNode.add(createTreeNode(body))
         treeNode
       case Ast.BinaryExpression(_, operator, lhs, rhs) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(createTreeNode(lhs))
         treeNode.add(createTreeNode(rhs))
         treeNode
       case Ast.TernaryExpression(_, condition, thenExpr, elseExpr) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(createTreeNode(condition))
         treeNode.add(createTreeNode(thenExpr))
         treeNode.add(createTreeNode(elseExpr))
         treeNode
       case Ast.WhileExpression(_, condition, body) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(createTreeNode(condition))
         treeNode.add(createTreeNode(body))
         treeNode
       case Ast.MinusOp(_, operand) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(createTreeNode(operand))
         treeNode
       case Ast.PlusOp(_, operand) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(createTreeNode(operand))
         treeNode
       case Ast.StringNode(_, value) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(new DefaultMutableTreeNode(s"Value: $value"))
         treeNode
       case Ast.IntNode(_, value) =>
-        new DefaultMutableTreeNode(nodeToString(node))
+        new DefaultMutableTreeNode(label + nodeToString(node))
       case Ast.ByteNode(_, value) =>
-        new DefaultMutableTreeNode(nodeToString(node))
+        new DefaultMutableTreeNode(label + nodeToString(node))
       case Ast.BooleanNode(_, value) =>
-        new DefaultMutableTreeNode(nodeToString(node))
+        new DefaultMutableTreeNode(label + nodeToString(node))
       case Ast.DoubleNode(_, value) =>
-        new DefaultMutableTreeNode(nodeToString(node))
+        new DefaultMutableTreeNode(label + nodeToString(node))
       case Ast.Id(_, name) =>
-        new DefaultMutableTreeNode(nodeToString(node))
+        new DefaultMutableTreeNode(label + nodeToString(node))
       case Ast.Placeholder(_) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(new DefaultMutableTreeNode("Placeholder"))
         treeNode
       case Ast.Selector(_, module, name) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(new DefaultMutableTreeNode(s"Module: $module"))
         treeNode.add(new DefaultMutableTreeNode(s"Name: $name"))
         treeNode
       case Ast.SimpleAssignment(_, variable, value) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(new DefaultMutableTreeNode(s"Variable: $variable"))
         treeNode.add(createTreeNode(value))
         treeNode
       case Ast.ValDeclaration(_, variable, _, value, immutable) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(new DefaultMutableTreeNode(s"Variable: $variable"))
         treeNode.add(new DefaultMutableTreeNode(s"Immutable: $immutable"))
         treeNode.add(createTreeNode(value))
         treeNode
       case Ast.Lambda(_, params, _, body) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         params.foreach(param => treeNode.add(new DefaultMutableTreeNode(s"Param: $param")))
         treeNode.add(createTreeNode(body))
         treeNode
       case Ast.FunctionDefinition(_, name, body) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(new DefaultMutableTreeNode(s"Name: $name"))
         treeNode.add(createTreeNode(body))
         treeNode
       case Ast.FunctionCall(_, func, params) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(createTreeNode(func))
         params.foreach(param => treeNode.add(createTreeNode(param)))
         treeNode
       case Ast.ListLiteral(_, elements) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         elements.foreach(elem => treeNode.add(createTreeNode(elem)))
         treeNode
       case Ast.SetLiteral(_, elements) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         elements.foreach(elem => treeNode.add(createTreeNode(elem)))
         treeNode
       case Ast.MapLiteral(_, elements) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         elements.foreach { case (key, value) =>
           val entryNode = new DefaultMutableTreeNode("Entry")
           entryNode.add(createTreeNode(key))
@@ -171,12 +172,12 @@ object ASTVisualizer {
         }
         treeNode
       case Ast.ObjectNew(_, className, params) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(new DefaultMutableTreeNode(s"Class: $className"))
         params.foreach(param => treeNode.add(createTreeNode(param)))
         treeNode
       case Ast.MethodCall(_, self, name, params) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
+        val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         treeNode.add(createTreeNode(self))
         treeNode.add(new DefaultMutableTreeNode(s"Method: $name"))
         params.foreach(param => treeNode.add(createTreeNode(param)))
