@@ -182,10 +182,7 @@ object ASTVisualizer {
         params.foreach(param => treeNode.add(createTreeNode(param)))
         treeNode
       case Ast.Casting(_, target, to) =>
-        val treeNode = new DefaultMutableTreeNode(nodeToString(node))
-        treeNode.add(createTreeNode(target))
-        treeNode.add(new DefaultMutableTreeNode(s"To: $to"))
-        treeNode
+        new DefaultMutableTreeNode(nodeToString(node))
       case n =>
         throw new RuntimeException(s"Unknown Node Type: $n")
     }
@@ -194,19 +191,19 @@ object ASTVisualizer {
   // ASTノードを文字列に変換するヘルパー関数
   private def nodeToString(node: Ast.Node): String = {
     node match {
-      case Ast.Block(_, _) => "Block"
-      case Ast.IfExpression(_, _, _, _) => "IfExpression"
+      case Ast.Block(_, _) => "ブロック"
+      case Ast.IfExpression(_, _, _, _) => "もし"
       case Ast.ForeachExpression(_, name, _, _) => s"ForeachExpression: $name"
       case Ast.BinaryExpression(_, operator, _, _) => s"${operator.descriptor}"
       case Ast.TernaryExpression(_, _, _, _) => "TernaryExpression"
-      case Ast.WhileExpression(_, _, _) => "WhileExpression"
-      case Ast.MinusOp(_, _) => "MinusOp"
-      case Ast.PlusOp(_, _) => "PlusOp"
+      case Ast.WhileExpression(_, _, _) => "繰り返す"
+      case Ast.MinusOp(_, _) => "+"
+      case Ast.PlusOp(_, _) => "-"
       case Ast.StringNode(_, value) => s"\"$value\""
-      case Ast.IntNode(_, value) => s"Int($value)"
-      case Ast.ByteNode(_, value) => s"Byte($value)"
-      case Ast.BooleanNode(_, value) => s"Boolean($value)"
-      case Ast.DoubleNode(_, value) => s"Double($value)"
+      case Ast.IntNode(_, value) => s"整数($value)"
+      case Ast.ByteNode(_, value) => s"バイト($value)"
+      case Ast.BooleanNode(_, value) => s"真偽値(${if(value) "真" else "偽"})"
+      case Ast.DoubleNode(_, value) => s"小数($value)"
       case Ast.Id(_, name) => name
       case Ast.Placeholder(_) => "Placeholder"
       case Ast.Selector(_, module, name) => s"Selector: $module.$name"
@@ -214,13 +211,13 @@ object ASTVisualizer {
       case Ast.ValDeclaration(_, variable, _, _, immutable) => s"ValDeclaration: $variable (immutable: $immutable)"
       case Ast.Lambda(_, params, _, _) => s"Lambda: ${params.mkString(", ")}"
       case Ast.FunctionDefinition(_, name, _) => s"FunctionDefinition: $name"
-      case Ast.FunctionCall(_, _, _) => "FunctionCall"
-      case Ast.ListLiteral(_, _) => "ListLiteral"
-      case Ast.SetLiteral(_, _) => "SetLiteral"
-      case Ast.MapLiteral(_, _) => "MapLiteral"
+      case Ast.FunctionCall(_, _, _) => "関数呼び出し"
+      case Ast.ListLiteral(_, _) => "リスト"
+      case Ast.SetLiteral(_, _) => "集合"
+      case Ast.MapLiteral(_, _) => "辞書"
       case Ast.ObjectNew(_, className, _) => s"ObjectNew: $className"
-      case Ast.MethodCall(_, _, name, _) => s"MethodCall: $name"
-      case Ast.Casting(_, _, to) => s"Casting to: $to"
+      case Ast.MethodCall(_, _, name, _) => s"メソッド呼び出し: $name"
+      case Ast.Casting(_, _, to) => s"キャスト($to)"
       case _ => "Unknown Node"
     }
   }
