@@ -130,7 +130,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val RBRACKET: Parser[String] = kwToken("]")
       val SHARP: Parser[String] = kwToken("#")
       val IF: Parser[String] = kwToken("もし")
-      val SHOW: Parser[String] = kwToken("表示")
+      val SHOW: Parser[String] = kwToken("表示") | kwToken("show")
       val ELSE: Parser[String] = kwToken("でなければ")
       val THEN: Parser[String] = kwToken("ならば")
       val WHILE: Parser[String] = kwToken("のあいだ")
