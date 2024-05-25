@@ -115,7 +115,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val GT: Parser[String] = kwToken(">")
       val LTE: Parser[String] = kwToken("<=")
       val GTE: Parser[String] = kwToken(">=")
-      val MAP_OPEN: Parser[String] = kwToken("%[")
+      val 辞書開始: Parser[String] = kwToken("辞書[")
       val SET_OPEN: Parser[String] = kwToken("%(")
       val UNDERSCORE: Parser[String] = kwToken("_")
       val PLUS: Parser[String] = kwToken("+")
@@ -127,7 +127,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val LBRACE: Parser[String] = kwToken("{")
       val RBRACE: Parser[String] = kwToken("}")
       val LBRACKET: Parser[String] = kwToken("[")
-      val RBRACKET: Parser[String] = kwToken("]")
+      val 閉じブラケット: Parser[String] = kwToken("]")
       val SHARP: Parser[String] = kwToken("#")
       val IF: Parser[String] = kwToken("もし")
       val SHOW: Parser[String] = kwToken("表示") | kwToken("show")
@@ -377,7 +377,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         case target ~ None => target
       })
 
-      //primary ::= selector | booleanLiteral | ident | floatLiteral | integerLiteral | mapLiteral | stringLiteral | listLiteral | setLiteral | newObject | functionLiteral | "(" expression ")" | "{" lines "}"
+      //primary ::= selector | booleanLiteral | ident | floatLiteral | integerLiteral | 辞書リテラル | stringLiteral | listLiteral | setLiteral | newObject | functionLiteral | "(" expression ")" | "{" lines "}"
       lazy val primary: Parser[Ast.Node] = rule {
         (
           selector
@@ -389,14 +389,13 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
             | integerLiteral
             | newObject
             | functionLiteral
-            | predict(
-            '%' -> (mapLiteral | setLiteral),
-            '"' -> stringLiteral,
-            '[' -> listLiteral,
-            '(' -> (CL(LPAREN) >> expression << RPAREN),
-            '{' -> (CL(LBRACE) >> lines << RBRACE)
-          )
-          )
+            | 辞書リテラル
+            | setLiteral
+            | stringLiteral
+            | listLiteral
+            | (CL(LPAREN) >> expression << RPAREN)
+            | (CL(LBRACE) >> lines << RBRACE)
+        )
       }
 
       //integerLiteral ::= ["1"-"9"] {"0"-"9"}
@@ -425,7 +424,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
           values.foldLeft(StringNode(NoLocation, ""): Ast.Node) { (node, content) => BinaryExpression(content.location, Operator.ADD, node, content) }
         }) << SPACING_WITHOUT_LF
 
-      lazy val listLiteral: Parser[Ast.Node] = rule(%% ~ (CL(LBRACKET) >> commit((CL(expression).repeat0By(SEPARATOR) << SEPARATOR.?) << RBRACKET)) ^^ {
+      lazy val listLiteral: Parser[Ast.Node] = rule(%% ~ (CL(LBRACKET) >> commit((CL(expression).repeat0By(SEPARATOR) << SEPARATOR.?) << 閉じブラケット)) ^^ {
         case location ~ contents => ListLiteral(location, contents)
       })
 
@@ -433,7 +432,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         case location ~ contents => SetLiteral(location, contents)
       })
 
-      lazy val mapLiteral: Parser[Ast.Node] = rule(%% ~ (CL(MAP_OPEN) >> commit((CL(expression ~ COLON ~ expression).repeat0By(SEPARATOR) << SEPARATOR.?) << RBRACKET)) ^^ {
+      lazy val 辞書リテラル: Parser[Ast.Node] = rule(%% ~ (CL(辞書開始) >> commit((CL(expression ~ COLON ~ expression).repeat0By(SEPARATOR) << SEPARATOR.?) << 閉じブラケット)) ^^ {
         case location ~ contents => MapLiteral(location, contents.map { case k ~ colon ~ v => (k, v) })
       })
 

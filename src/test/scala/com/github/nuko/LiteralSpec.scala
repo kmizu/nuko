@@ -101,11 +101,11 @@ class LiteralSpec extends SpecHelper {
   }
   describe("map literal") {
     val expectations = List[(String, Value)](
-      "%[]" -> ObjectValue(mapOf[String, String]()),
-      "%[1 : 2]" -> ObjectValue(mapOf(BigInt(1) -> BigInt(2))),
-      """%["a":"b"]""" -> ObjectValue(mapOf("a" -> "b")),
-      """%["a":"b" "c":"d"]""" -> ObjectValue(mapOf("a" -> "b", "c" -> "d")),
-    """%["a":"b"
+      "辞書[]" -> ObjectValue(mapOf[String, String]()),
+      "辞書[1 : 2]" -> ObjectValue(mapOf(BigInt(1) -> BigInt(2))),
+      """辞書["a":"b"]""" -> ObjectValue(mapOf("a" -> "b")),
+      """辞書["a":"b" "c":"d"]""" -> ObjectValue(mapOf("a" -> "b", "c" -> "d")),
+    """辞書["a":"b"
       | "c":"d"]""".stripMargin -> ObjectValue(mapOf("a" -> "b", "c" -> "d"))
     )
     expectations.zipWithIndex.foreach { case ((in, expected), i) =>
