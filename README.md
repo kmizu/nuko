@@ -1,18 +1,18 @@
 # 日本語プログラミング言語Nuko  [![Build Status](https://github.com/kmizu/nuko/actions/workflows/scala.yml/badge.svg?branch=main)](https://github.com/kmizu/nuko/actions)
 
-Nukoは日本語ぽい記法で記述できるプログラミング言語です。
+Nukoはできるだけ日本語のように書くことができ、初心者にとって読みやすく理解しやすいことを目指したログラミング言語です。
 
-たとえば、変数を使った簡単なプログラムは以下のように記述することができます：
+変数を使った簡単なプログラムは以下のように記述することができます：
 
 ```
 変数 挨拶 は　(時間 < 12) ならば "おはようございます" でなければ "こんにちは"
 ```
 
-プログラミング言語Nukoは、日本語プログラミング言語を作ってみたくなって思い立って作ったものです。日本語らしさを維持しつつどこまで使いやすい言語にできるかの実験作でもあります。
+最近、プログラミング教育の必要性が叫ばれています。しかし、プログラミング言語は英語で書かれていることが多いため、英語が苦手な人にとってはハードルが高いと感じることがあります。Nukoは、日本語でプログラミングを学ぶ人々にとって、プログラミング言語の学習をより身近なものにすることを目指しています。
 
 以下はNukoの特徴です：
 
-* Hindley-Milnerベースの型システム
+* 型があるけどあまり意識しないでよい仕様
 * レキシカルスコープ変数
 * ファーストクラスブロック
   * いわゆるファーストクラス関数のこと
@@ -25,7 +25,7 @@ Nukoは日本語ぽい記法で記述できるプログラミング言語です�
   * `変数xはv` のように書けます
 * スペース＆行センシティブなリテラルが使えます
   * リストリテラル
-  * マップリテラル
+  * 辞書リテラル
   * セットリテラル
 * Java FFI
   * Javaのメソッドを自然な形で呼び出せます
@@ -104,7 +104,7 @@ fact(2) // 2
 fact(3) // 6
 fact(4) // 24
 fact(5) // 120
-// The result of type inference of fact is : Int => Int
+// The result of type inference of fact is : 整数 => 整数
 ```
 
 ### メソッド呼び出し
@@ -132,15 +132,15 @@ println(add(1, 2))
 ### リストリテラル
 
 ```
-変数 list1 は [1, 2, 3, 4, 5]
+変数 list1 は リスト[1, 2, 3, 4, 5]
 println(list1)
 ```
 
-リストリテラルは`[e1, e2, ...,en]`という形で書くことができます。Nukoでは要素のセパレータに改行や
+リストリテラルは`リスト[e1, e2, ...,en]`という形で書くことができます。Nukoでは要素のセパレータに改行や
 スペースを使えます。これは他の言語にはあまり見られない特徴です：
 
 ```
-変数 list2 は [
+変数 list2 は リスト[
   1
   2
   3
@@ -148,9 +148,10 @@ println(list1)
   5
 ]
 println(list2)
-変数 list3 は [[1 2 3]
-              [4 5 6]
-              [7 8 9]]
+変数 list3 は リスト[
+              リスト[1 2 3]
+              リスト[4 5 6]
+              リスト[7 8 9]]
 ```
 
 リストリテラルの型は`List<'a>`型になります。
@@ -212,9 +213,9 @@ println(i)
 
 ### 数値リテラル
 
-Nukoではいくつかの数値リテラルがサポートされています。現時点では、`Int`、`Byte`、`Short`、`Long`、`Double`、`Float`のリテラルがサポートされています。
+Nukoではいくつかの数値リテラルがサポートされています。現時点では、`整数`、`バイト`、`小数` のリテラルがサポートされています。
 
-### Int
+### 整数
 
 ```
 println(100)
@@ -222,57 +223,25 @@ println(200)
 println(300)
 ```
 
-`Int`リテラルの最大値はScalaの`Int.MaxValue`で、最小値は`Int.MinValue`です。
+整数リテラルの最大値には制限がありません。
 
-### Byte
+### バイト
 
-`Byte`リテラルのサフィックスは`BY`です。`Byte`リテラルの最大値はScalaの`Byte.MaxValue`で、最小値は`Byte.MinValue`です。
+バイトリテラルのサフィックスは`BY`です。バイトリテラルの最大値はScalaの`Byte.MaxValue`で、最小値は`Byte.MinValue`です。
 
 ```
 println(127BY)
 println(-127BY)
 println(100BY)
 ```
-
-### Short
-
-`Short`リテラルのサフィックスは`S`です。`Short`リテラルの最大値はScalaの`Short.MaxValue`で、最小値は`Short.MinValue`です。
-
-```
-println(100S)
-println(200S)
-println(300S)
-```
-
-### Long
-
-`Long`リテラルのサフィックスは`L`です。`Long`リテラルの最大値はScalaの`Long.MaxValue`で、最小値は`Long.MinValue`です。
-
-```
-println(100L)
-println(200L)
-println(300L)
-```
-
-
-### Double
+### 小数
 
 ```
 println(1.0)
 println(1.5)
 ```
 
-`Double`型の最大値はScalaの`Double.MaxValue`で、最小値は`Double.MinValue`です。
-
-### Float
-
-```
-println(1.0F)
-println(1.5F)
-```
-
-`Float`型の最大値はScalaの`Float.MaxValue`で、最小値は`Float.MinValue`です。
-
+小数型の最大値はScalaの`Double.MaxValue`で、最小値は`Double.MinValue`です。
 
 ### コメント
 
@@ -337,21 +306,21 @@ printlnError("Hello, World!")
 
 ### 文字列操作ブロック
 
-- `substring: (s:String, begin:Int, end:Int) => String`  
+- `substring: (s: 文字列, begin: 整数, end: 整数) => 文章`  
    文字列`s`の部分文字列を返します。部分文字列はインデックス`begin`からインデックス`end` - 1までを切り取った文字列です。
 
 ```
 substring("FOO", 0, 1) // => "F"
 ```
 
-- `at: (s:String, index:Int) => String`  
+- `at: (s:文字列, index:整数) => 文字列`  
   文字列`s`のインデックス`index`番目にある文字を返します。
 
 ```
 at("BAR", 2) // => "R"
 ```
 
-- `matches: (s:String, regex:String) => Boolean`  
+- `matches: (s:文字列, regex:文字列) => Boolean`  
   文字列`s`が正規表現`regex`にマッチした場合`true`を、そうでない場合`false`を返します。
 
 ```
@@ -362,7 +331,7 @@ matches("a", pattern)   // => false
 
 ### 数値関係のブロック
 
-- `sqrt: (value:Double) => Double`  
+- `sqrt: (value:小数) => 小数`  
    `value`の平方根を返します。
  
 ```
@@ -370,22 +339,22 @@ sqrt(2.0) // => 1.4142135623730951
 sqrt(9.0) // => 3.0
 ```
   
-- `int: (vaue:Double) => Int`  
+- `int: (vaue:小数) => 整数`  
  
-`Double`型の値`value`を`Int`型に変換します。小数点以下は切り捨てられます。
+小数型の値`value`を整数型に変換します。小数点以下は切り捨てられます。
 
 ```
 int(3.14159265359) // => 3
 ```
 
-- `double: (value:Int) => Double`  
-   `value`を`Double`型に変換します。
+- `double: (value:整数) => 小数`  
+   `value`を小数型に変換します。
 
 ```
 double(10) // => 10.0
 ```
 
-- `floor: (value:Double) => Int`  
+- `floor: (value:小数) => 整数`  
   `value`を切り下げた値を返します。
 
 ```
@@ -393,7 +362,7 @@ floor(1.5) // => 1
 floor(-1.5) // => -1
 ```
 
-- `ceil: (value:Double) => Int`  
+- `ceil: (value:小数) => 整数`  
    `value`を切り上げた値を返します。
  
 ```
@@ -403,7 +372,7 @@ ceil(-4.4) // => -4
 ceil(-4.5) // => -4
 ```
 
-- `abs: (value:Double) => Double`  
+- `abs: (value:小数) => 小数`  
     `value`の絶対値を返します。
  
 ```
@@ -442,7 +411,7 @@ tail([1 2 3 4]) // => [2 3 4]
 cons(1)([2 3 4]) // => [1 2 3 4]
 ```
 
-- `size: (list:List<'a>) => Int`  
+- `size: (list:List<'a>) => 整数`  
    リスト`list`の要素数を返します。
  
 ```
@@ -480,7 +449,7 @@ foldLeft([1.0 2.0 3.0 4.0])(1.0){x, y => x * y} // => 24.0
     // => "Hello from another thread."
     ```
 
-- `sleep: (millis:Int) => Unit` 
+- `sleep: (millis:整数) => Unit` 
     現在のスレッドを`millis`ミリ秒の間休眠状態にします。
     ```
     sleep(1000)
@@ -488,7 +457,7 @@ foldLeft([1.0 2.0 3.0 4.0])(1.0){x, y => x * y} // => 24.0
 
 ### ユーティリティブロック
 
-- `stopwatch: (fun:() => Unit) => Int`  
+- `stopwatch: (fun:() => Unit) => 整数`  
    引数で渡された関数`fun`の評価にかかった時間をミリ秒単位で返します。
  
 ```
@@ -529,13 +498,13 @@ assertResult(2)(add(1, 2))  // => NG: AssertionError
 
 ### Java関係のブロック
 
-- `url: (value:String) => java.net.URL`  
+- `url: (value:文字列) => java.net.URL`  
     引数`value`から新しい`java.net.URL`オブジェクトを作ります。
     ```
     url("https://github.com/kmizu/nuko")
     ```
 
-- `uri: (value:String) => java.net.URI`  
+- `uri: (value:文字列) => java.net.URI`  
     引数`value`から新しい `java.net.URI` オブジェクトを作ります。
     ```
     uri("https://github.com/kmizu/nuko")
