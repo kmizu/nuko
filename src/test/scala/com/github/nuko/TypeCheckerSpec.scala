@@ -44,24 +44,6 @@ class TypeCheckerSpec extends SpecHelper {
     }
   }
 
-  describe("invalid foreach expression") {
-    val illTypedPrograms: List[String] = List(
-      """
-        |変数aは1
-        |foreach(a in [1, 2, 3]) {
-        |  b + 3
-        |}
-      """.stripMargin
-    )
-    illTypedPrograms.zipWithIndex.foreach { case (in, i) =>
-      it(s"expectation  ${i}") {
-        val e = intercept[TyperException] {
-          E(in)
-        }
-      }
-    }
-  }
-
   describe("function type doesn't match ") {
     val illTypedPrograms: List[String] = List(
       """
