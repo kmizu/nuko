@@ -43,7 +43,9 @@ releaseProcess := Seq[ReleaseStep](
   ReleaseStep(
     action = { state =>
       val extracted = Project extract state
-      extracted.runAggregated(PgpKeys.publishSigned in Global in extracted.get(thisProjectRef), state)
+      extracted.runAggregated(
+        extracted.get(thisProjectRef) / PgpKeys.publishSigned in Global, state
+      )
     },
     enableCrossBuild = true
   ),
@@ -57,5 +59,5 @@ releaseProcess := Seq[ReleaseStep](
 releaseCrossBuild := true
 
 releaseTagName := {
-  "releases/" + (version in ThisBuild).value
+  "releases/" + (ThisBuild / version).value
 }

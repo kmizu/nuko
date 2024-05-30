@@ -135,7 +135,6 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val THEN: Parser[String] = kwToken("ならば")
       val WHILE: Parser[String] = kwToken("のあいだ")
       val REPEAT: Parser[String] = kwToken("をくりかえす")
-      val FOREACH: Parser[String] = kwToken("foreach")
       val IMPORT: Parser[String] = kwToken("import")
       val ENUM: Parser[String] = kwToken("enum")
       val TRUE: Parser[String] = kwToken("true") | kwToken("真")
@@ -241,8 +240,8 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       //line ::= expression | valDeclaration | functionDefinition
       lazy val line: Parser[Ast.Node] = rule(expression | valDeclaration | functionDefinition)
 
-      //expression ::= ifExpression | whileExpression | foreachExpression | assignment | jpAssignment | ternary
-      lazy val expression: Parser[Ast.Node] = rule(ifExpression | whileExpression | foreachExpression | assignment | jpAssignment | ternary)
+      //expression ::= ifExpression | whileExpression | assignment | jpAssignment | ternary
+      lazy val expression: Parser[Ast.Node] = rule(ifExpression | whileExpression | assignment | jpAssignment | ternary)
 
       //ifExpression ::= "if" "(" expression ")" expression "else" expression
       lazy val ifExpression: Parser[Ast.Node] = rule {
@@ -255,13 +254,6 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       lazy val whileExpression: Parser[Ast.Node] = rule {
         %% ~ (ternary << CL(WHILE)) ~ commit(expression << REPEAT) ^^ {
           case location ~ condition ~ body => WhileExpression(location, condition, body)
-        }
-      }
-
-      //foreachExpression ::= "foreach" "(" ident "in" expression ")" expression
-      lazy val foreachExpression: Parser[Ast.Node] = rule {
-        (%% << CL(FOREACH) << CL(LPAREN)) ~ commit((CL(ident) << CL(IN)) ~ (expression << CL(RPAREN)) ~ expression) ^^ {
-          case location ~ (variable ~ collection ~ body) => ForeachExpression(location, variable.name, collection, body)
         }
       }
 

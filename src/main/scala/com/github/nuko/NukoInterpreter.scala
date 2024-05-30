@@ -4,9 +4,8 @@ import scala.jdk.CollectionConverters._
 import com.github.nuko._
 import com.github.nuko.Type._
 import com.github.nuko.TypedAst.{FunctionLiteral, TypedNode, ValueNode}
-import com.pi4j.io.gpio.{GpioController, GpioFactory, GpioPinDigitalInput, GpioPinDigitalOutput, Pin, PinState, RaspiPin}
-import com.pi4j.wiringpi.Gpio
 
+import java.net.{URI, URL}
 import scala.runtime.BoxedUnit
 
 /**
@@ -197,11 +196,11 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
     define("ToDo") { case Nil =>
       sys.error("not implemented yet")
     }
-    define("url") { case List(ObjectValue(value: String)) =>
-      ObjectValue(new java.net.URL(value))
-    }
     define("uri") { case List(ObjectValue(value: String)) =>
-      ObjectValue(new java.net.URL(value).toURI)
+      ObjectValue(new URI(value))
+    }
+    define("url") { case List(ObjectValue(value: String)) =>
+      ObjectValue(new URI(value).toURL)
     }
     define("foldLeft") { case List(ObjectValue(list: java.util.List[_])) =>
       NativeFunctionValue{ case List(init: Value) =>
