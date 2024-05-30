@@ -4,7 +4,7 @@ name := "nuko"
 
 version := "0.0.1-SNAPSHOT"
 
-scalaVersion := "2.13.12"
+scalaVersion := "2.13.14"
 
 publishMavenStyle := true
 
@@ -19,7 +19,9 @@ Compile / doc / scalacOptions  ++= { Seq(
 
 Test / testOptions += Tests.Argument("-oI")
 
-fork := true
+Test / javaOptions += "--add-opens=java.base/java.util=ALL-UNNAMED"
+
+Test/ fork := true
 
 scalacOptions ++= {
   Seq("-unchecked", "-deprecation", "-feature", "-language:implicitConversions")
@@ -33,19 +35,10 @@ resolvers ++= Seq(
 javaOptions += "--add-opens=java.base/java.util=ALL-UNNAMED"
 
 libraryDependencies ++= Seq(
-  "com.github.kmizu" %% "scomb" % "0.9.0",
   "com.github.scaruby" %% "scaruby" % "0.6",
   "org.ow2.asm" % "asm" % "5.0.4",
   "junit" % "junit" % "4.13" % "test",
   "org.scalatest" %% "scalatest" %  "3.1.1"
-)
-
-libraryDependencies ++= Seq(
-  "com.pi4j" % "pi4j-core" % "1.2",
-  "com.pi4j" % "pi4j-device" % "1.2",
-  "com.pi4j" % "pi4j-gpio-extension" % "1.2",
-  "com.pi4j" % "pi4j-service" % "1.1",
-  "com.pi4j" % "pi4j-native" % "1.2" pomOnly()
 )
 
 assembly / assemblyJarName := "nuko.jar"

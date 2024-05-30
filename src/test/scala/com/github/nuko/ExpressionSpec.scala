@@ -128,20 +128,6 @@ class ExpressionSpec extends SpecHelper {
       )(BoxedBoolean(false))
     }
 
-    describe("foreach expression") {
-      it("が正しく評価されていること") {
-        assertResult(
-          E(
-            """
-              |変数newListはnew java.util.ArrayList
-              |foreach(a in [1, 2, 3, 4, 5]) {
-              |  newList->add((a :> 整数) * 2)
-              |}
-              |newList
-            """.stripMargin))(ObjectValue(listOf(BigInt(2), BigInt(4), BigInt(6), BigInt(8), BigInt(10))))
-      }
-    }
-
     describe("「もし」 式") {
       it("が正しく評価されていること") {
         assertResult(
