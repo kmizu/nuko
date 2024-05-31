@@ -116,6 +116,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val LTE: Parser[String] = kwToken("<=")
       val GTE: Parser[String] = kwToken(">=")
       val 辞書開始: Parser[String] = kwToken("辞書[")
+      val 辞書区切り: Parser[String] = kwToken("→") | kwToken("->")
       val リスト開始: Parser[String] = kwToken("リスト[")
       val SET_OPEN: Parser[String] = kwToken("%(")
       val UNDERSCORE: Parser[String] = kwToken("_")
@@ -425,7 +426,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         case location ~ contents => SetLiteral(location, contents)
       })
 
-      lazy val 辞書リテラル: Parser[Ast.Node] = rule(%% ~ (CL(辞書開始) >> commit((CL(expression ~ COLON ~ expression).repeat0By(SEPARATOR) << SEPARATOR.?) << 閉じブラケット)) ^^ {
+      lazy val 辞書リテラル: Parser[Ast.Node] = rule(%% ~ (CL(辞書開始) >> commit((CL(expression ~ 辞書区切り ~ expression).repeat0By(SEPARATOR) << SEPARATOR.?) << 閉じブラケット)) ^^ {
         case location ~ contents => MapLiteral(location, contents.map { case k ~ colon ~ v => (k, v) })
       })
 
