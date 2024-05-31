@@ -105,7 +105,7 @@ object Ast {
 
   case class SetLiteral(location: Location, elements: List[Ast.Node]) extends Node
 
-  case class MapLiteral(location: Location, elements: List[(Ast.Node, Ast.Node)]) extends Node
+  case class DictionaryLiteral(location: Location, elements: List[(Ast.Node, Ast.Node)]) extends Node
 
   case class ObjectNew(location: Location, className: String, params: List[Ast.Node]) extends Node
 

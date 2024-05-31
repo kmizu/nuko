@@ -162,7 +162,7 @@ object ASTVisualizer {
         val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         elements.foreach(elem => treeNode.add(createTreeNode(elem)))
         treeNode
-      case Ast.MapLiteral(_, elements) =>
+      case Ast.DictionaryLiteral(_, elements) =>
         val treeNode = new DefaultMutableTreeNode(label + nodeToString(node))
         elements.foreach { case (key, value) =>
           val entryNode = new DefaultMutableTreeNode("Entry")
@@ -215,7 +215,7 @@ object ASTVisualizer {
       case Ast.FunctionCall(_, _, _) => "関数呼び出し"
       case Ast.ListLiteral(_, _) => "リスト"
       case Ast.SetLiteral(_, _) => "集合"
-      case Ast.MapLiteral(_, _) => "辞書"
+      case Ast.DictionaryLiteral(_, _) => "辞書"
       case Ast.ObjectNew(_, className, _) => s"ObjectNew: $className"
       case Ast.MethodCall(_, _, name, _) => s"メソッド呼び出し: $name"
       case Ast.Casting(_, _, to) => s"キャスト($to)"
