@@ -427,7 +427,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       })
 
       lazy val 辞書リテラル: Parser[Ast.Node] = rule(%% ~ (CL(辞書開始) >> commit((CL(expression ~ 辞書区切り ~ expression).repeat0By(SEPARATOR) << SEPARATOR.?) << 閉じブラケット)) ^^ {
-        case location ~ contents => MapLiteral(location, contents.map { case k ~ colon ~ v => (k, v) })
+        case location ~ contents => DictionaryLiteral(location, contents.map { case k ~ colon ~ v => (k, v) })
       })
 
       lazy val fqcn: Parser[String] = (ident ~ (CL(DOT) ~ ident).*) ^^ {
@@ -435,8 +435,10 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       }
 
       lazy val component: Parser[String] = (
-        """[A-Za-z_][A-Za-z_0-9]*|「([A-Za-z_]|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})(\w|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})*」""".r
+        """[A-Za-z_][A-Za-z_0-9]*""".r
+      | """「([A-Za-z_]|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})(\w|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})*」""".r.map(s => s.substring(1, s.length - 1))
       )
+
 
       lazy val placeholder: Parser[Placeholder] = ((%% ~ UNDERSCORE) ^^ { case location ~ _ => Placeholder(location) }) << SPACING_WITHOUT_LF
 

@@ -77,7 +77,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         "size" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TInt),
         "isEmpty" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TBoolean)
       ),
-      "Map" -> Map(
+      "辞書" -> Map(
         "add" -> TScheme(List(tv("a"), tv("b")), mapOf(tv("a"), tv("b")) ==> (List(tv("a"), tv("b")) ==> mapOf(tv("a"), tv("b")))),
         "containsKey" -> TScheme(List(tv("a"), tv("b")), mapOf(tv("a"), tv("b")) ==> (tv("a") ==> TBoolean)),
         "containsValue" -> TScheme(List(tv("a"), tv("b")), mapOf(tv("a"), tv("b")) ==> (tv("b") ==> TBoolean)),
@@ -713,7 +713,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         }
         val s = unify(setOfA, t, sx)
         (TypedAst.SetLiteral(s.replace(t), location, tes.reverse), s)
-      case Ast.MapLiteral(location, elements) =>
+      case Ast.DictionaryLiteral(location, elements) =>
         val kt = newTypeVariable()
         val vt = newTypeVariable()
         val mapOfKV = mapOf(kt, vt)
@@ -723,7 +723,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
           ((typedK -> typedY)::tes, sy)
         }
         val sy = unify(mapOfKV, t, s)
-        (TypedAst.MapLiteral(sy.replace(t), location, tes.reverse), sy)
+        (TypedAst.DictionaryLiteral(sy.replace(t), location, tes.reverse), sy)
       case Ast.ObjectNew(location, className, params) =>
         val ts = params.map{_ => newTypeVariable()}
         val (tes, sx) = (params zip ts).foldLeft((Nil:List[TypedNode], s0)){ case ((tes, s), (e, t)) =>

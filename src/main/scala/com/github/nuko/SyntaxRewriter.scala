@@ -132,7 +132,7 @@ class SyntaxRewriter extends Processor[Ast.Program, Ast.Program, InteractiveSess
     case FunctionCall(location, func, params) => FunctionCall(location, doRewrite(func), params.map{doRewrite})
     case ListLiteral(location, elements) =>  ListLiteral(location, elements.map{doRewrite})
     case SetLiteral(location, elements) =>  SetLiteral(location, elements.map{doRewrite})
-    case MapLiteral(location, elements) => MapLiteral(location, elements.map{ case (k, v) => (doRewrite(k), doRewrite(v))})
+    case DictionaryLiteral(location, elements) => DictionaryLiteral(location, elements.map{ case (k, v) => (doRewrite(k), doRewrite(v))})
     case ObjectNew(location, className, params) => ObjectNew(location, className, params.map{doRewrite})
     case MethodCall(location ,self, name, params) => MethodCall(location, doRewrite(self), name, params.map{doRewrite})
     case Casting(location, target, to) => Casting(location, doRewrite(target), to)

@@ -234,7 +234,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
 
   object BuiltinModuleEnvironment extends ModuleEnvironment() {
     private final val LIST= "List"
-    private final val MAP = "Map"
+    private final val DICTIONARY = "辞書"
     private final val SET = "Set"
     private final val GPIO = "GPIO"
     enter(LIST) {
@@ -304,7 +304,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
         }
       }
     }
-    enter(MAP) {
+    enter(DICTIONARY) {
       define("add") { case List(ObjectValue(self: java.util.Map[_, _])) =>
         NativeFunctionValue{ case List(a: Value, b: Value) =>
           val newMap = new java.util.HashMap[Any, Any]()
@@ -566,7 +566,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
             newSet.add(param)
           }
           ObjectValue(newSet)
-        case TypedAst.MapLiteral(type_, location, elements) =>
+        case TypedAst.DictionaryLiteral(type_, location, elements) =>
           val params = elements.map{ case (k, v) =>
             (Value.fromKlassic(evalRecursive(k)), Value.fromKlassic(evalRecursive(v)))
           }

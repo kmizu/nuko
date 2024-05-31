@@ -73,7 +73,7 @@ object TypedAst {
 
   case class SetLiteral(type_ : Type, location: Location, elements: List[TypedNode]) extends TypedNode
 
-  case class MapLiteral(type_ : Type, location: Location, elements: List[(TypedNode, TypedNode)]) extends TypedNode
+  case class DictionaryLiteral(type_ : Type, location: Location, elements: List[(TypedNode, TypedNode)]) extends TypedNode
 
   case class RecordSelect(type_ : Type, location: Location, expression: TypedNode, member: String) extends TypedNode
 

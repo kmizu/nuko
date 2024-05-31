@@ -134,7 +134,7 @@ class PlaceholderDesugerer extends Processor[Ast.Program, Ast.Program, Interacti
       ListLiteral(location, elements.map{doRewrite})
     case SetLiteral(location, elements) =>
       SetLiteral(location, elements.map{doRewrite})
-    case x@MapLiteral(location, elements) =>
+    case x@DictionaryLiteral(location, elements) =>
       x.copy(location, elements = x.elements.map{ case (k, v) => (doRewrite(k), doRewrite(v)) })
     case x@ObjectNew(location, className, params) =>
       x.copy(params = x.params.map{doRewrite})
