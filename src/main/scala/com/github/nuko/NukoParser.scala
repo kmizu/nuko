@@ -36,13 +36,13 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       }
 
       lazy val SPACING: Parser[String] = rule {
-        (COMMENT | "\r\n" | "\r" | "\n" | " " | "\t" | "\b" | "\f" | "　").* ^^ {
+        (COMMENT | "\r\n" | "\r" | "\n" | " " | "　" | "\t" | "\b" | "\f" | "　").* ^^ {
           _.mkString
         }
       }
 
       lazy val SPACING_WITHOUT_LF: Parser[String] = rule {
-        (COMMENT | "\t" | " " | "\b" | "\f").* ^^ {
+        (COMMENT | "\t" | " " | "　" | "\b" | "\f").* ^^ {
           _.mkString
         }
       }
