@@ -118,7 +118,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val 辞書開始: Parser[String] = kwToken("辞書[")
       val 辞書区切り: Parser[String] = kwToken("→") | kwToken("->")
       val リスト開始: Parser[String] = kwToken("リスト[")
-      val SET_OPEN: Parser[String] = kwToken("%(")
+      val 集合開始: Parser[String] = kwToken("集合(")
       val UNDERSCORE: Parser[String] = kwToken("_")
       val PLUS: Parser[String] = kwToken("+")
       val MINUS: Parser[String] = kwToken("-")
@@ -371,7 +371,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         case target ~ None => target
       })
 
-      //primary ::= selector | booleanLiteral | ident | floatLiteral | integerLiteral | 辞書リテラル | stringLiteral | リストリテラル | setLiteral | newObject | functionLiteral | "(" expression ")" | "{" lines "}"
+      //primary ::= selector | booleanLiteral | ident | floatLiteral | integerLiteral | 辞書リテラル | stringLiteral | リストリテラル | 集合リテラル | newObject | functionLiteral | "(" expression ")" | "{" lines "}"
       lazy val primary: Parser[Ast.Node] = rule {
         (
           selector
@@ -383,10 +383,10 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
             | integerLiteral
             | newObject
             | functionLiteral
-            | 辞書リテラル
-            | setLiteral
-            | stringLiteral
             | リストリテラル
+            | 辞書リテラル
+            | 集合リテラル
+            | stringLiteral
             | (CL(LPAREN) >> expression << RPAREN)
             | (CL(LBRACE) >> lines << RBRACE)
         )
@@ -422,7 +422,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         case location ~ contents => ListLiteral(location, contents)
       })
 
-      lazy val setLiteral: Parser[Ast.Node] = rule(%% ~ (CL(SET_OPEN) >> commit((CL(expression).repeat0By(SEPARATOR) << SEPARATOR.?) << RPAREN)) ^^ {
+      lazy val 集合リテラル:  Parser[Ast.Node] = rule(%% ~ (CL(集合開始) >> commit((CL(expression).repeat0By(SEPARATOR) << SEPARATOR.?) << RPAREN)) ^^ {
         case location ~ contents => SetLiteral(location, contents)
       })
 
