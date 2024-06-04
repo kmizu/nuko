@@ -115,10 +115,10 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val GT: Parser[String] = kwToken(">")
       val LTE: Parser[String] = kwToken("<=")
       val GTE: Parser[String] = kwToken(">=")
-      val 辞書開始: Parser[String] = kwToken("辞書[")
-      val 辞書区切り: Parser[String] = kwToken("→") | kwToken("->")
-      val リスト開始: Parser[String] = kwToken("リスト[")
-      val 集合開始: Parser[String] = kwToken("集合(")
+      val DICTIONARY_BEGIN: Parser[String] = kwToken("辞書[")
+      val DICTIONARY_SEPARATOR: Parser[String] = kwToken("→") | kwToken("->")
+      val LIST_BEGIN: Parser[String] = kwToken("リスト(")
+      val SET_BEGIN: Parser[String] = kwToken("集合(")
       val UNDERSCORE: Parser[String] = kwToken("_")
       val PLUS: Parser[String] = kwToken("+")
       val MINUS: Parser[String] = kwToken("-")
@@ -129,7 +129,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val LBRACE: Parser[String] = kwToken("{")
       val RBRACE: Parser[String] = kwToken("}")
       val LBRACKET: Parser[String] = kwToken("[")
-      val 閉じブラケット: Parser[String] = kwToken("]")
+      val RBRACKET: Parser[String] = kwToken("]")
       val SHARP: Parser[String] = kwToken("#")
       val IF: Parser[String] = kwToken("もし")
       val SHOW: Parser[String] = kwToken("表示") | kwToken("show")
@@ -383,9 +383,9 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
             | integerLiteral
             | newObject
             | functionLiteral
-            | リストリテラル
+            | listLiteral
             | 辞書リテラル
-            | 集合リテラル
+            | setLiteral
             | stringLiteral
             | (CL(LPAREN) >> expression << RPAREN)
             | (CL(LBRACE) >> lines << RBRACE)
@@ -418,15 +418,15 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
           values.foldLeft(StringNode(NoLocation, ""): Ast.Node) { (node, content) => BinaryExpression(content.location, Operator.ADD, node, content) }
         }) << SPACING_WITHOUT_LF
 
-      lazy val リストリテラル: Parser[Ast.Node] = rule(%% ~ (CL(リスト開始) >> commit((CL(expression).repeat0By(SEPARATOR) << SEPARATOR.?) << 閉じブラケット)) ^^ {
+      lazy val listLiteral: Parser[Ast.Node] = rule(%% ~ (CL(LIST_BEGIN) >> commit((CL(expression).repeat0By(SEPARATOR) << SEPARATOR.?) << RPAREN)) ^^ {
         case location ~ contents => ListLiteral(location, contents)
       })
 
-      lazy val 集合リテラル:  Parser[Ast.Node] = rule(%% ~ (CL(集合開始) >> commit((CL(expression).repeat0By(SEPARATOR) << SEPARATOR.?) << RPAREN)) ^^ {
+      lazy val setLiteral:  Parser[Ast.Node] = rule(%% ~ (CL(SET_BEGIN) >> commit((CL(expression).repeat0By(SEPARATOR) << SEPARATOR.?) << RPAREN)) ^^ {
         case location ~ contents => SetLiteral(location, contents)
       })
 
-      lazy val 辞書リテラル: Parser[Ast.Node] = rule(%% ~ (CL(辞書開始) >> commit((CL(expression ~ 辞書区切り ~ expression).repeat0By(SEPARATOR) << SEPARATOR.?) << 閉じブラケット)) ^^ {
+      lazy val 辞書リテラル: Parser[Ast.Node] = rule(%% ~ (CL(DICTIONARY_BEGIN) >> commit((CL(expression ~ DICTIONARY_SEPARATOR ~ expression).repeat0By(SEPARATOR) << SEPARATOR.?) << RBRACKET)) ^^ {
         case location ~ contents => DictionaryLiteral(location, contents.map { case k ~ colon ~ v => (k, v) })
       })
 
