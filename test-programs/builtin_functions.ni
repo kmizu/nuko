@@ -1,4 +1,4 @@
-// String Functions
+// 文字列関数
 変数 pattern は "[0-9]+"
 assertResult("F")(substring("FOO", 0, 1))
 assertResult("R")(at("BAR", 2))
@@ -8,7 +8,7 @@ assertResult(false)(matches("a", pattern))
 変数 sub は substring
 assertResult("B")(sub("BAR", 0, 1))
 
-// Numeric Functions
+// 数値関数
 assertResult(1.4142135623730951)(sqrt(2.0))
 assertResult(3.0)(sqrt(9.0))
 assertResult(3)(int(3.14159265359))
@@ -22,7 +22,7 @@ assertResult(-4)(ceil(-4.5))
 assertResult(10.5)(abs(10.5))
 assertResult(10.5)(abs(-10.5))
 
-// Assert Function
+// 確認関数
 assert(2 == 1 + 1)
 // assert(3 > 5) // => throws AssertionError
 
@@ -41,7 +41,7 @@ list->add(4)
 list->add(1)
 list->add(2)
 list->add(3)
-assertResult(リスト[4 1 2 3])((list :> List<整数>))
+assertResult(リスト(4 1 2 3))((list :> List<整数>))
 assertResult(5.0)(sqrt(3.0 * 3.0 + 4.0 * 4.0))
 assertResult(6)(int(6.5))
 assertResult(7)(floor(7.5))
