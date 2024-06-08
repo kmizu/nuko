@@ -12,7 +12,7 @@ case class BoxedInt(value: BigInt) extends Value {
 case class BoxedBoolean(value: Boolean) extends Value {
   override def toString = value.toString
 }
-case class BoxedDouble(value: Double) extends Value {
+case class BoxedReal(value: Double) extends Value {
   override def toString = value.toString
 }
 case class FunctionValue(value: TypedAst.FunctionLiteral, environment: Option[RuntimeEnvironment]) extends Value {
@@ -45,7 +45,7 @@ object Value {
     case BoxedBoolean(v) => classOf[Boolean]
     case BoxedByte(v) => classOf[Byte]
     case BoxedInt(v) => classOf[Int]
-    case BoxedDouble(v) => classOf[Double]
+    case BoxedReal(v) => classOf[Double]
     case ObjectValue(v) => v.getClass
     case otherwise => otherwise.getClass
   }
@@ -54,7 +54,7 @@ object Value {
     case BoxedBoolean(v) => classOf[java.lang.Boolean]
     case BoxedByte(v) => classOf[java.lang.Byte]
     case BoxedInt(v) => classOf[java.lang.Integer]
-    case BoxedDouble(v) => classOf[java.lang.Double]
+    case BoxedReal(v) => classOf[java.lang.Double]
     case ObjectValue(v) => v.getClass
     case otherwise => otherwise.getClass
   }
@@ -67,7 +67,7 @@ object Value {
     case BoxedBoolean(v) => java.lang.Boolean.valueOf(v)
     case BoxedByte(v) => java.lang.Byte.valueOf(v)
     case BoxedInt(v) => v
-    case BoxedDouble(v) => java.lang.Double.valueOf(v)
+    case BoxedReal(v) => java.lang.Double.valueOf(v)
     case ObjectValue(v) => v
     case UnitValue => UnitValue
     case otherwise => otherwise
@@ -77,7 +77,7 @@ object Value {
     case v:java.lang.Boolean => BoxedBoolean(v.booleanValue())
     case v:java.lang.Byte => BoxedByte(v.byteValue())
     case v:BigInt => BoxedInt(v)
-    case v:java.lang.Double => BoxedDouble(v.doubleValue())
+    case v:java.lang.Double => BoxedReal(v.doubleValue())
     case UnitValue => UnitValue
     case otherwise => ObjectValue(otherwise)
   }

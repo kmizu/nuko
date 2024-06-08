@@ -134,12 +134,12 @@ class ExpressionSpec extends SpecHelper {
           E(
             """
               |もし (真) 1.0 でなければ 2.0
-            """.stripMargin))(BoxedDouble(1.0))
+            """.stripMargin))(BoxedReal(1.0))
         assertResult(
           E(
             """
               |もし (偽) 1.0 でなければ 2.0
-            """.stripMargin))(BoxedDouble(2.0))
+            """.stripMargin))(BoxedReal(2.0))
       }
     }
 

@@ -88,28 +88,28 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       BoxedBoolean(s.matches(regex))
     }
 
-    define("sqrt") { case List(BoxedDouble(value)) =>
-      BoxedDouble(math.sqrt(value))
+    define("sqrt") { case List(BoxedReal(value)) =>
+      BoxedReal(math.sqrt(value))
     }
 
-    define("int") { case List(BoxedDouble(value)) =>
+    define("int") { case List(BoxedReal(value)) =>
       BoxedInt(value.toInt)
     }
 
     define("double") { case List(BoxedInt(value)) =>
-      BoxedDouble(value.toDouble)
+      BoxedReal(value.toDouble)
     }
 
-    define("floor") { case List(BoxedDouble(value)) =>
+    define("floor") { case List(BoxedReal(value)) =>
       BoxedInt(value.toInt)
     }
 
-    define("ceil") { case List(BoxedDouble(value)) =>
+    define("ceil") { case List(BoxedReal(value)) =>
       BoxedInt(math.ceil(value).toInt)
     }
 
-    define("abs") { case List(BoxedDouble(value)) =>
-      BoxedDouble(math.abs(value))
+    define("abs") { case List(BoxedReal(value)) =>
+      BoxedReal(math.abs(value))
     }
 
     define("thread") { case List(fun: FunctionValue) =>
@@ -445,7 +445,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           (evalRecursive(left), evalRecursive(right)) match {
             case (BoxedInt(lval), BoxedInt(rval)) => BoxedBoolean(lval == rval)
             case (BoxedByte(lval), BoxedByte(rval)) => BoxedBoolean(lval == rval)
-            case (BoxedDouble(lval), BoxedDouble(rval)) => BoxedBoolean(lval == rval)
+            case (BoxedReal(lval), BoxedReal(rval)) => BoxedBoolean(lval == rval)
             case (BoxedBoolean(lval), BoxedBoolean(rval)) => BoxedBoolean(lval == rval)
             case (BoxedBoolean(lval), ObjectValue(rval:java.lang.Boolean)) => BoxedBoolean(lval == rval.booleanValue())
             case (ObjectValue(lval:java.lang.Boolean), BoxedBoolean(rval)) => BoxedBoolean(lval.booleanValue() == rval)
@@ -456,28 +456,28 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           (evalRecursive(left), evalRecursive(right)) match {
             case (BoxedInt(lval), BoxedInt(rval)) => BoxedBoolean(lval < rval)
             case (BoxedByte(lval), BoxedByte(rval)) => BoxedBoolean(lval < rval)
-            case (BoxedDouble(lval), BoxedDouble(rval)) => BoxedBoolean(lval < rval)
+            case (BoxedReal(lval), BoxedReal(rval)) => BoxedBoolean(lval < rval)
             case _ => reportError("comparation must be done between numeric types")
           }
         case TypedAst.BinaryExpression(type_, location, Operator.GREATER_THAN, left, right) =>
           (evalRecursive(left), evalRecursive(right)) match {
             case (BoxedInt(lval), BoxedInt(rval)) => BoxedBoolean(lval > rval)
             case (BoxedByte(lval), BoxedByte(rval)) => BoxedBoolean(lval > rval)
-            case (BoxedDouble(lval), BoxedDouble(rval)) => BoxedBoolean(lval > rval)
+            case (BoxedReal(lval), BoxedReal(rval)) => BoxedBoolean(lval > rval)
             case _ => reportError("comparation must be done between numeric types")
           }
         case TypedAst.BinaryExpression(type_, location, Operator.LESS_OR_EQUAL, left, right) =>
           (evalRecursive(left), evalRecursive(right)) match {
             case (BoxedInt(lval), BoxedInt(rval)) => BoxedBoolean(lval <= rval)
             case (BoxedByte(lval), BoxedByte(rval)) => BoxedBoolean(lval <= rval)
-            case (BoxedDouble(lval), BoxedDouble(rval)) => BoxedBoolean(lval <= rval)
+            case (BoxedReal(lval), BoxedReal(rval)) => BoxedBoolean(lval <= rval)
             case _ => reportError("comparation must be done between numeric types")
           }
         case TypedAst.BinaryExpression(type_, location, Operator.GREATER_EQUAL, left, right) =>
           (evalRecursive(left), evalRecursive(right)) match {
             case (BoxedInt(lval), BoxedInt(rval)) => BoxedBoolean(lval >= rval)
             case (BoxedByte(lval), BoxedByte(rval)) => BoxedBoolean(lval >= rval)
-            case (BoxedDouble(lval), BoxedDouble(rval)) => BoxedBoolean(lval >= rval)
+            case (BoxedReal(lval), BoxedReal(rval)) => BoxedBoolean(lval >= rval)
             case _ => reportError("comparation must be done between numeric types")
           }
         case TypedAst.BinaryExpression(type_, location, Operator.ADD, left, right) =>
@@ -486,28 +486,28 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
             case (BoxedInt(lval), BoxedInt(rval)) => BoxedInt(lval + rval)
             case (ObjectValue(lval:String), rval) => ObjectValue(lval + rval)
             case (lval, ObjectValue(rval:String)) => ObjectValue(lval.toString + rval)
-            case (BoxedDouble(lval), BoxedDouble(rval)) => BoxedDouble(lval + rval)
+            case (BoxedReal(lval), BoxedReal(rval)) => BoxedReal(lval + rval)
             case _ => reportError("arithmetic operation must be done between the same numeric types")
           }
         case TypedAst.BinaryExpression(type_, location, Operator.SUBTRACT, left, right) =>
           (evalRecursive(left), evalRecursive(right)) match{
             case (BoxedInt(lval), BoxedInt(rval)) => BoxedInt(lval - rval)
             case (BoxedByte(lval), BoxedByte(rval)) => BoxedByte((lval - rval).toByte)
-            case (BoxedDouble(lval), BoxedDouble(rval)) => BoxedDouble(lval - rval)
+            case (BoxedReal(lval), BoxedReal(rval)) => BoxedReal(lval - rval)
             case _ => reportError("arithmetic operation must be done between the same numeric types")
           }
         case TypedAst.BinaryExpression(type_, location, Operator.MULTIPLY, left, right) =>
           (evalRecursive(left), evalRecursive(right)) match{
             case (BoxedInt(lval), BoxedInt(rval)) => BoxedInt(lval * rval)
             case (BoxedByte(lval), BoxedByte(rval)) => BoxedByte((lval * rval).toByte)
-            case (BoxedDouble(lval), BoxedDouble(rval)) => BoxedDouble(lval * rval)
+            case (BoxedReal(lval), BoxedReal(rval)) => BoxedReal(lval * rval)
             case _ => reportError("arithmetic operation must be done between the same numeric types")
           }
         case TypedAst.BinaryExpression(type_, location, Operator.DIVIDE, left, right) =>
           (evalRecursive(left), evalRecursive(right)) match {
             case (BoxedInt(lval), BoxedInt(rval)) => BoxedInt(lval / rval)
             case (BoxedByte(lval), BoxedByte(rval)) => BoxedByte((lval / rval).toByte)
-            case (BoxedDouble(lval), BoxedDouble(rval)) => BoxedDouble(lval / rval)
+            case (BoxedReal(lval), BoxedReal(rval)) => BoxedReal(lval / rval)
             case _ => reportError("arithmetic operation must be done between the same numeric types")
           }
         case TypedAst.BinaryExpression(type_, location, Operator.AND, left, right) =>
@@ -532,14 +532,14 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           evalRecursive(operand) match {
             case BoxedInt(value) => BoxedInt(-value)
             case BoxedByte(value) => BoxedByte((-value).toByte)
-            case BoxedDouble(value) => BoxedDouble(-value)
+            case BoxedReal(value) => BoxedReal(-value)
             case _ => reportError("- cannot be applied to non-integer value")
           }
         case TypedAst.PlusOp(type_, location, operand) =>
           evalRecursive(operand) match {
             case BoxedInt(value) => BoxedInt(value)
             case BoxedByte(value) => BoxedByte(value)
-            case BoxedDouble(value) => BoxedDouble(value)
+            case BoxedReal(value) => BoxedReal(value)
             case _ => reportError("+ cannot be applied to non-integer value")
           }
         case TypedAst.IntNode(type_, location, value) =>
@@ -549,7 +549,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
         case TypedAst.ByteNode(type_, location, value) =>
           BoxedByte(value)
         case TypedAst.DoubleNode(type_, location, value) =>
-          BoxedDouble(value)
+          BoxedReal(value)
         case TypedAst.BooleanNode(type_, location, value) =>
           BoxedBoolean(value)
         case TypedAst.ListLiteral(type_, location, elements) =>

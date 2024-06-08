@@ -55,19 +55,19 @@ class FunctionSpec extends SpecHelper {
     val expectations: List[(String, Value)] = List(
       """
         |double(3)
-      """.stripMargin -> BoxedDouble(3.0),
+      """.stripMargin -> BoxedReal(3.0),
       """
         |double(2)
-      """.stripMargin -> BoxedDouble(2.0),
+      """.stripMargin -> BoxedReal(2.0),
       """
         |double(1)
-      """.stripMargin -> BoxedDouble(1.0),
+      """.stripMargin -> BoxedReal(1.0),
       """
         |double(0)
-      """.stripMargin -> BoxedDouble(0.0),
+      """.stripMargin -> BoxedReal(0.0),
       """
         |double(-1)
-      """.stripMargin -> BoxedDouble(-1.0)
+      """.stripMargin -> BoxedReal(-1.0)
     )
 
     expectations.foreach { case (in, expected) =>
@@ -105,19 +105,19 @@ class FunctionSpec extends SpecHelper {
     val expectations: List[(String, Value)] = List(
       """
         |abs(2.5)
-      """.stripMargin -> BoxedDouble(2.5),
+      """.stripMargin -> BoxedReal(2.5),
       """
         |abs(1.0)
-      """.stripMargin -> BoxedDouble(1.0),
+      """.stripMargin -> BoxedReal(1.0),
       """
         |abs(0.0)
-      """.stripMargin -> BoxedDouble(0.0),
+      """.stripMargin -> BoxedReal(0.0),
       """
         |abs(-0.5)
-      """.stripMargin -> BoxedDouble(0.5),
+      """.stripMargin -> BoxedReal(0.5),
       """
         |abs(-1.5)
-      """.stripMargin -> BoxedDouble(1.5)
+      """.stripMargin -> BoxedReal(1.5)
     )
 
     expectations.foreach { case (in, expected) =>
@@ -199,16 +199,16 @@ class FunctionSpec extends SpecHelper {
     val expectations: List[(String, Value)] = List(
       """
         |sqrt(4.0)
-      """.stripMargin -> BoxedDouble(2.0),
+      """.stripMargin -> BoxedReal(2.0),
       """
         |sqrt(9.0)
-      """.stripMargin -> BoxedDouble(3.0),
+      """.stripMargin -> BoxedReal(3.0),
       """
         |sqrt(2.0)
-      """.stripMargin -> BoxedDouble(1.4142135623730951),
+      """.stripMargin -> BoxedReal(1.4142135623730951),
       """
         |sqrt(1.0)
-      """.stripMargin -> BoxedDouble(1.0)
+      """.stripMargin -> BoxedReal(1.0)
     )
 
     expectations.foreach { case (in, expected) =>

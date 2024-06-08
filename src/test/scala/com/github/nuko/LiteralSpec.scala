@@ -25,12 +25,12 @@ class LiteralSpec extends SpecHelper {
 
   describe("double literal") {
     val expectations = List[(String, Value)](
-      "2.0" -> BoxedDouble(2.0),
-      "2.5" -> BoxedDouble(2.5),
-      "+0.0" -> BoxedDouble(+0.0),
-      "-0.0" -> BoxedDouble(-0.0),
-      "0.1" -> BoxedDouble(+0.1),
-      "-0.1" -> BoxedDouble(-0.1)
+      "2.0" -> BoxedReal(2.0),
+      "2.5" -> BoxedReal(2.5),
+      "+0.0" -> BoxedReal(+0.0),
+      "-0.0" -> BoxedReal(-0.0),
+      "0.1" -> BoxedReal(+0.1),
+      "-0.1" -> BoxedReal(-0.1)
     )
 
     expectations.zipWithIndex.foreach{ case ((in, expected), i) =>
