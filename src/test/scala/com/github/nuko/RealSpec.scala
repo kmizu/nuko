@@ -19,6 +19,6 @@ class RealSpec extends SpecHelper {
   }
 
   describe("real operations") {
-    assert(E("0.1") == E("1.0 - 0.9")) // 10進小数のため成り立つ
+    assert(E("0.1") == E("1.0 - 0.9"))
   }
 }
