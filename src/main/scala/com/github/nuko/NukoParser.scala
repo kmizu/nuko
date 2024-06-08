@@ -200,21 +200,23 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       lazy val typeVariable: Parser[TVariable] = qident ^^ { id => TVariable(id) }
 
       lazy val typeDescription: Parser[Type] = rule(
-        qident ^^ { id => TVariable(id) }
-          | ((CL(LPAREN) >> typeDescription.repeat0By(CL(COMMA)) << CL(RPAREN)) << CL(ARROW1)) ~ typeDescription ^^ { case args ~ returnType => TFunction(args, returnType) }
-          | (SHARP >> sident).filter { s => !isBuiltinType(s) } ~ (CL(LT) >> typeDescription.repeat0By(CL(COMMA)) << CL(GT)).? ^^ {
+        kwToken("バイト") ^^ { _ => TByte }
+      | kwToken("整数") ^^ { _ => TInt }
+      | kwToken("小数") ^^ { _ => TDouble }
+      | kwToken("Boolean") ^^ { _ => TBoolean }
+      | kwToken("Unit") ^^ { _ => TUnit }
+      | kwToken("文章") ^^ { _ => TString }
+      | kwToken("*") ^^ { _ => TDynamic }
+      | qident ^^ { id => TVariable(id) }
+      | ((CL(LPAREN) >> typeDescription.repeat0By(CL(COMMA)) << CL(RPAREN)) << CL(ARROW1)) ~ typeDescription ^^ { case args ~ returnType => TFunction(args, returnType) }
+      | (SHARP >> sident).filter { s => !isBuiltinType(s) } ~ (CL(LT) >> typeDescription.repeat0By(CL(COMMA)) << CL(GT)).? ^^ {
           case name ~ Some(args) => TRecordReference(name, args)
           case name ~ None => TRecordReference(name, Nil)
-        } | sident.filter { s => !isBuiltinType(s) } ~ (CL(LT) >> typeDescription.repeat0By(CL(COMMA)) << CL(GT)).? ^^ {
+        }
+      | sident.filter { s => !isBuiltinType(s) } ~ (CL(LT) >> typeDescription.repeat0By(CL(COMMA)) << CL(GT)).? ^^ {
           case name ~ Some(args) => TConstructor(name, args)
           case name ~ None => TConstructor(name, Nil)
-        } | kwToken("バイト") ^^ { _ => TByte }
-          | kwToken("整数") ^^ { _ => TInt }
-          | kwToken("小数") ^^ { _ => TDouble }
-          | kwToken("Boolean") ^^ { _ => TBoolean }
-          | kwToken("Unit") ^^ { _ => TUnit }
-          | kwToken("文章") ^^ { _ => TString }
-          | kwToken("*") ^^ { _ => TDynamic }
+        }
       )
 
       def root: Parser[Program] = rule(program)
@@ -240,7 +242,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       }
 
       //line ::= expression | valDeclaration | functionDefinition
-      lazy val line: Parser[Ast.Node] = rule(expression | valDeclaration | functionDefinition)
+      lazy val line: Parser[Ast.Node] = rule(valDeclaration | functionDefinition | expression)
 
       //expression ::= ifExpression | whileExpression | assignment | jpAssignment | ternary
       lazy val expression: Parser[Ast.Node] = rule(ifExpression | whileExpression | assignment | jpAssignment | ternary)
@@ -378,17 +380,17 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
             | (%% ~< SHOW ~< CL(LBRACE)) ~ expression ~< CL(RBRACE) ^^ { case location ~ expression => Show(location, expression) }
             | booleanLiteral
             | placeholder
-            | ident
             | floatLiteral
             | integerLiteral
             | newObject
             | functionLiteral
             | listLiteral
-            | 辞書リテラル
+            | dictionaryLiteral
             | setLiteral
             | stringLiteral
             | (CL(LPAREN) >> expression << RPAREN)
             | (CL(LBRACE) >> lines << RBRACE)
+            | ident
         )
       }
 
@@ -426,7 +428,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         case location ~ contents => SetLiteral(location, contents)
       })
 
-      lazy val 辞書リテラル: Parser[Ast.Node] = rule(%% ~ (CL(DICTIONARY_BEGIN) >> commit((CL(expression ~ DICTIONARY_SEPARATOR ~ expression).repeat0By(SEPARATOR) << SEPARATOR.?) << RBRACKET)) ^^ {
+      lazy val dictionaryLiteral: Parser[Ast.Node] = rule(%% ~ (CL(DICTIONARY_BEGIN) >> commit((CL(expression ~ DICTIONARY_SEPARATOR ~ expression).repeat0By(SEPARATOR) << SEPARATOR.?) << RBRACKET)) ^^ {
         case location ~ contents => DictionaryLiteral(location, contents.map { case k ~ colon ~ v => (k, v) })
       })
 
@@ -437,6 +439,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       lazy val component: Parser[String] = (
         """[A-Za-z_][A-Za-z_0-9]*""".r
       | """「([A-Za-z_]|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})(\w|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})*」""".r.map(s => s.substring(1, s.length - 1))
+      | """(\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})(\w|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})*""".r
       )
 
 

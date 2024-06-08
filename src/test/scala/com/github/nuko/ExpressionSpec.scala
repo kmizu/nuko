@@ -9,41 +9,41 @@ class ExpressionSpec extends SpecHelper {
       assertResult(
         E(
           """
-            |変数aは1
-            |a
+            |変数 ほげ は 1
+            |ほげ
           """.stripMargin))(BoxedInt(1))
       assertResult(
         E(
           """
-            |変数aは1
+            |変数 a は 1
             |a = a 足す 1
             |a
           """.stripMargin))(BoxedInt(2))
       assertResult(
         E(
           """
-            |変数aは1
+            |変数 a は 1
             |a += 1
             |a
           """.stripMargin))(BoxedInt(2))
       assertResult(
         E(
           """
-            |変数aは1
+            |変数 a は 1
             |a -= 1
             |a
           """.stripMargin))(BoxedInt(0))
       assertResult(
         E(
           """
-            |変数aは3
+            |変数 a は 3
             |a *= 2
             |a
           """.stripMargin))(BoxedInt(6))
       assertResult(
         E(
           """
-            |変数aは5
+            |変数 a は 5
             |a /= 2
             |a
           """.stripMargin))(BoxedInt(2))
