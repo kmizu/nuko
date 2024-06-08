@@ -19,8 +19,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
   def listOf(tp: Type): TConstructor = {
     TConstructor("List", List(tp))
   }
-  def mapOf(k: Type, v: Type): TConstructor = {
-    TConstructor("Map", List(k, v))
+  def dictionaryOf(k: Type, v: Type): TConstructor = {
+    TConstructor("Dictionary", List(k, v))
   }
   def setOf(tp: Type): TConstructor = {
     TConstructor("Set", List(tp))
@@ -45,12 +45,12 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       "head"         -> TScheme(List(tv("a")), listOf(tv("a")) ==> tv("a")),
       "tail"         -> TScheme(List(tv("a")), listOf(tv("a")) ==> listOf(tv("a"))),
       "cons"         -> TScheme(List(tv("a")), tv("a") ==> (listOf(tv("a")) ==> listOf(tv("a")))),
-      "double"       -> TScheme(Nil, TInt ==> TDouble),
-      "int"          -> TScheme(Nil, TDouble ==> TInt),
-      "floor"        -> TScheme(Nil, TDouble ==> TInt),
-      "ceil"         -> TScheme(Nil, TDouble ==> TInt),
-      "sqrt"         -> TScheme(Nil, TDouble ==> TDouble),
-      "abs"          -> TScheme(Nil, TDouble ==> TDouble),
+      "double"       -> TScheme(Nil, TInt ==> TReal),
+      "int"          -> TScheme(Nil, TReal ==> TInt),
+      "floor"        -> TScheme(Nil, TReal ==> TInt),
+      "ceil"         -> TScheme(Nil, TReal ==> TInt),
+      "sqrt"         -> TScheme(Nil, TReal ==> TReal),
+      "abs"          -> TScheme(Nil, TReal ==> TReal),
       "size"         -> TScheme(List(tv("a")), listOf(tv("a")) ==> TInt),
       "foldLeft"     -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> (tv("b") ==> ((List(tv("b"), tv("a")) ==> tv("b")) ==> tv("b")))),
       "null"         -> TScheme(List(tv("a")), tv("a")),
@@ -78,12 +78,12 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         "isEmpty" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TBoolean)
       ),
       "辞書" -> Map(
-        "add" -> TScheme(List(tv("a"), tv("b")), mapOf(tv("a"), tv("b")) ==> (List(tv("a"), tv("b")) ==> mapOf(tv("a"), tv("b")))),
-        "containsKey" -> TScheme(List(tv("a"), tv("b")), mapOf(tv("a"), tv("b")) ==> (tv("a") ==> TBoolean)),
-        "containsValue" -> TScheme(List(tv("a"), tv("b")), mapOf(tv("a"), tv("b")) ==> (tv("b") ==> TBoolean)),
-        "get" -> TScheme(List(tv("a"), tv("b")), mapOf(tv("a"), tv("b")) ==> (tv("a") ==> tv("b"))),
-        "size" -> TScheme(List(tv("a"), tv("b")), mapOf(tv("a"), tv("b")) ==> TInt),
-        "isEmpty" -> TScheme(List(tv("a"), tv("b")), mapOf(tv("a"), tv("b")) ==> TBoolean)
+        "add" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (List(tv("a"), tv("b")) ==> dictionaryOf(tv("a"), tv("b")))),
+        "containsKey" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("a") ==> TBoolean)),
+        "containsValue" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("b") ==> TBoolean)),
+        "get" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("a") ==> tv("b"))),
+        "size" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TInt),
+        "isEmpty" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TBoolean)
       ),
       "Set" -> Map(
         "add" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),
@@ -140,7 +140,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       s
     case (TByte, TByte) =>
       s
-    case (TDouble, TDouble) =>
+    case (TReal, TReal) =>
       s
     case (TBoolean, TBoolean) =>
       s
@@ -246,9 +246,9 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       case Ast.ByteNode(location, value) =>
         val newSub = unify(t, TByte, s0)
         (TypedAst.ByteNode(newSub.replace(t), location, value), newSub)
-      case Ast.DoubleNode(location, value) =>
-        val newSub = unify(t, TDouble, s0)
-        (TypedAst.DoubleNode(newSub.replace(t), location, value), newSub)
+      case Ast.RealNode(location, value) =>
+        val newSub = unify(t, TReal, s0)
+        (TypedAst.RealNode(newSub.replace(t), location, value), newSub)
       case Ast.BooleanNode(location, value) =>
         val newSub = unify(t, TBoolean, s0)
         (TypedAst.BooleanNode(newSub.replace(t), location, value), newSub)
@@ -295,7 +295,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TBoolean, s2)
           case (TByte, TByte) =>
             (TBoolean, s2)
-          case (TDouble, TDouble) =>
+          case (TReal, TReal) =>
             (TBoolean, s2)
           case (TBoolean, TBoolean) =>
             (TBoolean, s2)
@@ -332,7 +332,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TBoolean, s2)
           case (TByte, TByte) =>
             (TBoolean, s2)
-          case (TDouble, TDouble) =>
+          case (TReal, TReal) =>
             (TBoolean, s2)
           case (TDynamic, TDynamic) =>
             (TBoolean, s2)
@@ -356,7 +356,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TBoolean, s2)
           case (TByte, TByte) =>
             (TBoolean, s2)
-          case (TDouble, TDouble) =>
+          case (TReal, TReal) =>
             (TBoolean, s2)
           case (TDynamic, TDynamic) =>
             (TBoolean, s2)
@@ -380,7 +380,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TBoolean, s2)
           case (TByte, TByte) =>
             (TBoolean, s2)
-          case (TDouble, TDouble) =>
+          case (TReal, TReal) =>
             (TBoolean, s2)
           case (TDynamic, TDynamic) =>
             (TBoolean, s2)
@@ -404,7 +404,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TBoolean, s2)
           case (TByte, TByte) =>
             (TBoolean, s2)
-          case (TDouble, TDouble) =>
+          case (TReal, TReal) =>
             (TBoolean, s2)
           case (TDynamic, TDynamic) =>
             (TBoolean, s2)
@@ -428,8 +428,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TInt, s2)
           case (TByte, TByte) =>
             (TByte, s2)
-          case (TDouble, TDouble) =>
-            (TDouble, s2)
+          case (TReal, TReal) =>
+            (TReal, s2)
           case (TDynamic, TDynamic) =>
             (TDynamic, s2)
           case (x: TVariable, y) if !y.isInstanceOf[TVariable] =>
@@ -460,8 +460,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TInt, s2)
           case (TByte, TByte) =>
             (TByte, s2)
-          case (TDouble, TDouble) =>
-            (TDouble, s2)
+          case (TReal, TReal) =>
+            (TReal, s2)
           case (TDynamic, TDynamic) =>
             (TDynamic, s2)
           case (x: TVariable, y) if !y.isInstanceOf[TVariable] =>
@@ -484,8 +484,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TInt, s2)
           case (TByte, TByte) =>
             (TByte, s2)
-          case (TDouble, TDouble) =>
-            (TDouble, s2)
+          case (TReal, TReal) =>
+            (TReal, s2)
           case (TDynamic, TDynamic) =>
             (TDynamic, s2)
           case (x: TVariable, y) if !y.isInstanceOf[TVariable] =>
@@ -507,8 +507,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TInt, s2)
           case (TByte, TByte) =>
             (TByte, s2)
-          case (TDouble, TDouble) =>
-            (TDouble, s2)
+          case (TReal, TReal) =>
+            (TReal, s2)
           case (TDynamic, TDynamic) =>
             (TDynamic, s2)
           case (x: TVariable, y) if !y.isInstanceOf[TVariable] =>
@@ -593,8 +593,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TInt, s1)
           case TByte =>
             (TByte, s1)
-          case TDouble =>
-            (TDouble, s1)
+          case TReal =>
+            (TReal, s1)
           case TDynamic =>
             (TDynamic, s1)
           case operandType =>
@@ -610,8 +610,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TInt, s1)
           case TByte =>
             (TByte, s1)
-          case TDouble =>
-            (TDouble, s1)
+          case TReal =>
+            (TReal, s1)
           case TDynamic =>
             (TDynamic, s1)
           case operandType =>
@@ -716,7 +716,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       case Ast.DictionaryLiteral(location, elements) =>
         val kt = newTypeVariable()
         val vt = newTypeVariable()
-        val mapOfKV = mapOf(kt, vt)
+        val mapOfKV = dictionaryOf(kt, vt)
         val (tes, s) = elements.foldLeft((Nil:List[(TypedNode, TypedNode)], s0)){ case ((tes, s), (k, v)) =>
           val (typedK, sx) = doType(k, env, kt, s)
           val (typedY, sy) = doType(v, env, vt, sx)

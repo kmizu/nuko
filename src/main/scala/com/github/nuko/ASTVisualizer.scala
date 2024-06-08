@@ -115,7 +115,7 @@ object ASTVisualizer {
         new DefaultMutableTreeNode(label + nodeToString(node))
       case Ast.BooleanNode(_, value) =>
         new DefaultMutableTreeNode(label + nodeToString(node))
-      case Ast.DoubleNode(_, value) =>
+      case Ast.RealNode(_, value) =>
         new DefaultMutableTreeNode(label + nodeToString(node))
       case Ast.Id(_, name) =>
         new DefaultMutableTreeNode(label + nodeToString(node))
@@ -204,7 +204,7 @@ object ASTVisualizer {
       case Ast.IntNode(_, value) => s"$value"
       case Ast.ByteNode(_, value) => s"$value"
       case Ast.BooleanNode(_, value) => if(value) "真" else "偽"
-      case Ast.DoubleNode(_, value) => s"$value"
+      case Ast.RealNode(_, value) => s"$value"
       case Ast.Id(_, name) => name
       case Ast.Placeholder(_) => "Placeholder"
       case Ast.Selector(_, module, name) => s"Selector: $module.$name"

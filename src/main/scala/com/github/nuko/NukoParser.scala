@@ -202,10 +202,10 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       lazy val typeDescription: Parser[Type] = rule(
         kwToken("バイト") ^^ { _ => TByte }
       | kwToken("整数") ^^ { _ => TInt }
-      | kwToken("小数") ^^ { _ => TDouble }
-      | kwToken("Boolean") ^^ { _ => TBoolean }
-      | kwToken("Unit") ^^ { _ => TUnit }
-      | kwToken("文章") ^^ { _ => TString }
+      | kwToken("小数") ^^ { _ => TReal }
+      | kwToken("真偽") ^^ { _ => TBoolean }
+      | kwToken("空") ^^ { _ => TUnit }
+      | kwToken("文字列") ^^ { _ => TString }
       | kwToken("*") ^^ { _ => TDynamic }
       | qident ^^ { id => TVariable(id) }
       | ((CL(LPAREN) >> typeDescription.repeat0By(CL(COMMA)) << CL(RPAREN)) << CL(ARROW1)) ~ typeDescription ^^ { case args ~ returnType => TFunction(args, returnType) }
@@ -373,14 +373,14 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         case target ~ None => target
       })
 
-      //primary ::= selector | booleanLiteral | ident | floatLiteral | integerLiteral | 辞書リテラル | stringLiteral | リストリテラル | 集合リテラル | newObject | functionLiteral | "(" expression ")" | "{" lines "}"
+      //primary ::= selector | booleanLiteral | ident | realLiteral | integerLiteral | 辞書リテラル | stringLiteral | リストリテラル | 集合リテラル | newObject | functionLiteral | "(" expression ")" | "{" lines "}"
       lazy val primary: Parser[Ast.Node] = rule {
         (
           selector
             | (%% ~< SHOW ~< CL(LBRACE)) ~ expression ~< CL(RBRACE) ^^ { case location ~ expression => Show(location, expression) }
             | booleanLiteral
             | placeholder
-            | floatLiteral
+            | realLiteral
             | integerLiteral
             | newObject
             | functionLiteral
@@ -400,8 +400,8 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         case location ~ value ~ Some(ByteSuffix) => ByteNode(location, value.toByte)
       }) << SPACING_WITHOUT_LF
 
-      lazy val floatLiteral: Parser[Ast.Node] = (%% ~ "([1-9][0-9]*|0)\\.[0-9]*".r  ^^ {
-        case location ~ value => DoubleNode(location, value.toDouble)
+      lazy val realLiteral: Parser[Ast.Node] = (%% ~ "([1-9][0-9]*|0)\\.[0-9]*".r  ^^ {
+        case location ~ value => RealNode(location, BigDecimal(value))
       }) << SPACING_WITHOUT_LF
 
       lazy val booleanLiteral: Parser[Ast.Node] = %% ~ (TRUE ^^ { _ => true } | FALSE ^^ { _ => false }) ^^ {

@@ -2,7 +2,7 @@ package com.github
 
 import java.io.{BufferedReader, FileInputStream, InputStreamReader}
 
-import com.github.nuko.Type.{Row, TBoolean, TByte, TConstructor, TDouble, TDynamic, TError,  TFunction, TInt, TRecord, TRecordReference, TRowEmpty, TRowExtend, TScheme, TString, TUnit, TVariable}
+import com.github.nuko.Type.{Row, TBoolean, TByte, TConstructor, TReal, TDynamic, TError,  TFunction, TInt, TRecord, TRecordReference, TRowEmpty, TRowExtend, TScheme, TString, TUnit, TVariable}
 
 import scala.language.reflectiveCalls
 
@@ -63,8 +63,8 @@ package object nuko {
         TInt
       case TByte =>
         TByte
-      case TDouble =>
-        TDouble
+      case TReal =>
+        TReal
       case TBoolean =>
         TBoolean
       case TUnit =>
@@ -110,7 +110,7 @@ package object nuko {
       Nil
     case TByte =>
       Nil
-    case TDouble =>
+    case TReal =>
       Nil
     case TBoolean =>
       Nil

@@ -41,7 +41,7 @@ object Ast {
 
   case class BooleanNode(location: Location, value: Boolean) extends Node
 
-  case class DoubleNode(location: Location, value: Double) extends Node
+  case class RealNode(location: Location, value: BigDecimal) extends Node
 
   case class Id(location: Location, name: String) extends Node
   object Id {

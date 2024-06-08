@@ -66,7 +66,7 @@ class SyntaxRewriter extends Processor[Ast.Program, Ast.Program, InteractiveSess
     case literal@IntNode(location, value) => literal
     case literal@ByteNode(location, value) => literal
     case literal@BooleanNode(location, value) => literal
-    case literal@DoubleNode(location, value) => literal
+    case literal@RealNode(location, value) => literal
     case node@Id(_, _) => node
     case node@Selector(_, _, _) => node
     case SimpleAssignment(location, variable, value) => SimpleAssignment(location, variable, doRewrite(value))

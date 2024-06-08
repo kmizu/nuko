@@ -244,7 +244,7 @@ println(1.0)
 println(1.5)
 ```
 
-小数型の最大値はScalaの`Double.MaxValue`で、最小値は`Double.MinValue`です。
+ぬこの小数は10進浮動小数点数ですので直感的に扱うことができます。2進浮動小数点数は将来的に「二進小数」のような型によってサポートする予定です。
 
 ### コメント
 
@@ -319,7 +319,7 @@ substring("FOO", 0, 1) // => "F"
 at("BAR", 2) // => "R"
 ```
 
-- `matches: (s:文字列, regex:文字列) => Boolean`  
+- `matches: (s: 文字列, regex: 文字列) => 真偽`  
   文字列`s`が正規表現`regex`にマッチした場合`true`を、そうでない場合`false`を返します。
 
 ```
@@ -417,7 +417,7 @@ cons(1)([2 3 4]) // => [1 2 3 4]
 size([1 2 3 4 5]) // => 5
 ```
 
-- `isEmpty: (list:List<'a>) => Boolean`
+- `isEmpty: (list:List<'a>) => 真偽`
    もし`list`が空ならばtrueを、そうでなければfalseを返します。
  
 ```
@@ -436,7 +436,7 @@ foldLeft([1.0 2.0 3.0 4.0])(1.0){x, y => x * y} // => 24.0
 
 ### スレッド関係のブロック
 
-- `thread: (fun:() => Unit) => Unit` 
+- `thread: (fun:() => 空) => 空` 
     新しいスレッドを作成し、ブロック `fun` を非同期に実行します。
     ```
     thread(() => {
@@ -448,7 +448,7 @@ foldLeft([1.0 2.0 3.0 4.0])(1.0){x, y => x * y} // => 24.0
     // => "Hello from another thread."
     ```
 
-- `sleep: (millis:整数) => Unit` 
+- `sleep: (millis: 整数) => 空` 
     現在のスレッドを`millis`ミリ秒の間休眠状態にします。
     ```
     sleep(1000)
@@ -456,7 +456,7 @@ foldLeft([1.0 2.0 3.0 4.0])(1.0){x, y => x * y} // => 24.0
 
 ### ユーティリティブロック
 
-- `stopwatch: (fun:() => Unit) => 整数`  
+- `stopwatch: (fun:() => 空) => 整数`  
    引数で渡された関数`fun`の評価にかかった時間をミリ秒単位で返します。
  
 ```
@@ -467,7 +467,7 @@ foldLeft([1.0 2.0 3.0 4.0])(1.0){x, y => x * y} // => 24.0
 println("it took #{time} milli seconds")
 ```
 
-- `ToDo: () => Unit`  
+- `ToDo: () => 空`  
     評価されると `nuko.runtime.NotImplementedError` を投げます。
 
  ```
@@ -476,14 +476,14 @@ ToDo()  // => throw NotImplementedError
 
 ### アサーションブロック
 
-- `assert: (condition:Boolean) => Unit`  
+- `assert: (condition: 真偽) => 空`  
     Asserts that the `condtion` should be true, and throws `nuko.runtime.AssertionError` if the `condition` is false.
   ```
   assert(2 == 1 + 1)  // => OK
   assert(3 > 5)       // => NG: AssertionError
   ```
 
-- `assertResult: (expected:Any)(actual:Any) => Unit`  
+- `assertResult: (expected: Any)(actual: Any) => 空`  
 
     Asserts that the `actual` value should be equal to the `expected` value, and throws `nuko.runtime.AssertionError` if the `actual` value is not equal to the `expected` value.
  

@@ -106,7 +106,7 @@ class PlaceholderDesugerer extends Processor[Ast.Program, Ast.Program, Interacti
       literal
     case literal@BooleanNode(location, value) =>
       literal
-    case literal@DoubleNode(location, value) =>
+    case literal@RealNode(location, value) =>
       literal
     case node@Id(_, _) =>
       node

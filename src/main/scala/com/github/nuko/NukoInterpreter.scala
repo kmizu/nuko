@@ -89,7 +89,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
     }
 
     define("sqrt") { case List(BoxedReal(value)) =>
-      BoxedReal(math.sqrt(value))
+      BoxedReal(math.sqrt(value.toDouble))
     }
 
     define("int") { case List(BoxedReal(value)) =>
@@ -105,11 +105,11 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
     }
 
     define("ceil") { case List(BoxedReal(value)) =>
-      BoxedInt(math.ceil(value).toInt)
+      BoxedInt(math.ceil(value.toDouble).toInt)
     }
 
     define("abs") { case List(BoxedReal(value)) =>
-      BoxedReal(math.abs(value))
+      BoxedReal(math.abs(value.toDouble))
     }
 
     define("thread") { case List(fun: FunctionValue) =>
@@ -487,7 +487,11 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
             case (ObjectValue(lval:String), rval) => ObjectValue(lval + rval)
             case (lval, ObjectValue(rval:String)) => ObjectValue(lval.toString + rval)
             case (BoxedReal(lval), BoxedReal(rval)) => BoxedReal(lval + rval)
-            case _ => reportError("arithmetic operation must be done between the same numeric types")
+            case _ =>
+              reportError(
+                s"""|arithmetic operation must be done between the same numeric types:
+                    |  left: ${left.type_}, right: ${right.type_}""".stripMargin
+              )
           }
         case TypedAst.BinaryExpression(type_, location, Operator.SUBTRACT, left, right) =>
           (evalRecursive(left), evalRecursive(right)) match{
@@ -548,7 +552,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           ObjectValue(value)
         case TypedAst.ByteNode(type_, location, value) =>
           BoxedByte(value)
-        case TypedAst.DoubleNode(type_, location, value) =>
+        case TypedAst.RealNode(type_, location, value) =>
           BoxedReal(value)
         case TypedAst.BooleanNode(type_, location, value) =>
           BoxedBoolean(value)

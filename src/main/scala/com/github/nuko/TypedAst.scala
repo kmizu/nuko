@@ -49,7 +49,7 @@ object TypedAst {
 
   case class BooleanNode(type_ : Type, location: Location, value: Boolean) extends TypedNode
 
-  case class DoubleNode(type_ : Type, location: Location, value: Double) extends TypedNode
+  case class RealNode(type_ : Type, location: Location, value: BigDecimal) extends TypedNode
 
   case class Id(type_ : Type, location: Location, name: String) extends TypedNode
 

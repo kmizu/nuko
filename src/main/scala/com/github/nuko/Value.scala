@@ -12,7 +12,7 @@ case class BoxedInt(value: BigInt) extends Value {
 case class BoxedBoolean(value: Boolean) extends Value {
   override def toString = value.toString
 }
-case class BoxedReal(value: Double) extends Value {
+case class BoxedReal(value: BigDecimal) extends Value {
   override def toString = value.toString
 }
 case class FunctionValue(value: TypedAst.FunctionLiteral, environment: Option[RuntimeEnvironment]) extends Value {
@@ -67,7 +67,7 @@ object Value {
     case BoxedBoolean(v) => java.lang.Boolean.valueOf(v)
     case BoxedByte(v) => java.lang.Byte.valueOf(v)
     case BoxedInt(v) => v
-    case BoxedReal(v) => java.lang.Double.valueOf(v)
+    case BoxedReal(v) => v
     case ObjectValue(v) => v
     case UnitValue => UnitValue
     case otherwise => otherwise
@@ -77,6 +77,7 @@ object Value {
     case v:java.lang.Boolean => BoxedBoolean(v.booleanValue())
     case v:java.lang.Byte => BoxedByte(v.byteValue())
     case v:BigInt => BoxedInt(v)
+    case v:BigDecimal => BoxedReal(v)
     case v:java.lang.Double => BoxedReal(v.doubleValue())
     case UnitValue => UnitValue
     case otherwise => ObjectValue(otherwise)

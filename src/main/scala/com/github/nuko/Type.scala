@@ -19,7 +19,7 @@ object Type {
 
   case object TByte extends Type("Byte")
 
-  case object TDouble extends Type("Double")
+  case object TReal extends Type("Real")
 
   case object TBoolean extends Type("Boolean")
 
