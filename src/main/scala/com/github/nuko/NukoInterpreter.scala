@@ -120,7 +120,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       UnitValue
     }
 
-    define("println") { case List(param) =>
+    define("表示") { case List(param) =>
       println(param)
       param
     }
@@ -162,7 +162,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
         if(!condition) sys.error("assertion failure") else UnitValue
     }
 
-    define("assertResult") { case List(a: Value) =>
+    define("一致を確認") { case List(a: Value) =>
       NativeFunctionValue{
         case List(b: Value) =>
           if(a != b) sys.error(s"expected: ${a}, actual: ${b}") else UnitValue

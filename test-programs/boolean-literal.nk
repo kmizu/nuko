@@ -1,4 +1,4 @@
-println(true)
-println(false)
+表示(true)
+表示(false)
 
-assertResult(1)(もし(true) 1 でなければ 0)
+一致を確認(1)(もし(true) 1 でなければ 0)

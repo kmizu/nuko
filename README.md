@@ -46,16 +46,16 @@ Usage: java -jar nuko.jar (-f <fileName> | -e <expression>)
 -e <expression> : evaluate <expression>
 ```
 
-次のようなプログラムを`hello.ni`という名前で保存してください：
+次のようなプログラムを`hello.nk`という名前で保存してください：
 
 ```
-println("Hello, World!")
+表示("Hello, World!")
 ```
 
-このプログラムを実行するには、`java -jar nuko.jar hello.ni`とします：
+このプログラムを実行するには、`java -jar nuko.jar hello.nk`とします：
 
 ```console
-$ java -jar nuko.jar hello.ni
+$ java -jar nuko.jar hello.nk
 
 Hello, World!
 ```
@@ -83,8 +83,8 @@ Hello, World!
 
 ```
 変数 printAndAdd は (x, y) => {
-  println(x)
-  println(y)
+  表示(x)
+  表示(y)
   x + y
 }
 ```
@@ -104,24 +104,11 @@ fact(5) // 120
 // The result of type inference of fact is : 整数 => 整数
 ```
 
-### メソッド呼び出し
-
-```
-変数 list は new java.util.ArrayList
-list->add(1)
-list->add(2)
-list->add(3)
-list->add(4)
-println(list)
-```
-
-現在の実装ではJavaのオブジェクトに対するメソッド呼び出しのみ可能です。プリミティブ型のボクシングは自動的に行われます。
-
 ### ブロック呼び出し
 
 ```
 変数 add は (x, y) => x + y
-println(add(1, 2))
+表示(add(1, 2))
 ```
 
 ブロック呼び出しは`fun(p1, p2, ..., pn)`のように書けます。`fun`の評価結果はブロックオブジェクトでなければなりません。
@@ -130,7 +117,7 @@ println(add(1, 2))
 
 ```
 変数 list1 は リスト(1, 2, 3, 4, 5)
-println(list1)
+表示(list1)
 ```
 
 リストは`リスト(e1, e2, ...,en)`という形で書くことができます。
@@ -145,7 +132,7 @@ println(list1)
   4
   5
 )
-println(list2)
+表示(list2)
 変数 list3 は リスト(
               リスト(1 2 3)
               リスト(4 5 6)
@@ -204,14 +191,16 @@ dic1 「辞書」#get "cat"   // => null
 
 ### 繰り返し式
 
-繰り返し式は、条件を満たす間、式を評価し続けます。例えば、以下のプログラムは`10`を表示します。
+繰り返し式は、条件を満たす間、式を評価し続けます。例えば、以下のプログラムは`55`を表示します。
 
 ```
-変数 i は 0
-(i < 10) のあいだ {
-  i = i + 1
+変数 合計 は 0
+変数 カウンタ は 0
+(カウンタ < 10) のあいだ {
+  カウンタ = カウンタ + 1
+  合計 = 合計 + カウンタ
 } をくりかえす
-println(i)
+表示(合計)
 ```
 
 ### 数値リテラル
@@ -221,9 +210,9 @@ println(i)
 ### 整数
 
 ```
-println(100)
-println(200)
-println(300)
+表示(100)
+表示(200)
+表示(300)
 ```
 
 整数リテラルの最大値には制限がありません。
@@ -233,15 +222,15 @@ println(300)
 バイトリテラルのサフィックスは`BY`です。バイトリテラルの最大値はScalaの`Byte.MaxValue`で、最小値は`Byte.MinValue`です。
 
 ```
-println(127BY)
-println(-127BY)
-println(100BY)
+表示(127BY)
+表示(-127BY)
+表示(100BY)
 ```
 ### 小数
 
 ```
-println(1.0)
-println(1.5)
+表示(1.0)
+表示(1.5)
 ```
 
 ぬこの小数は10進浮動小数点数ですので直感的に扱うことができます。2進浮動小数点数は将来的に「二進小数」のような型によってサポートする予定です。
@@ -289,11 +278,11 @@ println(1.5)
 
 ### 標準入出力ブロック
 
-- `println: (param:Any) => Any`  
+- `表示: (param:Any) => Any`  
   `param`を標準出力に表示します。
  
 ```
-println("Hello, World!")
+表示("Hello, World!")
 ```
 
 - `printlnError: (param:Any) => Any`  
@@ -441,9 +430,9 @@ foldLeft([1.0 2.0 3.0 4.0])(1.0){x, y => x * y} // => 24.0
     ```
     thread(() => {
       sleep(1000)
-      println("Hello from another thread.")
+      表示("Hello from another thread.")
     })
-    println("Hello from main thread.")
+    表示("Hello from main thread.")
     // => "Hello from main thread."
     // => "Hello from another thread."
     ```
@@ -462,9 +451,9 @@ foldLeft([1.0 2.0 3.0 4.0])(1.0){x, y => x * y} // => 24.0
 ```
 変数 time は stopwatch( => {
   sleep(1000)
-  println("1")
+  表示("1")
 })
-println("it took #{time} milli seconds")
+表示("it took #{time} milli seconds")
 ```
 
 - `ToDo: () => 空`  
@@ -483,7 +472,7 @@ ToDo()  // => throw NotImplementedError
   assert(3 > 5)       // => NG: AssertionError
   ```
 
-- `assertResult: (expected: Any)(actual: Any) => 空`  
+- `一致を確認: (expected: Any)(actual: Any) => 空`  
 
     Asserts that the `actual` value should be equal to the `expected` value, and throws `nuko.runtime.AssertionError` if the `actual` value is not equal to the `expected` value.
  
@@ -491,6 +480,6 @@ ToDo()  // => throw NotImplementedError
 変数 add は (x, y) => {
   x + y
 }
-assertResult(5)(add(2, 3))  // => OK
-assertResult(2)(add(1, 2))  // => NG: AssertionError
+一致を確認(5)(add(2, 3))  // => OK
+一致を確認(2)(add(1, 2))  // => NG: AssertionError
 ```

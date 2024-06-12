@@ -6,7 +6,7 @@
 }
 
 変数 num1 は add(1, 2)
-assertResult(1)(count)
+一致を確認(1)(count)
 
 変数 num2 は add(1, 2)
-assertResult(2)(count)
+一致を確認(2)(count)

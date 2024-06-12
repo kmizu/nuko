@@ -1,5 +1,5 @@
 thread(() => {
     sleep(1000)
-    println("Hello from another thread.")
+    表示("他のスレッドからこんにちは")
 })
-println("Hello from main thread.")
+表示("メインスレッドからこんにちは")

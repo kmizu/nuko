@@ -4,4 +4,4 @@ i < 10 のあいだ {
 } をくりかえす
 
 変数 result は i == 10 ならば "A" でなければ "B"
-assertResult("A")(result)
+一致を確認("A")(result)

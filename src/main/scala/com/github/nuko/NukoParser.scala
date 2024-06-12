@@ -132,7 +132,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val RBRACKET: Parser[String] = kwToken("]")
       val SHARP: Parser[String] = kwToken("#")
       val IF: Parser[String] = kwToken("もし")
-      val SHOW: Parser[String] = kwToken("表示") | kwToken("show")
+      val VISUALIZE: Parser[String] = kwToken("視覚化") | kwToken("visualize")
       val ELSE: Parser[String] = kwToken("でなければ")
       val THEN: Parser[String] = kwToken("ならば")
       val WHILE: Parser[String] = kwToken("のあいだ")
@@ -377,7 +377,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       lazy val primary: Parser[Ast.Node] = rule {
         (
           selector
-            | (%% ~< SHOW ~< CL(LBRACE)) ~ expression ~< CL(RBRACE) ^^ { case location ~ expression => Show(location, expression) }
+            | (%% ~< VISUALIZE ~< CL(LBRACE)) ~ expression ~< CL(RBRACE) ^^ { case location ~ expression => Show(location, expression) }
             | booleanLiteral
             | placeholder
             | realLiteral
@@ -438,8 +438,8 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
 
       lazy val component: Parser[String] = (
         """[A-Za-z_][A-Za-z_0-9]*""".r
-      | """「([A-Za-z_]|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})(\w|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})*」""".r.map(s => s.substring(1, s.length - 1))
-      | """(\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})(\w|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})*""".r
+      | """「([A-Za-z_]|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})(\w|[\uFF10-\uFF19]|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})*」""".r.map(s => s.substring(1, s.length - 1))
+      | """(\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})(\w|[\uFF10-\uFF19]|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})*""".r
       )
 
 
