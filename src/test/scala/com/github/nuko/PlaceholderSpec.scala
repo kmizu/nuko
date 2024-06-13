@@ -9,7 +9,7 @@ class PlaceholderSpec extends TestSuiteHelper {
     val result = E(
       """
         |変数 xs は リスト(1 2 3)
-        |map(xs)(_ + 1)
+        |変換(xs)(_ + 1)
       """.stripMargin
     )
     assertResult(result)(ObjectValue(listOf(BigInt(2), BigInt(3), BigInt(4))))
@@ -37,7 +37,7 @@ class PlaceholderSpec extends TestSuiteHelper {
   test("unary expression - has one placeholder") {
     val result = E(
       """
-        |map(リスト(1 2 3))(- _)
+        |変換(リスト(1 2 3))(- _)
       """.stripMargin
     )
     assertResult(result)(ObjectValue(listOf(BigInt(-1), BigInt(-2), BigInt(-3))))
@@ -45,7 +45,7 @@ class PlaceholderSpec extends TestSuiteHelper {
   test("unary expression + has one placeholder") {
     val result = E(
       """
-        |map(リスト(1 2 3))(+ _)
+        |変換(リスト(1 2 3))(+ _)
       """.stripMargin
     )
     assertResult(result)(ObjectValue(listOf(BigInt(1), BigInt(2), BigInt(3))))
@@ -54,7 +54,7 @@ class PlaceholderSpec extends TestSuiteHelper {
     val result = E(
       """
         |変数 id は _
-        |map(リスト(1))(id)
+        |変換(リスト(1))(id)
       """.stripMargin
     )
     assertResult(result)(ObjectValue(listOf(BigInt(1))))
@@ -63,7 +63,7 @@ class PlaceholderSpec extends TestSuiteHelper {
     val result = E(
       """
         |ブロック f(x) は _
-        |map(リスト(1))(f(1))
+        |変換(リスト(1))(f(1))
       """.stripMargin
     )
     assertResult(result)(ObjectValue(listOf(BigInt(1))))

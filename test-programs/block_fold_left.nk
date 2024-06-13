@@ -1,10 +1,10 @@
 ブロック myFoldLeft(list) は (z) => (f) => {
-  もし (isEmpty(list)) z でなければ myFoldLeft(tail(list))(f(z, head(list)))(f)
+  もし (isEmpty(list)) z でなければ myFoldLeft(末尾(list))(f(z, 先頭(list)))(f)
 }
 一致を確認(10)(myFoldLeft(リスト(1 2 3 4))(0)((x, y) => x + y))
 一致を確認("ABC")(myFoldLeft(リスト("A" "B" "C"))("")((x, y) => x + y))
-一致を確認(リスト(4 3 2 1))(myFoldLeft(リスト(1 2 3 4))(リスト())((x, y) => y #cons x))
-一致を確認(リスト(4 3 2 1))(myFoldLeft(リスト(1 2 3 4))(リスト()){x, y => y #cons x})
+一致を確認(リスト(4 3 2 1))(myFoldLeft(リスト(1 2 3 4))(リスト())((x, y) => 構築(y)(x)))
+一致を確認(リスト(4 3 2 1))(myFoldLeft(リスト(1 2 3 4))(リスト()){x, y => 構築(y)(x)})
 
 変数 sum は myFoldLeft(リスト(1 2 3 4 5))(0){x, y => x + y}
 一致を確認(15)(sum)

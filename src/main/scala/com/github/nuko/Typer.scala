@@ -17,13 +17,13 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
   type Name = String
   type Label = String
   def listOf(tp: Type): TConstructor = {
-    TConstructor("List", List(tp))
+    TConstructor("リスト", List(tp))
   }
   def dictionaryOf(k: Type, v: Type): TConstructor = {
-    TConstructor("Dictionary", List(k, v))
+    TConstructor("辞書", List(k, v))
   }
   def setOf(tp: Type): TConstructor = {
-    TConstructor("Set", List(tp))
+    TConstructor("集合", List(tp))
   }
   val BuiltinEnvironment: Environment = {
     Map(
@@ -34,17 +34,17 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       "matches"      -> TScheme(Nil, TFunction(List(TString, TString), TBoolean)),
       "thread"       -> TScheme(Nil, TFunction(List(TFunction(List.empty, TDynamic)), TDynamic)),
       "表示"          -> TScheme(List(tv("x")), TFunction(List(tv("x")), TUnit)),
-      "printlnError" -> TScheme(List(tv("x")), TFunction(List(tv("x")), TUnit)),
+      "エラー表示"     -> TScheme(List(tv("x")), TFunction(List(tv("x")), TUnit)),
       "stopwatch"    -> TScheme(Nil, TFunction(List(TFunction(List.empty, TDynamic)), TInt)),
       "sleep"        -> TScheme(Nil, TInt ==> TUnit),
       "isEmpty"      -> TScheme(List(tv("a")), listOf(tv("a")) ==> TBoolean),
       "ToDo"         -> TScheme(List(tv("a")), TFunction(Nil, tv("a"))),
       "assert"       -> TScheme(List(tv("a")), TBoolean ==> TUnit),
       "一致を確認"     -> TScheme(List(tv("a")), tv("a") ==> (tv("a") ==> TUnit)),
-      "map"          -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> ((tv("a") ==> tv("b"))  ==> listOf(tv("b")))),
-      "head"         -> TScheme(List(tv("a")), listOf(tv("a")) ==> tv("a")),
-      "tail"         -> TScheme(List(tv("a")), listOf(tv("a")) ==> listOf(tv("a"))),
-      "cons"         -> TScheme(List(tv("a")), tv("a") ==> (listOf(tv("a")) ==> listOf(tv("a")))),
+      "変換"          -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> ((tv("a") ==> tv("b"))  ==> listOf(tv("b")))),
+      "先頭"          -> TScheme(List(tv("a")), listOf(tv("a")) ==> tv("a")),
+      "末尾"          -> TScheme(List(tv("a")), listOf(tv("a")) ==> listOf(tv("a"))),
+      "構築"          -> TScheme(List(tv("a")), tv("a") ==> (listOf(tv("a")) ==> listOf(tv("a")))),
       "double"       -> TScheme(Nil, TInt ==> TReal),
       "int"          -> TScheme(Nil, TReal ==> TInt),
       "floor"        -> TScheme(Nil, TReal ==> TInt),

@@ -1,16 +1,16 @@
 package com.github.nuko
 
 class ListSpec extends SpecHelper {
-  describe("head") {
+  describe("先頭") {
     val expectations: List[(String, Value)] = List(
       """
-        |head(リスト(1))
+        |先頭(リスト(1))
       """.stripMargin -> BoxedInt(1),
       """
-        |head(リスト(2 1))
+        |先頭(リスト(2 1))
       """.stripMargin -> BoxedInt(2),
       """
-        |head(リスト(3 2 1))
+        |先頭(リスト(3 2 1))
       """.stripMargin -> BoxedInt(3)
     )
 
@@ -21,16 +21,16 @@ class ListSpec extends SpecHelper {
     }
   }
 
-  describe("tail") {
+  describe("末尾") {
     val expectations: List[(String, Value)] = List(
       """
-        |tail(リスト(1))
+        |末尾(リスト(1))
       """.stripMargin -> ObjectValue(listOf()),
       """
-        |tail(リスト(2 1))
+        |末尾(リスト(2 1))
       """.stripMargin -> ObjectValue(listOf(BigInt(1))),
       s"""
-        |tail(リスト(3 2 1))
+        |末尾(リスト(3 2 1))
       """.stripMargin -> ObjectValue(listOf(BigInt(2), BigInt(1)))
     )
     expectations.zipWithIndex.foreach{ case ((in, expected), i) =>
@@ -40,20 +40,20 @@ class ListSpec extends SpecHelper {
     }
   }
 
-  describe("cons") {
+  describe("構築") {
     val expectations: List[(String, Value)] = List(
       """
-         | cons(1)(リスト())
+        |構築(1)(リスト())
       """.stripMargin -> ObjectValue(listOf(BigInt(1))),
       """
-         | cons(2)(リスト(1))
+        |構築(2)(リスト(1))
       """.stripMargin -> ObjectValue(listOf(BigInt(2), BigInt(1))),
       """
-        | cons(3)(リスト(2, 1))
+        |構築(3)(リスト(2, 1))
       """.stripMargin -> ObjectValue(listOf(BigInt(3), BigInt(2), BigInt(1))),
 
       """
-        | 3 #cons (2 #cons (1 #cons リスト()))
+        |構築(3)(構築(2)(構築(1)(リスト())))
       """.stripMargin -> ObjectValue(listOf(BigInt(3), BigInt(2), BigInt(1)))
     )
 
@@ -108,15 +108,15 @@ class ListSpec extends SpecHelper {
     }
   }
 
-  describe("map") {
-    expect("for empty list")(
+  describe("変換") {
+    expect("空リストに対して")(
       """
-        |map(リスト())((x) => x + 1)
+        |変換(リスト())((x) => x + 1)
       """.stripMargin, ObjectValue(listOf())
     )
     expect("for a non empty list and a function that add arg to 1")(
       """
-        |map(リスト(1 2 3))((x) => x + 1)
+        |変換(リスト(1 2 3))((x) => x + 1)
       """.stripMargin, ObjectValue(listOf(2, 3, 4))
     )
   }

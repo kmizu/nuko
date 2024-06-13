@@ -125,7 +125,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       param
     }
 
-    define("printlnError") { case List(param) =>
+    define("エラー表示") { case List(param) =>
       Console.err.println(param)
       param
     }
@@ -142,7 +142,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       UnitValue
     }
 
-    define("map") { case List(ObjectValue(list: java.util.List[_])) =>
+    define("変換") { case List(ObjectValue(list: java.util.List[_])) =>
       NativeFunctionValue{
         case List(fun: FunctionValue) =>
           val newList = new java.util.ArrayList[Any]
@@ -169,13 +169,13 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       }
     }
 
-    define("head") { case List(ObjectValue(list: java.util.List[_])) =>
+    define("先頭") { case List(ObjectValue(list: java.util.List[_])) =>
       Value.toKlassic(list.get(0).asInstanceOf[AnyRef])
     }
-    define("tail") { case List(ObjectValue(list: java.util.List[_])) =>
+    define("末尾") { case List(ObjectValue(list: java.util.List[_])) =>
       Value.toKlassic(list.subList(1, list.size()))
     }
-    define("cons") { case List(value: Value) =>
+    define("構築") { case List(value: Value) =>
       NativeFunctionValue{ case List(ObjectValue(list: java.util.List[_])) =>
         val newList = new java.util.ArrayList[Any]
         var i = 0
