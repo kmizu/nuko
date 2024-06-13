@@ -149,10 +149,10 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val EQ: Parser[String] = kwToken("=")
       val JP_HA: Parser[String] = kwToken("は")
       val JP_KIND_OF: Parser[String] = kwToken("の種類は")
-      val PLUSEQ: Parser[String] = kwToken("+=")
-      val MINUSEQ: Parser[String] = kwToken("-=")
-      val ASTEREQ: Parser[String] = kwToken("*=")
-      val SLASHEQ: Parser[String] = kwToken("/=")
+      val PLUS_ASSIGN: Parser[String] = kwToken("+<-") | kwToken("+←")
+      val MINUS_ASSIGN: Parser[String] = kwToken("-<-") | kwToken("-←")
+      val MULT_ASSIGN: Parser[String] = kwToken("*<-") | kwToken("*←")
+      val DIV_ASSIGN: Parser[String] = kwToken("/<-") | kwToken("/←")
       val TO: Parser[String]           = kwToken("を")
       val INCREMENT_BY: Parser[String] = kwToken("増やす")
       val DECREMENT_BY: Parser[String] = kwToken("減らす")
@@ -465,12 +465,12 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         !KEYWORDS(n.substring(1))
       }.map { n => n.substring(1) }) << SPACING_WITHOUT_LF
 
-      lazy val assignment: Parser[Assignment] = rule(ident ~ CL(PLUSEQ | MINUSEQ | ASTEREQ | SLASHEQ | EQ) ~ expression ^^ {
-        case v ~ "=" ~ value => SimpleAssignment(v.location, v.name, value)
-        case v ~ "+=" ~ value => PlusAssignment(v.location, v.name, value)
-        case v ~ "-=" ~ value => MinusAssignment(v.location, v.name, value)
-        case v ~ "*=" ~ value => MultiplicationAssignment(v.location, v.name, value)
-        case v ~ "/=" ~ value => DivisionAssignment(v.location, v.name, value)
+      lazy val assignment: Parser[Assignment] = rule(ident ~ CL(PLUS_ASSIGN | MINUS_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | LARROW) ~ expression ^^ {
+        case v ~ ("<-" | "←") ~ value => SimpleAssignment(v.location, v.name, value)
+        case v ~ ("+<-" | "+←") ~ value => PlusAssignment(v.location, v.name, value)
+        case v ~ ("-<-" | "-←") ~ value => MinusAssignment(v.location, v.name, value)
+        case v ~ ("*<-" | "*←") ~ value => MultiplicationAssignment(v.location, v.name, value)
+        case v ~ ("/<-" | "/←") ~ value => DivisionAssignment(v.location, v.name, value)
         case _ ~ op ~ _ => sys.error(s"unknown assignment operator ${op}")
       })
 

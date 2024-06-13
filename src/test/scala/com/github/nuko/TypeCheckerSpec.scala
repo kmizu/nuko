@@ -12,12 +12,12 @@ class TypeCheckerSpec extends SpecHelper {
       """.stripMargin -> BoxedInt(1),
       """
         |変数aは1
-        |a = a + 1
+        |a ← a + 1
         |a
       """.stripMargin -> BoxedInt(2),
       """
         |変数sは"FOO"
-        |s=s+s
+        |s ← s+s
         |s
       """.stripMargin -> ObjectValue("FOOFOO")
     )

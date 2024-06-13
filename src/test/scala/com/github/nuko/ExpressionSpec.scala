@@ -16,35 +16,35 @@ class ExpressionSpec extends SpecHelper {
         E(
           """
             |変数 a は 1
-            |a = a 足す 1
+            |a ← a 足す 1
             |a
           """.stripMargin))(BoxedInt(2))
       assertResult(
         E(
           """
             |変数 a は 1
-            |a += 1
+            |a +← 1
             |a
           """.stripMargin))(BoxedInt(2))
       assertResult(
         E(
           """
             |変数 a は 1
-            |a -= 1
+            |a -← 1
             |a
           """.stripMargin))(BoxedInt(0))
       assertResult(
         E(
           """
             |変数 a は 3
-            |a *= 2
+            |a *← 2
             |a
           """.stripMargin))(BoxedInt(6))
       assertResult(
         E(
           """
             |変数 a は 5
-            |a /= 2
+            |a /← 2
             |a
           """.stripMargin))(BoxedInt(2))
     }
@@ -77,7 +77,7 @@ class ExpressionSpec extends SpecHelper {
              |変数iは0
              |i <= 5 のあいだ {
              |  buf->append("#{i}")
-             |  i = i 足す 1
+             |  i ← i 足す 1
              |} をくりかえす
              |buf->toString()
       """.stripMargin))(ObjectValue("012345"))

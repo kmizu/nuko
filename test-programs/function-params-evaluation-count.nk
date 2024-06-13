@@ -1,7 +1,7 @@
 変数 count は 0
 
 変数 add は (x, y) => {
-  count = count + 1
+  count ← count + 1
   x + y
 }
 
