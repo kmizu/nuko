@@ -39,7 +39,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       "sleep"        -> TScheme(Nil, TInt ==> TUnit),
       "isEmpty"      -> TScheme(List(tv("a")), listOf(tv("a")) ==> TBoolean),
       "ToDo"         -> TScheme(List(tv("a")), TFunction(Nil, tv("a"))),
-      "assert"       -> TScheme(List(tv("a")), TBoolean ==> TUnit),
+      "確認"          -> TScheme(List(tv("a")), TBoolean ==> TUnit),
       "一致を確認"     -> TScheme(List(tv("a")), tv("a") ==> (tv("a") ==> TUnit)),
       "変換"          -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> ((tv("a") ==> tv("b"))  ==> listOf(tv("b")))),
       "先頭"          -> TScheme(List(tv("a")), listOf(tv("a")) ==> tv("a")),

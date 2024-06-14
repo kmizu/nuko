@@ -43,17 +43,17 @@ class ListSpec extends SpecHelper {
   describe("構築") {
     val expectations: List[(String, Value)] = List(
       """
-        |構築(1)(リスト())
+        |1 #構築 リスト()
       """.stripMargin -> ObjectValue(listOf(BigInt(1))),
       """
-        |構築(2)(リスト(1))
+        |2 #構築 リスト(1)
       """.stripMargin -> ObjectValue(listOf(BigInt(2), BigInt(1))),
       """
-        |構築(3)(リスト(2, 1))
+        |3 #構築 リスト(2, 1)
       """.stripMargin -> ObjectValue(listOf(BigInt(3), BigInt(2), BigInt(1))),
 
       """
-        |構築(3)(構築(2)(構築(1)(リスト())))
+        |3 #構築 (2 #構築 (1 #構築 リスト()))
       """.stripMargin -> ObjectValue(listOf(BigInt(3), BigInt(2), BigInt(1)))
     )
 

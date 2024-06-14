@@ -158,7 +158,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       }
     }
 
-    define("assert") { case List(BoxedBoolean(condition)) =>
+    define("確認") { case List(BoxedBoolean(condition)) =>
         if(!condition) sys.error("assertion failure") else UnitValue
     }
 

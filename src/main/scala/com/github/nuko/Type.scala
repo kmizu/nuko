@@ -15,21 +15,21 @@ object Type {
 
   case class TVariable(name: String) extends Row(name)
 
-  case object TInt extends Type("Int")
+  case object TInt extends Type("整数")
 
-  case object TByte extends Type("Byte")
+  case object TByte extends Type("バイト")
 
-  case object TReal extends Type("Real")
+  case object TReal extends Type("小数")
 
-  case object TBoolean extends Type("Boolean")
+  case object TBoolean extends Type("真偽")
 
-  case object TUnit extends Type("Unit")
+  case object TUnit extends Type("空")
 
-  case object TString extends Type("String")
+  case object TString extends Type("文字列")
 
-  case object TDynamic extends Type("*")
+  case object TDynamic extends Type("全")
 
-  case object TError extends Type("!")
+  case object TError extends Type("エラー")
 
   case class TRecordReference(name: String, paramTypes: List[Type]) extends Type(
     s"#${name}${if(paramTypes == Nil) "" else s"<${paramTypes.mkString(", ")}>"}"

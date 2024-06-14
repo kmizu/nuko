@@ -206,7 +206,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       | kwToken("真偽") ^^ { _ => TBoolean }
       | kwToken("空") ^^ { _ => TUnit }
       | kwToken("文字列") ^^ { _ => TString }
-      | kwToken("*") ^^ { _ => TDynamic }
+      | kwToken("全") ^^ { _ => TDynamic }
       | qident ^^ { id => TVariable(id) }
       | ((CL(LPAREN) >> typeDescription.repeat0By(CL(COMMA)) << CL(RPAREN)) << CL(ARROW1)) ~ typeDescription ^^ { case args ~ returnType => TFunction(args, returnType) }
       | (SHARP >> sident).filter { s => !isBuiltinType(s) } ~ (CL(LT) >> typeDescription.repeat0By(CL(COMMA)) << CL(GT)).? ^^ {
@@ -461,9 +461,9 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         !KEYWORDS(n)
       }) << SPACING_WITHOUT_LF
 
-      lazy val operator: Parser[String] = (regularExpression("""#[A-Za-z_][a-zA-Z0-9_]*""".r).filter { n =>
-        !KEYWORDS(n.substring(1))
-      }.map { n => n.substring(1) }) << SPACING_WITHOUT_LF
+      lazy val operator: Parser[String] = (("#" ~> component).filter { n =>
+        !KEYWORDS(n)
+      }) << SPACING_WITHOUT_LF
 
       lazy val assignment: Parser[Assignment] = rule(ident ~ CL(PLUS_ASSIGN | MINUS_ASSIGN | MULT_ASSIGN | DIV_ASSIGN | LARROW) ~ expression ^^ {
         case v ~ ("<-" | "←") ~ value => SimpleAssignment(v.location, v.name, value)

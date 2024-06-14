@@ -23,8 +23,7 @@
 一致を確認(10.5)(abs(-10.5))
 
 // 確認関数
-assert(2 == 1 + 1)
-// assert(3 > 5) // => throws AssertionError
+確認(2 == 1 + 1)
 
 変数 add は (x, y) => {
   x + y
