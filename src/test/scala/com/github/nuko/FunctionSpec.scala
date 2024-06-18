@@ -1,22 +1,22 @@
 package com.github.nuko
 
 class FunctionSpec extends SpecHelper {
-  describe("ceil") {
+  describe("切り上げが機能する") {
     val expectations: List[(String, Value)] = List(
       """
-        |ceil(2.5)
+        |切り上げ(2.5)
       """.stripMargin -> BoxedInt(3),
       """
-        |ceil(2.0)
+        |切り上げ(2.0)
       """.stripMargin -> BoxedInt(2),
       """
-        |ceil(0.5)
+        |切り上げ(0.5)
       """.stripMargin -> BoxedInt(1),
       """
-        |ceil(-0.5)
+        |切り上げ(-0.5)
       """.stripMargin -> BoxedInt(0),
       """
-        |ceil(-1.5)
+        |切り上げ(-1.5)
       """.stripMargin -> BoxedInt(-1)
     )
 
@@ -26,22 +26,22 @@ class FunctionSpec extends SpecHelper {
       }
     }
   }
-  describe("int") {
+  describe("整数への変換") {
     val expectations: List[(String, Value)] = List(
       """
-        |int(2.5)
+        |整数(2.5)
       """.stripMargin -> BoxedInt(2),
       """
-        |int(2.0)
+        |整数(2.0)
       """.stripMargin -> BoxedInt(2),
       """
-        |int(0.5)
+        |整数(0.5)
       """.stripMargin -> BoxedInt(0),
       """
-        |int(-0.5)
+        |整数(-0.5)
       """.stripMargin -> BoxedInt(0),
       """
-        |int(-1.5)
+        |整数(-1.5)
       """.stripMargin -> BoxedInt(-1)
     )
 
@@ -51,22 +51,22 @@ class FunctionSpec extends SpecHelper {
       }
     }
   }
-  describe("double") {
+  describe("小数への変換") {
     val expectations: List[(String, Value)] = List(
       """
-        |double(3)
+        |小数(3)
       """.stripMargin -> BoxedReal(3.0),
       """
-        |double(2)
+        |小数(2)
       """.stripMargin -> BoxedReal(2.0),
       """
-        |double(1)
+        |小数(1)
       """.stripMargin -> BoxedReal(1.0),
       """
-        |double(0)
+        |小数(0)
       """.stripMargin -> BoxedReal(0.0),
       """
-        |double(-1)
+        |小数(-1)
       """.stripMargin -> BoxedReal(-1.0)
     )
 
@@ -76,22 +76,22 @@ class FunctionSpec extends SpecHelper {
       }
     }
   }
-  describe("floor") {
+  describe("切り捨てが機能する") {
     val expectations: List[(String, Value)] = List(
       """
-        |floor(2.5)
+        |切り捨て(2.5)
       """.stripMargin -> BoxedInt(2),
       """
-        |floor(2.0)
+        |切り捨て(2.0)
       """.stripMargin -> BoxedInt(2),
       """
-        |floor(0.5)
+        |切り捨て(0.5)
       """.stripMargin -> BoxedInt(0),
       """
-        |floor(-0.5)
+        |切り捨て(-0.5)
       """.stripMargin -> BoxedInt(0),
       """
-        |floor(-1.5)
+        |切り捨て(-1.5)
       """.stripMargin -> BoxedInt(-1)
     )
 
@@ -101,22 +101,22 @@ class FunctionSpec extends SpecHelper {
       }
     }
   }
-  describe("abs") {
+  describe("絶対値が計算できる") {
     val expectations: List[(String, Value)] = List(
       """
-        |abs(2.5)
+        |絶対値(2.5)
       """.stripMargin -> BoxedReal(2.5),
       """
-        |abs(1.0)
+        |絶対値(1.0)
       """.stripMargin -> BoxedReal(1.0),
       """
-        |abs(0.0)
+        |絶対値(0.0)
       """.stripMargin -> BoxedReal(0.0),
       """
-        |abs(-0.5)
+        |絶対値(-0.5)
       """.stripMargin -> BoxedReal(0.5),
       """
-        |abs(-1.5)
+        |絶対値(-1.5)
       """.stripMargin -> BoxedReal(1.5)
     )
 
@@ -195,19 +195,19 @@ class FunctionSpec extends SpecHelper {
       }
     }
   }
-  describe("sqrt") {
+  describe("平方根が計算できる") {
     val expectations: List[(String, Value)] = List(
       """
-        |sqrt(4.0)
+        |平方根(4.0)
       """.stripMargin -> BoxedReal(2.0),
       """
-        |sqrt(9.0)
+        |平方根(9.0)
       """.stripMargin -> BoxedReal(3.0),
       """
-        |sqrt(2.0)
+        |平方根(2.0)
       """.stripMargin -> BoxedReal(1.4142135623730951),
       """
-        |sqrt(1.0)
+        |平方根(1.0)
       """.stripMargin -> BoxedReal(1.0)
     )
 

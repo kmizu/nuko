@@ -45,16 +45,15 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       "先頭"          -> TScheme(List(tv("a")), listOf(tv("a")) ==> tv("a")),
       "末尾"          -> TScheme(List(tv("a")), listOf(tv("a")) ==> listOf(tv("a"))),
       "構築"          -> TScheme(List(tv("a")), tv("a") ==> (listOf(tv("a")) ==> listOf(tv("a")))),
-      "double"       -> TScheme(Nil, TInt ==> TReal),
-      "int"          -> TScheme(Nil, TReal ==> TInt),
-      "floor"        -> TScheme(Nil, TReal ==> TInt),
-      "ceil"         -> TScheme(Nil, TReal ==> TInt),
-      "sqrt"         -> TScheme(Nil, TReal ==> TReal),
-      "abs"          -> TScheme(Nil, TReal ==> TReal),
-      "size"         -> TScheme(List(tv("a")), listOf(tv("a")) ==> TInt),
-      "foldLeft"     -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> (tv("b") ==> ((List(tv("b"), tv("a")) ==> tv("b")) ==> tv("b")))),
-      "null"         -> TScheme(List(tv("a")), tv("a")),
-      "desktop"      -> TScheme(Nil, Nil ==> TDynamic)
+      "小数"          -> TScheme(Nil, TInt ==> TReal),
+      "整数"          -> TScheme(Nil, TReal ==> TInt),
+      "切り捨て"       -> TScheme(Nil, TReal ==> TInt),
+      "切り上げ"       -> TScheme(Nil, TReal ==> TInt),
+      "平方根"         -> TScheme(Nil, TReal ==> TReal),
+      "絶対値"         -> TScheme(Nil, TReal ==> TReal),
+      "size"          -> TScheme(List(tv("a")), listOf(tv("a")) ==> TInt),
+      "foldLeft"      -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> (tv("b") ==> ((List(tv("b"), tv("a")) ==> tv("b")) ==> tv("b")))),
+      "null"          -> TScheme(List(tv("a")), tv("a")),
     )
   }
 

@@ -27,7 +27,7 @@ object Type {
 
   case object TString extends Type("文字列")
 
-  case object TDynamic extends Type("全")
+  case object TDynamic extends Type("万物")
 
   case object TError extends Type("エラー")
 

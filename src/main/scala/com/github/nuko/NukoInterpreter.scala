@@ -88,27 +88,27 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       BoxedBoolean(s.matches(regex))
     }
 
-    define("sqrt") { case List(BoxedReal(value)) =>
+    define("平方根") { case List(BoxedReal(value)) =>
       BoxedReal(math.sqrt(value.toDouble))
     }
 
-    define("int") { case List(BoxedReal(value)) =>
+    define("整数") { case List(BoxedReal(value)) =>
       BoxedInt(value.toInt)
     }
 
-    define("double") { case List(BoxedInt(value)) =>
+    define("小数") { case List(BoxedInt(value)) =>
       BoxedReal(value.toDouble)
     }
 
-    define("floor") { case List(BoxedReal(value)) =>
+    define("切り捨て") { case List(BoxedReal(value)) =>
       BoxedInt(value.toInt)
     }
 
-    define("ceil") { case List(BoxedReal(value)) =>
+    define("切り上げ") { case List(BoxedReal(value)) =>
       BoxedInt(math.ceil(value.toDouble).toInt)
     }
 
-    define("abs") { case List(BoxedReal(value)) =>
+    define("絶対値") { case List(BoxedReal(value)) =>
       BoxedReal(math.abs(value.toDouble))
     }
 
