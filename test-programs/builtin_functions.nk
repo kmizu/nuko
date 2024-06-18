@@ -1,11 +1,11 @@
 // 文字列関数
-変数 pattern は "[0-9]+"
-一致を確認("F")(substring("FOO", 0, 1))
-一致を確認("R")(at("BAR", 2))
-一致を確認(true)(matches("199", pattern))
-一致を確認(true)(matches("200", pattern))
-一致を確認(false)(matches("a", pattern))
-変数 sub は substring
+変数 パターン  は "[0-9]+"
+一致を確認("F")(部分文字列("FOO", 0, 1))
+一致を確認("R")(文字を取得("BAR", 2))
+一致を確認(true)(マッチする("199", パターン))
+一致を確認(true)(マッチする("200", パターン))
+一致を確認(false)(マッチする("a", パターン))
+変数 sub は 部分文字列
 一致を確認("B")(sub("BAR", 0, 1))
 
 // 数値関数
@@ -28,11 +28,11 @@
 変数 add は (x, y) => {
   x + y
 }
-変数 time は stopwatch( => {
-  sleep(1000)
+変数 経過時間 は 時間を計測する( => {
+  休眠する(1000)
   表示("1")
 })
-表示("it took #{time} milli seconds")
+表示("経過時間は #{経過時間} ミリ秒です")
 エラー表示("this param is displayed into standard error")
 一致を確認(5)(add(2, 3))
 変数 list は new java.util.ArrayList

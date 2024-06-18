@@ -154,7 +154,7 @@ class SyntaxRewriter extends Processor[Ast.Program, Ast.Program, InteractiveSess
     case x@(EnumDeclaration(_, _, _, _) | EnumIn(_, _, _)
       |  FunctionDefinition(_, _, _) | Let(_, _, _, _, _, _)
       |  LetRec(_, _, _, _) | MethodDefinition(_, _, _) | Placeholder(_)) =>
-      throw new RewriterPanic(x.toString)
+      throw new RewriterPanic(Some(x.location), x.toString)
   }
 
   def transform(program: Ast.Program): Ast.Program = {

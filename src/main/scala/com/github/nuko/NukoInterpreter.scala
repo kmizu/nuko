@@ -15,7 +15,7 @@ import scala.runtime.BoxedUnit
  */
 class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSession] {interpreter =>
   def reportError(message: String): Nothing = {
-    throw InterpreterException(message)
+    throw InterpreterException(None, message)
   }
 
   def findMethod(self: AnyRef, name: String, params: Array[Value]): MethodSearchResult = {
@@ -78,15 +78,15 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
   }
 
   object BuiltinEnvironment extends RuntimeEnvironment(None) {
-    define("substring"){ case List(ObjectValue(s:String), begin: BoxedInt, end: BoxedInt) =>
+    define("部分文字列"){ case List(ObjectValue(s:String), begin: BoxedInt, end: BoxedInt) =>
       ObjectValue(s.substring(begin.value.toInt, end.value.toInt))
     }
 
-    define("at") { case List(ObjectValue(s:String), index: BoxedInt) =>
+    define("文字を取得") { case List(ObjectValue(s:String), index: BoxedInt) =>
       ObjectValue(s.substring(index.value.toInt, index.value.toInt + 1))
     }
 
-    define("matches") { case List(ObjectValue(s: String), ObjectValue(regex: String)) =>
+    define("マッチする") { case List(ObjectValue(s: String), ObjectValue(regex: String)) =>
       BoxedBoolean(s.matches(regex))
     }
 
@@ -114,7 +114,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       BoxedReal(math.abs(value.toDouble))
     }
 
-    define("thread") { case List(fun: FunctionValue) =>
+    define("スレッド開始") { case List(fun: FunctionValue) =>
       new Thread({() =>
           val env = new RuntimeEnvironment(fun.environment)
           interpreter.evaluate(TypedAst.FunctionCall(TDynamic, NoLocation, fun.value, Nil), env)
@@ -132,14 +132,14 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       param
     }
 
-    define("stopwatch") { case List(fun: FunctionValue) =>
+    define("時間を計測する") { case List(fun: FunctionValue) =>
       val env = new RuntimeEnvironment(fun.environment)
       val start = System.currentTimeMillis()
       interpreter.evaluate(TypedAst.FunctionCall(TDynamic, NoLocation, fun.value, List()), env)
       val end = System.currentTimeMillis()
       BoxedInt((end - start).toInt)
     }
-    define("sleep"){ case List(milliseconds: BoxedInt) =>
+    define("休眠する"){ case List(milliseconds: BoxedInt) =>
       Thread.sleep(milliseconds.value.toLong)
       UnitValue
     }
@@ -189,22 +189,22 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
         Value.toKlassic(newList)
       }
     }
-    define("size") { case List(ObjectValue(list: java.util.List[_])) =>
+    define("サイズ") { case List(ObjectValue(list: java.util.List[_])) =>
       BoxedInt(list.size())
     }
-    define("isEmpty") { case List(ObjectValue(list: java.util.List[_])) =>
+    define("空である") { case List(ObjectValue(list: java.util.List[_])) =>
       BoxedBoolean(list.isEmpty)
     }
-    define("ToDo") { case Nil =>
-      sys.error("not implemented yet")
+    define("後で埋める") { case Nil =>
+      sys.error("まだ実装されていません")
     }
-    define("uri") { case List(ObjectValue(value: String)) =>
+    define("URI") { case List(ObjectValue(value: String)) =>
       ObjectValue(new URI(value))
     }
-    define("url") { case List(ObjectValue(value: String)) =>
+    define("URL") { case List(ObjectValue(value: String)) =>
       ObjectValue(new URI(value).toURL)
     }
-    define("foldLeft") { case List(ObjectValue(list: java.util.List[_])) =>
+    define("たたむ") { case List(ObjectValue(list: java.util.List[_])) =>
       NativeFunctionValue{ case List(init: Value) =>
         NativeFunctionValue { case List(fun: FunctionValue) =>
           val env = new RuntimeEnvironment(fun.environment)
@@ -222,13 +222,13 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
     define("desktop") { case Nil =>
       ObjectValue(java.awt.Desktop.getDesktop())
     }
-    defineValue("null")(
+    defineValue("無")(
       ObjectValue(null)
     )
   }
 
   object BuiltinRecordEnvironment extends RecordEnvironment() {
-    define("Point")(
+    define("点")(
       "x" -> TInt,
       "y" -> TInt
     )
@@ -237,7 +237,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
   object BuiltinModuleEnvironment extends ModuleEnvironment() {
     private final val LIST= "List"
     private final val DICTIONARY = "辞書"
-    private final val SET = "Set"
+    private final val SET = "集合"
     private final val FILE = "ファイル"
     private final val WEB = "ウェブ"
     enter(LIST) {
@@ -324,7 +324,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       }
     }
     enter(DICTIONARY) {
-      define("add") { case List(ObjectValue(self: java.util.Map[_, _])) =>
+      define("追加") { case List(ObjectValue(self: java.util.Map[_, _])) =>
         NativeFunctionValue{ case List(a: Value, b: Value) =>
           val newMap = new java.util.HashMap[Any, Any]()
           for((k, v) <- self.asScala) {
@@ -334,30 +334,30 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           ObjectValue(newMap)
         }
       }
-      define("containsKey") { case List(ObjectValue(self: java.util.Map[_, _])) =>
+      define("キーを含む") { case List(ObjectValue(self: java.util.Map[_, _])) =>
         NativeFunctionValue{ case List(k: Value) =>
           BoxedBoolean(self.containsKey(Value.fromKlassic(k)))
         }
       }
-      define("containsValue") { case List(ObjectValue(self: java.util.Map[_, _])) =>
+      define("値を含む") { case List(ObjectValue(self: java.util.Map[_, _])) =>
         NativeFunctionValue{ case List(v: Value) =>
           BoxedBoolean(self.containsValue(Value.fromKlassic(v)))
         }
       }
-      define("get") { case List(ObjectValue(self: java.util.Map[_, _])) =>
+      define("値を取得") { case List(ObjectValue(self: java.util.Map[_, _])) =>
         NativeFunctionValue{ case List(k: Value) =>
           Value.toKlassic(self.get(Value.fromKlassic(k)).asInstanceOf[AnyRef])
         }
       }
-      define("size") { case List(ObjectValue(self: java.util.Map[_, _])) =>
+      define("サイズ") { case List(ObjectValue(self: java.util.Map[_, _])) =>
         BoxedInt(self.size())
       }
-      define("isEmpty") { case List(ObjectValue(map: java.util.Map[_, _])) =>
+      define("空である") { case List(ObjectValue(map: java.util.Map[_, _])) =>
         BoxedBoolean(map.isEmpty)
       }
     }
     enter(SET) {
-      define("add") { case List(ObjectValue(self: java.util.Set[_])) =>
+      define("追加") { case List(ObjectValue(self: java.util.Set[_])) =>
         NativeFunctionValue{ case List(a: Value) =>
           val newSet = new java.util.HashSet[Any]()
           for(v <- self.asScala) {
@@ -367,7 +367,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           ObjectValue(newSet)
         }
       }
-      define("remove") { case List(ObjectValue(self: java.util.Set[_])) =>
+      define("削除") { case List(ObjectValue(self: java.util.Set[_])) =>
         NativeFunctionValue{ case List(a: Value) =>
           val newSet = new java.util.HashSet[Any]()
           for(v <- self.asScala) {
@@ -377,15 +377,15 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           ObjectValue(newSet)
         }
       }
-      define("contains") { case List(ObjectValue(self: java.util.Set[_])) =>
+      define("要素を含む") { case List(ObjectValue(self: java.util.Set[_])) =>
         NativeFunctionValue { case List(a: Value) =>
           BoxedBoolean(self.contains(Value.fromKlassic(a)))
         }
       }
-      define("size") { case List(ObjectValue(self: java.util.Set[_])) =>
+      define("サイズ") { case List(ObjectValue(self: java.util.Set[_])) =>
         BoxedInt(self.size())
       }
-      define("isEmpty") { case List(ObjectValue(self: java.util.Set[_])) =>
+      define("空である") { case List(ObjectValue(self: java.util.Set[_])) =>
         BoxedBoolean(self.isEmpty)
       }
     }
@@ -395,7 +395,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
     case tv@TVariable(_) => sys.error("cannot reach here")
     case TRowExtend(l, t, extension) => (l -> t) :: toList(extension)
     case TRowEmpty => Nil
-    case otherwise => throw TyperPanic("Unexpected: " + otherwise)
+    case otherwise => throw TyperPanic(None, "Unexpected: " + otherwise)
   }
 
   final def interpret(program: TypedAst.Program, session: InteractiveSession): Value = {
@@ -475,7 +475,8 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
             case (BoxedBoolean(lval), ObjectValue(rval:java.lang.Boolean)) => BoxedBoolean(lval == rval.booleanValue())
             case (ObjectValue(lval:java.lang.Boolean), BoxedBoolean(rval)) => BoxedBoolean(lval.booleanValue() == rval)
             case (ObjectValue(lval), ObjectValue(rval)) => BoxedBoolean(lval == rval)
-            case _ => reportError("comparation must be done between same types")
+            case (a@RecordValue(_, _), b@RecordValue(_, _)) => BoxedBoolean(a == b)
+            case _ => reportError("同じ型同士で比較する必要があります")
           }
         case TypedAst.BinaryExpression(type_, location, Operator.LESS_THAN, left, right) =>
           (evalRecursive(left), evalRecursive(right)) match {

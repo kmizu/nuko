@@ -1,11 +1,11 @@
 // url
 変数 url1 は new java.net.URL("https://github.com/klassic/klassic")
-変数 url2 は url("https://github.com/klassic/klassic")
+変数 url2 は URL("https://github.com/klassic/klassic")
 表示(url2)
 一致を確認(url1)(url2)
 
 // uri
 変数 uri1 は new java.net.URI("https://github.com/klassic/klassic")
-変数 uri2 は uri("https://github.com/klassic/klassic")
+変数 uri2 は URI("https://github.com/klassic/klassic")
 表示(uri2)
 一致を確認(uri1)(uri2)

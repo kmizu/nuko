@@ -14,6 +14,13 @@ trait SpecHelper extends AnyFunSpec with Diagrams {
     }
     newList
   }
+  def setOf[T](elements: T*): java.util.Set[T] = {
+    val newSet = new java.util.HashSet[T]
+    elements.foreach{e =>
+      newSet.add(e)
+    }
+    newSet
+  }
   def mapOf[K, V](kvs: (K, V)*): HashMap[K, V] = {
     val newMap = new HashMap[K, V]
     for((k, v) <- kvs) {

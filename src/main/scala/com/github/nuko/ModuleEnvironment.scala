@@ -10,7 +10,7 @@ class ModuleEnvironment(val modules: mutable.Map[String, mutable.Map[String, Val
       module <- modules.get(module)
       member <- module.get(name)
     } yield member).getOrElse {
-      throw InterpreterException("module '%s' or member '%s' not found".format(module, name))
+      throw InterpreterException(None, "モジュール '%s' またはメンバー '%s' が見つかりませんでした".format(module, name))
     }
   }
   def enter(newModuleName: String)(block: => Unit): Unit = {

@@ -27,18 +27,18 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
   }
   val BuiltinEnvironment: Environment = {
     Map(
-      "url"          -> TScheme(Nil, TFunction(List(TString), TDynamic)),
-      "uri"          -> TScheme(Nil, TFunction(List(TString), TDynamic)),
-      "substring"    -> TScheme(Nil, TFunction(List(TString, TInt, TInt), TString)),
-      "at"           -> TScheme(Nil, TFunction(List(TDynamic, TInt), TDynamic)),
-      "matches"      -> TScheme(Nil, TFunction(List(TString, TString), TBoolean)),
-      "thread"       -> TScheme(Nil, TFunction(List(TFunction(List.empty, TDynamic)), TDynamic)),
+      "URL"          -> TScheme(Nil, TFunction(List(TString), TDynamic)),
+      "URI"          -> TScheme(Nil, TFunction(List(TString), TDynamic)),
+      "部分文字列"     -> TScheme(Nil, TFunction(List(TString, TInt, TInt), TString)),
+      "文字を取得"     -> TScheme(Nil, TFunction(List(TDynamic, TInt), TDynamic)),
+      "マッチする"     -> TScheme(Nil, TFunction(List(TString, TString), TBoolean)),
+      "スレッド開始"   -> TScheme(Nil, TFunction(List(TFunction(List.empty, TDynamic)), TDynamic)),
       "表示"          -> TScheme(List(tv("x")), TFunction(List(tv("x")), TUnit)),
       "エラー表示"     -> TScheme(List(tv("x")), TFunction(List(tv("x")), TUnit)),
-      "stopwatch"    -> TScheme(Nil, TFunction(List(TFunction(List.empty, TDynamic)), TInt)),
-      "sleep"        -> TScheme(Nil, TInt ==> TUnit),
-      "isEmpty"      -> TScheme(List(tv("a")), listOf(tv("a")) ==> TBoolean),
-      "ToDo"         -> TScheme(List(tv("a")), TFunction(Nil, tv("a"))),
+      "時間を計測する"  -> TScheme(Nil, TFunction(List(TFunction(List.empty, TDynamic)), TInt)),
+      "休眠する"       -> TScheme(Nil, TInt ==> TUnit),
+      "空である"       -> TScheme(List(tv("a")), listOf(tv("a")) ==> TBoolean),
+      "後で埋める"     -> TScheme(List(tv("a")), TFunction(Nil, tv("a"))),
       "確認"          -> TScheme(List(tv("a")), TBoolean ==> TUnit),
       "一致を確認"     -> TScheme(List(tv("a")), tv("a") ==> (tv("a") ==> TUnit)),
       "変換"          -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> ((tv("a") ==> tv("b"))  ==> listOf(tv("b")))),
@@ -51,15 +51,15 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       "切り上げ"       -> TScheme(Nil, TReal ==> TInt),
       "平方根"         -> TScheme(Nil, TReal ==> TReal),
       "絶対値"         -> TScheme(Nil, TReal ==> TReal),
-      "size"          -> TScheme(List(tv("a")), listOf(tv("a")) ==> TInt),
-      "foldLeft"      -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> (tv("b") ==> ((List(tv("b"), tv("a")) ==> tv("b")) ==> tv("b")))),
-      "null"          -> TScheme(List(tv("a")), tv("a")),
+      "サイズ"         -> TScheme(List(tv("a")), listOf(tv("a")) ==> TInt),
+      "たたむ"         -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> (tv("b") ==> ((List(tv("b"), tv("a")) ==> tv("b")) ==> tv("b")))),
+      "無"            -> TScheme(List(tv("a")), tv("a")),
     )
   }
 
   val BuiltinRecordEnvironment: Map[String, TRecord] = {
     Map(
-      "Point" -> TRecord(
+      "点" -> TRecord(
         Nil,
         TRowExtend("x", TInt, TRowExtend("y", TInt, TRowEmpty))
       )
@@ -77,12 +77,12 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         "isEmpty" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TBoolean)
       ),
       "辞書" -> Map(
-        "add" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (List(tv("a"), tv("b")) ==> dictionaryOf(tv("a"), tv("b")))),
-        "containsKey" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("a") ==> TBoolean)),
-        "containsValue" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("b") ==> TBoolean)),
-        "get" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("a") ==> tv("b"))),
-        "size" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TInt),
-        "isEmpty" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TBoolean)
+        "追加" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (List(tv("a"), tv("b")) ==> dictionaryOf(tv("a"), tv("b")))),
+        "キーを含む" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("a") ==> TBoolean)),
+        "値を含む" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("b") ==> TBoolean)),
+        "値を取得" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("a") ==> tv("b"))),
+        "サイズ" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TInt),
+        "空である" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TBoolean)
       ),
       "ファイル" -> Map(
         "読み込む" -> TScheme(Nil, TString ==> TString),
@@ -91,12 +91,12 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       "ウェブ" -> Map(
        "読み込む" -> TScheme(Nil, TString ==> TString)
       ),
-      "Set" -> Map(
-        "add" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),
-        "remove" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),
-        "contains" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> TBoolean)),
-        "size" -> TScheme(List(tv("a")), setOf(tv("a")) ==> TInt),
-        "isEmpty" -> TScheme(List(tv("a")), setOf(tv("a")) ==> TBoolean)
+      "集合" -> Map(
+        "追加" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),
+        "削除" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),
+        "要素を含む" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> TBoolean)),
+        "サイズ" -> TScheme(List(tv("a")), setOf(tv("a")) ==> TInt),
+        "空である" -> TScheme(List(tv("a")), setOf(tv("a")) ==> TBoolean)
       ),
     )
   }
@@ -197,7 +197,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
     case TRowExtend(l, t, r) =>
       val (ls, mv) = toList(r)
       ((l -> t) :: ls, mv)
-    case otherwise => throw TyperPanic("Unexpected: " + otherwise)
+    case otherwise => throw TyperPanic(None, "Unexpected: " + otherwise)
   }
 
   def rewriteRow(row: Type, newLabel: Label, s: Substitution): (Type, Type, Substitution) = row match {
@@ -347,6 +347,12 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
                 unify(t1, t2, s)
             }
             (sx.replace(a), sx)
+          case (a@TRecord(ts1, row1), b@TRecord(ts2, row2)) if ts1.length == ts2.length =>
+            val sx = (ts1 zip ts2).foldLeft(s0) { case (s, (t1, t2)) =>
+              unify(t1, t2, s)
+            }
+            val sx2 = unify(row1, row2, sx)
+            (sx2.replace(a), sx2)
           case (ltype, rtype) =>
             val s3 = unify(TInt, ltype, s2)
             val s4 = unify(TInt, rtype, s3)
@@ -666,7 +672,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         (TypedAst.StringNode(TString, location, value), s)
       case Ast.Id(location, name) =>
         val s = env.lookup(name) match {
-          case None => typeError(location, s"variable '${name}' is not found")
+          case None => typeError(location, s"変数 '${name}' が見つかりませんでした")
           case Some(u) => unify(newInstanceFrom(u), t, s0)
         }
         val resultType = s.replace(t)
@@ -816,7 +822,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         val s = unify(t, TDynamic, sx)
         (TypedAst.MethodCall(TDynamic, location, typedReceiver, name, tes.reverse), s)
       case otherwise =>
-        throw TyperPanic(otherwise.toString)
+        throw TyperPanic(Some(otherwise.location), otherwise.toString)
     }
   }
 
@@ -900,7 +906,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
   }
 
   def typeError(location: Location, message: String): Nothing = {
-    throw TyperException(s"${location.format} ${message}")
+    throw TyperException(location=Some(location), s"${location.format} ${message}")
   }
 
   def transform(program: Ast.Program): TypedAst.Program = {

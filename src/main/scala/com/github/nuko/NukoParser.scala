@@ -4,6 +4,7 @@ package com.github.nuko
 import scala.util.matching.Regex
 import com.github.nuko.Ast._
 import com.github.nuko.Type._
+import com.github.nuko.{Location => NukoLocation}
 import com.github.kmizu.scomb
 import com.github.kmizu.scomb.{Result, SCombinator}
 
@@ -161,8 +162,8 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val COLONGT: Parser[String] = kwToken(":>")
       val EQEQ: Parser[String] = kwToken("==")
       val LARROW: Parser[String] = kwToken("<-") | kwToken("←")
-      val ARROW1: Parser[String] = kwToken("=>")
-      val ARROW2: Parser[String] = kwToken("->")
+      val ARROW1: Parser[String] = kwToken("=>") | kwToken("⇒")
+      val ARROW2: Parser[String] = kwToken("->") | kwToken("→")
       val COLON: Parser[String] = kwToken(":")
       val NEW: Parser[String] = kwToken("new")
       val QUES: Parser[String] = kwToken("?")
@@ -466,11 +467,32 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         case id ~ ids => ids.foldLeft(id.name) { case (a, d ~ e) => a + d + e.name }
       }
 
+      def normalize(input: String): String = {
+        // 全角数字を半角数字に対応させるマップ
+        val mapping = Map(
+          '０' -> '0',
+          '１' -> '1',
+          '２' -> '2',
+          '３' -> '3',
+          '４' -> '4',
+          '５' -> '5',
+          '６' -> '6',
+          '７' -> '7',
+          '８' -> '8',
+          '９' -> '9'
+        )
+
+        // 文字列の各文字を調べて、全角数字なら対応する半角数字に変換
+        new String(input.toCharArray.map { char =>
+          mapping.getOrElse(char, char)
+        })
+      }
+
       lazy val component: Parser[String] = (
         """[A-Za-z_][A-Za-z_0-9]*""".r
       | """「([A-Za-z_]|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})(\w|[\uFF10-\uFF19]|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})*」""".r.map(s => s.substring(1, s.length - 1))
       | """(\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})(\w|[\uFF10-\uFF19]|\p{InCjkUnifiedIdeographs}|\p{InHiragana}|\p{InKatakana})*""".r
-      )
+      ).map{s => normalize(s)}
 
 
       lazy val placeholder: Parser[Placeholder] = ((%% ~ UNDERSCORE) ^^ { case location ~ _ => Placeholder(location) }) << SPACING_WITHOUT_LF
@@ -615,14 +637,14 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
   def parseExpression(input: String): Ast.Node = {
     parse(Klassic.root, input) match {
       case Result.Success(program) => program.block
-      case Result.Failure(location, message) => throw new InterpreterException(s"${location}:${message}")
+      case Result.Failure(location, message) => throw new InterpreterException(Some(SourceLocation(location.line, location.column)), s"${location}:${message}")
     }
   }
 
   def parseAll(input: String): Program = {
     parse(Klassic.root, input) match {
       case Result.Success(program) => program
-      case Result.Failure(location, message) => throw new InterpreterException(s"${location}:${message}")
+      case Result.Failure(location, message) => throw new InterpreterException(Some(SourceLocation(location.line, location.column)), s"${location}:${message}")
     }
   }
 

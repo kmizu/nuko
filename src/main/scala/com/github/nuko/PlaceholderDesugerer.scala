@@ -163,7 +163,7 @@ class PlaceholderDesugerer extends Processor[Ast.Program, Ast.Program, Interacti
     case Placeholder(location) =>
       Id(location, manager.generate())
     case otherwise =>
-      throw RewriterPanic(otherwise.toString)
+      throw RewriterPanic(Some(otherwise.location), otherwise.toString)
   }
 
   def transform(program: Ast.Program): Ast.Program = {

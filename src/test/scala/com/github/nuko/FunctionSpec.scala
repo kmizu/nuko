@@ -126,73 +126,46 @@ class FunctionSpec extends SpecHelper {
       }
     }
   }
-  describe("substring") {
-    val expectations: List[(String, Value)] = List(
-      """
-        |substring("FOO", 0, 1)
-      """.stripMargin -> ObjectValue("F"),
-      """
-        |substring("FOO", 0, 2)
-      """.stripMargin -> ObjectValue("FO"),
-      """
-        |substring("FOO", 0, 3)
-      """.stripMargin -> ObjectValue("FOO"),
-      """
-        |substring("FOO", 1, 1)
-      """.stripMargin -> ObjectValue(""),
-      """
-        |substring("FOO", 1, 2)
-      """.stripMargin -> ObjectValue("O"),
-      """
-        |substring("FOO", 1, 3)
-      """.stripMargin -> ObjectValue("OO")
-    )
-
-    expectations.foreach { case (in, expected) =>
-      it(s"${in} evaluates to ${expected}") {
-        assert(expected == E(in))
-      }
+  describe("部分文字列を求める") {
+    it("FOOのインデックス0から1まで") {
+      assert(ObjectValue("F") == E("""部分文字列("FOO", 0, 1)"""))
+    }
+    it("FOOのインデックス0から2まで") {
+      assert(ObjectValue("FO") == E("""部分文字列("FOO", 0, 2)"""))
+    }
+    it("FOOのインデックス0から3まで") {
+      assert(ObjectValue("FOO") == E("""部分文字列("FOO", 0, 3)"""))
+    }
+    it("FOOのインデックス1から1まで") {
+      assert(ObjectValue("") == E("""部分文字列("FOO", 1, 1)"""))
+    }
+    it("FOOのインデックス1から2まで") {
+      assert(ObjectValue("O") == E("""部分文字列("FOO", 1, 2)"""))
+    }
+    it("FOOのインデックス1から3まで") {
+      assert(ObjectValue("OO") == E("""部分文字列("FOO", 1, 3)"""))
     }
   }
-  describe("at") {
-    val expectations: List[(String, Value)] = List(
-      """
-        |at("FOO", 0)
-      """.stripMargin -> ObjectValue("F"),
-      """
-        |at("FOO", 1)
-      """.stripMargin -> ObjectValue("O"),
-      """
-        |at("FOO", 2)
-      """.stripMargin -> ObjectValue("O")
-    )
-
-    expectations.foreach { case (in, expected) =>
-      it(s"${in} evaluates to ${expected}") {
-        assert(expected == E(in))
-      }
+  describe("文字列から添字を指定して文字を取得できる") {
+    it("FOOのインデックス0") {
+      assert(ObjectValue("F") == E("""文字を取得("FOO", 0)"""))
+    }
+    it("FOOのインデックス1") {
+      assert(ObjectValue("O") == E("""文字を取得("FOO", 1)"""))
+    }
+    it("FOOのインデックス2") {
+      assert(ObjectValue("O") == E("""文字を取得("FOO", 2)"""))
     }
   }
-  describe("matches") {
-    val expectations: List[(String, Value)] = List(
-      """
-        |matches("FOO", ".*")
-      """.stripMargin -> BoxedBoolean(true),
-      """
-        |matches("FOO", "FOO")
-      """.stripMargin -> BoxedBoolean(true),
-      """
-        |matches("FOO", "FO")
-      """.stripMargin -> BoxedBoolean(false),
-      """
-        |matches("FO", "FOO")
-      """.stripMargin -> BoxedBoolean(false)
-    )
-
-    expectations.foreach { case (in, expected) =>
-      it(s"${in} evaluates to ${expected}") {
-        assert(expected == E(in))
-      }
+  describe("正規表現を使ったマッチができる") {
+    it("正規表現 .*") {
+      assert(BoxedBoolean(true) == E("""マッチする("FOO", ".*")"""))
+    }
+    it("正規表現 FOO") {
+      assert(BoxedBoolean(true) == E("""マッチする("FOO", "FOO")"""))
+    }
+    it("正規表現 FO") {
+      assert(BoxedBoolean(false) == E("""マッチする("FOO", "FO")"""))
     }
   }
   describe("平方根が計算できる") {

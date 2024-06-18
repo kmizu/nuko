@@ -19,7 +19,7 @@ class PlaceholderSpec extends TestSuiteHelper {
     val result = E(
       """
         |変数 add は _ + _
-        |foldLeft(リスト(1 2 3))(0)(add)
+        |たたむ(リスト(1 2 3))(0)(add)
       """.stripMargin
     )
     assertResult(result)(BoxedInt(6))
@@ -28,7 +28,7 @@ class PlaceholderSpec extends TestSuiteHelper {
   test("binary expression has two placeholder (2)") {
     val result = E(
       """
-        |foldLeft(リスト(1 2 3))(0)(_ + _)
+        |たたむ(リスト(1 2 3))(0)(_ + _)
       """.stripMargin
     )
     assertResult(result)(BoxedInt(6))

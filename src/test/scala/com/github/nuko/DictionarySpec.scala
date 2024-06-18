@@ -1,74 +1,52 @@
 package com.github.nuko
 
 class DictionarySpec extends SpecHelper {
-  describe("キーを含む") {
-    val expectations: List[(String, Value)] = List(
-      """
-        |辞書["名前" -> "Kota Mizushima" "年齢" -> "33"] 「辞書」#containsKey "名前"
-      """.stripMargin -> BoxedBoolean(true),
-      """
-        |辞書["名前" -> "Kota Mizushima" "年齢" -> "33"] 「辞書」#containsKey "年齢"
-      """.stripMargin -> BoxedBoolean(true),
-      """
-        |辞書["名前" -> "Kota Mizushima" "年齢" -> "33"] 「辞書」#containsKey "hoge"
-      """.stripMargin -> BoxedBoolean(false)
-    )
-
-    expectations.foreach{ case (in, expected) =>
-      it(s"${in} evaluates to ${expected}") {
-        assert(expected == E(in))
-      }
+  describe("辞書がキーを含むことを判定できる") {
+    it("キー「名前」") {
+      assert(BoxedBoolean(true) == E("辞書[\"名前\" → \"Kota Mizushima\" \"年齢\" → \"33\"] 辞書#キーを含む \"名前\""))
+    }
+    it("キー「年齢」") {
+      assert(BoxedBoolean(true) == E("辞書[\"名前\" → \"Kota Mizushima\" \"年齢\" → \"33\"] 辞書#キーを含む \"年齢\""))
+    }
+    it("キー「hoge」") {
+      assert(BoxedBoolean(false) == E("辞書[\"名前\" → \"Kota Mizushima\" \"年齢\" → \"33\"]  辞書#キーを含む　\"hoge\""))
     }
   }
 
-  describe("含む") {
-    val expectations: List[(String, Value)] = List(
-      """
-        |辞書["名前" -> "Kota Mizushima" "年齢" -> "33"] 「辞書」#containsValue "33"
-      """.stripMargin -> BoxedBoolean(true),
-      """
-        |辞書["名前" -> "Kota Mizushima" "年齢" -> "33"] 「辞書」#containsValue "Kota Mizushima"
-      """.stripMargin -> BoxedBoolean(true),
-      """
-        |辞書["名前" -> "Kota Mizushima" "年齢" -> "33"] 「辞書」#containsValue "hoge"
-      """.stripMargin -> BoxedBoolean(false)
-    )
-    expectations.zipWithIndex.foreach{ case ((in, expected), i) =>
-      it(s"${in} evaluates to ${expected}") {
-        assert(expected == E(in))
-      }
+  describe("辞書が値を含むことを判定できる") {
+    it("値 = 33") {
+      assert(BoxedBoolean(true) == E("辞書[\"名前\" -> \"Kota Mizushima\" \"年齢\" -> \"33\"] 辞書#値を含む \"33\""))
+    }
+    it("値 = Kota Mizushima") {
+      assert(BoxedBoolean(true) == E("辞書[\"名前\" -> \"Kota Mizushima\" \"年齢\" -> \"33\"] 辞書#値を含む \"Kota Mizushima\""))
+    }
+    it("値 = hoge") {
+      assert(BoxedBoolean(false) == E("辞書[\"名前\" -> \"Kota Mizushima\" \"年齢\" -> \"33\"]  辞書#値を含む　\"hoge\""))
     }
   }
 
-  describe("取得") {
-    val expectations: List[(String, Value)] = List(
-      """
-        |辞書["名前" -> "水島宏太" "年齢" -> "40"] 「辞書」#get "年齢"
-      """.stripMargin -> ObjectValue("40"),
-      """
-        |辞書["名前" -> "水島宏太" "年齢" -> "40"] 「辞書」#get "名前"
-      """.stripMargin -> ObjectValue("水島宏太"),
-      """
-        |辞書["名前" -> "水島宏太" "年齢" -> "33"] 「辞書」#get "性別"
-      """.stripMargin -> ObjectValue(null)
-    )
-    expectations.zipWithIndex.foreach{ case ((in, expected), i) =>
-      it(s"${in} evaluates to ${expected}") {
-        assert(expected == E(in))
-      }
+  describe("辞書からキーを指定して値を取得できる") {
+    it("キー = 年齢") {
+      assert(ObjectValue("33") == E("辞書[\"名前\" -> \"Kota Mizushima\" \"年齢\" -> \"33\"] 辞書#値を取得 \"年齢\""))
+    }
+    it("キー = 名前") {
+      assert(ObjectValue("Kota Mizushima") == E("辞書[\"名前\" -> \"Kota Mizushima\" \"年齢\" -> \"33\"] 辞書#値を取得 \"名前\""))
+    }
+    it("キー = 性別") {
+      assert(ObjectValue(null) == E("辞書[\"名前\" -> \"Kota Mizushima\" \"年齢\" -> \"33\"]  辞書#値を取得　\"性別\""))
     }
   }
 
-  describe("isEmpty") {
-    expect("empty map should be isEmpty")(
-      """
-        |「辞書」#isEmpty(辞書[])
-      """.stripMargin -> BoxedBoolean(true)
+  describe("辞書が空であることを判定できる") {
+    it("空の辞書")(
+      assert(
+        BoxedBoolean(true) == E("辞書#空である(辞書[])")
+      )
     )
-    expect("non empty map should not be isEmpty")(
-      """
-        |「辞書」#isEmpty(辞書["x" -> 1 "y" -> 2])
-      """.stripMargin -> BoxedBoolean(false)
+    it("空でない辞書")(
+      assert(
+        BoxedBoolean(false) == E("辞書#空である(辞書[\"x\" -> 1 \"y\" -> 2])")
+      )
     )
   }
 }

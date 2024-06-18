@@ -13,6 +13,14 @@ class FileBasedProgramSpec extends SpecHelper {
           E.evaluateFile(program)
           assert(true)
         }catch {
+          case e:LanguageException =>
+            val line = e.location match {
+              case Some(SourceLocation(line, _)) => line
+              case None => 0
+            }
+            Console.err.println(new StackTraceElement("<empty>", "<empty>", program.name, line))
+            e.printStackTrace()
+            assert(false)
           case e:Throwable =>
             e.printStackTrace()
             assert(false)
