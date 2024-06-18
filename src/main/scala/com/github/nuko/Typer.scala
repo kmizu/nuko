@@ -84,6 +84,10 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         "size" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TInt),
         "isEmpty" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TBoolean)
       ),
+      "ファイル" -> Map(
+        "読み込む" -> TScheme(Nil, TString ==> TString),
+        "書き込む" -> TScheme(Nil, TString ==> TString ==> TUnit),
+      ),
       "Set" -> Map(
         "add" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),
         "remove" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),
