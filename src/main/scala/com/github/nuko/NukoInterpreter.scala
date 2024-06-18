@@ -236,7 +236,6 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
     private final val LIST= "List"
     private final val DICTIONARY = "辞書"
     private final val SET = "Set"
-    private final val GPIO = "GPIO"
     enter(LIST) {
       define("head") { case List(ObjectValue(list: java.util.List[_])) =>
         println("list: " + list)
