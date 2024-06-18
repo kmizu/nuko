@@ -131,6 +131,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val LBRACKET: Parser[String] = kwToken("[") | kwToken("［")
       val RBRACKET: Parser[String] = kwToken("]") | kwToken("］")
       val SHARP: Parser[String] = kwToken("#") | kwToken("＃")
+      val ATMARK: Parser[String] = kwToken("@") | kwToken("＠")
       val IF: Parser[String] = kwToken("もし")
       val VISUALIZE: Parser[String] = kwToken("視覚化") | kwToken("visualize")
       val ELSE: Parser[String] = kwToken("でなければ")
@@ -143,7 +144,8 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       val FALSE: Parser[String] = kwToken("false") | kwToken("偽")
       val IN: Parser[String] = kwToken("in")
       val COMMA: Parser[String] = kwToken(",")
-      val DOT: Parser[String] = kwToken(".")
+      val DOT: Parser[String] = kwToken(".") | kwToken("．")
+      val RECORD: Parser[String] = kwToken("構造体")
       val DEF: Parser[String] = kwToken("ブロック")
       val VARIABLE: Parser[String] = kwToken("変数")
       val EQ: Parser[String] = kwToken("=")
@@ -222,8 +224,8 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       def root: Parser[Program] = rule(program)
 
       lazy val program: Parser[Program] = rule {
-        (SPACING >> %%) ~ `import`.repeat0By(TERMINATOR) ~ lines << EOF ^^ {
-          case location ~ imports ~ block => Program(location, imports, block)
+        (SPACING >> %%) ~ `import`.repeat0By(TERMINATOR) ~ record.repeat0By(TERMINATOR) ~ lines << EOF ^^ {
+          case location ~ imports ~ records ~ block => Program(location=location, imports=imports, records=records, block=block)
         }
       }
 
@@ -232,6 +234,19 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
           val fragments = fqcn.split(".")
           Import(location, fragments(fragments.length - 1), fqcn)
         }
+      }
+
+      lazy val record: Parser[RecordDeclaration] = rule {
+        for {
+          location <- %%
+          _ <- RECORD
+          name <- commit(sident)
+          ts <- commit((CL(LT) >> typeVariable.repeat1By(CL(COMMA)) << CL(GT)).?)
+          _ <- commit(CL(LBRACE))
+          members <- commit(((sident ~ CL(typeAnnotation << SEMICOLON.?)) ^^ { case n ~ t => (n, t) }).*)
+          methods <- commit(methodDefinition.repeat0By(TERMINATOR))
+          _ <- commit(RBRACE)
+        } yield RecordDeclaration(location, name, ts.getOrElse(Nil), members, methods)
       }
 
       //lines ::= line {TERMINATOR expr} [TERMINATOR]
@@ -342,11 +357,25 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
        | invocation
       )
 
-      lazy val invocation: Parser[Ast.Node] = rule(%% ~ application ~ ((CL(ARROW2) >> ident) ~ (CL(LPAREN) >> expression.repeat0By(CL(COMMA)) << RPAREN).?).* ^^ {
+      lazy val invocation: Parser[Ast.Node] = rule(%% ~ recordSelect ~ ((CL(ARROW2) >> ident) ~ (CL(LPAREN) >> expression.repeat0By(CL(COMMA)) << RPAREN).?).* ^^ {
         case location ~ self ~ Nil =>
           self
         case location ~ self ~ npList =>
           npList.foldLeft(self) { case (self, name ~ params) => MethodCall(location, self, name.name, params.getOrElse(Nil)) }
+      })
+
+      lazy val recordSelect: Parser[Ast.Node] = rule(%% ~ application ~ ((CL(DOT) >> (%% ~ ident ~ (CL(LPAREN) >> expression.repeat0By((COMMA)) << RPAREN).?))).* ^^ {
+        case location ~ self ~ names =>
+          val ns = names.map {
+            case l ~ n ~ Some(params) => (l, n.name, Some(params))
+            case l ~ n ~ None => (l, n.name, None)
+          }
+          ns.foldLeft(self) { case (e, (l, n, optParams)) =>
+            optParams match {
+              case Some(params) => RecordCall(l, e, n, params)
+              case None => RecordSelect(l, e, n)
+            }
+          }
       })
 
       lazy val application: Parser[Ast.Node] = rule {
@@ -373,7 +402,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         case target ~ None => target
       })
 
-      //primary ::= selector | booleanLiteral | ident | realLiteral | integerLiteral | 辞書リテラル | stringLiteral | リストリテラル | 集合リテラル | newObject | functionLiteral | "(" expression ")" | "{" lines "}"
+      //primary ::= selector | booleanLiteral | placeholder | realLiteral | integerLiteral | newRecord | newObject | functionLiteral | listLiteral | dictionaryLiteral | setLiteral | stringLiteral | newObject | functionLiteral | "(" expression ")" | "{" lines "}" | ident
       lazy val primary: Parser[Ast.Node] = rule {
         (
           selector
@@ -382,6 +411,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
             | placeholder
             | realLiteral
             | integerLiteral
+            | newRecord
             | newObject
             | functionLiteral
             | listLiteral
@@ -530,6 +560,12 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       lazy val newObject: Parser[Ast.Node] = rule((%% << CL(NEW)) ~ commit(fqcn ~ (CL(LPAREN) >> expression.repeat0By(CL(COMMA)) << RPAREN).?) ^^ {
         case location ~ (className ~ Some(params)) => ObjectNew(location, className, params)
         case location ~ (className ~ None) => ObjectNew(location, className, List())
+      })
+
+      // newRecord ::= "@" sident "(" [param {"," param} ")"
+      lazy val newRecord: Parser[Ast.Node] = rule((%% << CL(ATMARK)) ~ commit(sident ~ (CL(LPAREN) >> expression.repeat0By(CL(COMMA)) << RPAREN).?) ^^ {
+        case location ~ (recordName ~ Some(params)) => RecordNew(location, recordName, params)
+        case location ~ (recordName ~ None) => RecordNew(location, recordName, List())
       })
 
       // methodDefinition ::= "def" ident  ["(" [param {"," param}] ")"] "=" expression

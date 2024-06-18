@@ -379,7 +379,13 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
   }
 
   final def interpret(program: TypedAst.Program, session: InteractiveSession): Value = {
-    interpreter.evaluate(program.block, env = BuiltinEnvironment, moduleEnv = BuiltinModuleEnvironment)
+    val runtimeRecordEnvironment: RecordEnvironment = BuiltinRecordEnvironment
+    program.records.foreach { case (name, record) =>
+      val members = toList(record.row)
+      val rmembers = members.map { case (n, t) => n -> t }
+      runtimeRecordEnvironment.records += (name -> rmembers)
+    }
+    interpreter.evaluate(program.block, env = BuiltinEnvironment, recordEnv = runtimeRecordEnvironment, moduleEnv = BuiltinModuleEnvironment)
   }
 
   private def evaluate(node: TypedNode): Value = {
@@ -411,7 +417,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       }
   }
 
-  private def evaluate(node: TypedNode, env: RuntimeEnvironment, moduleEnv: ModuleEnvironment = BuiltinModuleEnvironment): Value = {
+  private def evaluate(node: TypedNode, env: RuntimeEnvironment, recordEnv: RecordEnvironment=BuiltinRecordEnvironment, moduleEnv: ModuleEnvironment = BuiltinModuleEnvironment): Value = {
     def evalRecursive(node: TypedNode): Value = {
       node match{
         case TypedAst.Block(type_, location, expressions) =>
@@ -621,6 +627,28 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
               Value.toKlassic(constructor.newInstance(actualParams:_*).asInstanceOf[AnyRef])
             case NoConstructorFound =>
               throw new IllegalArgumentException(s"new ${className}(${params}) is not found")
+          }
+        case TypedAst.RecordNew(type_, location, recordName, params) =>
+          val paramsList = params.map {
+            evalRecursive
+          }
+          recordEnv.records.get(recordName) match {
+            case None => throw new IllegalArgumentException(s"record ${recordName} is not found")
+            case Some(argsList) =>
+              val members = (argsList zip paramsList).map { case ((n, _), v) => n -> v }
+              RecordValue(recordName, members)
+          }
+        case TypedAst.RecordSelect(type_, location, expression, memberName) =>
+          evalRecursive(expression) match {
+            case RecordValue(recordName, members) =>
+              members.find { case (mname, mtype) => memberName == mname } match {
+                case None =>
+                  throw new IllegalArgumentException(s"member ${memberName} is not found in record ${recordName}")
+                case Some((_, value)) =>
+                  value
+              }
+            case v =>
+              throw new IllegalArgumentException(s"value ${v} is not record")
           }
         case call@TypedAst.FunctionCall(type_, location, function, params) =>
           performFunction(call, env)

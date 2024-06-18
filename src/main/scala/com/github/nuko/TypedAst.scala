@@ -23,7 +23,7 @@ object TypedAst {
 
   case object FloatSuffix extends FloatSuffix
 
-  case class Program(location: Location, imports: List[Import], block: Block)
+  case class Program(location: Location, imports: List[Import], block: Block, records: RecordEnvironment)
 
   case class Import(location: Location, simpleName: String, fqcn: String)
 

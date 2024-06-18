@@ -2,7 +2,7 @@ package com.github.nuko
 
 import java.lang.reflect.TypeVariable
 import com.github.nuko.TypedAst.TypedNode
-import com.github.nuko.Ast.Node
+import com.github.nuko.Ast.{Node, RecordDeclaration}
 import com.github.nuko.Type._
 import com.github.nuko._
 
@@ -163,6 +163,14 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       (t2 zip u2).foldLeft(s) { case (s, (t, u)) =>
         unify(t, u, s)
       }
+    case (TRecordReference(name, ts), record2@TRecord(us, _)) =>
+      if(ts.length != us.length) {
+        typeError(current.location, s"type constructor arity mismatch: ${ts.length} != ${us.length}")
+      }
+      val record1 = recordEnvironment(name)
+      unify(record1, record2, s)
+    case (r1@TRecord(_, _), r2@TRecordReference(_, _)) =>
+      unify(r2, r1, s)
     case (TFunction(t1, t2), TFunction(u1, u2)) if t1.size == u1.size =>
       unify(t2, u2, (t1 zip u1).foldLeft(s){ case (s, (t, u)) => unify(t, u, s)})
     case (TConstructor(k1, ts), TConstructor(k2, us)) if k1 == k2 =>
@@ -200,14 +208,42 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       typeError(current.location, s"Unexpect type: ${row}")
   }
 
-  def typeOf(e: Ast.Node, environment: Environment = BuiltinEnvironment, modules: ModuleEnvironment = BuiltinModuleEnvironment): Type = {
+  def doTypeRecords(recordDeclarations: List[Ast.RecordDeclaration]): RecordEnvironment = {
+    val headers = recordDeclarations.map { d => (d.name, d.ts) }.toMap
+    var recordEnvironment: RecordEnvironment = Map.empty
+    var s: Substitution = EmptySubstitution
+    recordDeclarations.foreach { recordDeclaration =>
+      val recordName = recordDeclaration.name
+      val location = recordDeclaration.location
+      val members: List[(String, Type)] = recordDeclaration.members.map { case (n, t) =>
+        t match {
+          case TRecordReference(rname, rtypes) if !headers.contains(rname) =>
+            typeError(location, s"record ${rname} is not found")
+          case r@TRecordReference(rname, rtypes) if recordName == rname =>
+            val ts = headers(recordName)
+            if (ts.length != rtypes.length) {
+              typeError(location, s"type variables length mismatch: required: ${ts.length} actual: ${rtypes.length}")
+            }
+            (n, t)
+          case _ =>
+            (n, t)
+        }
+      }
+      val ts = headers(recordName)
+      recordEnvironment += (recordName -> TRecord(ts, toRow(members)))
+    }
+    recordEnvironment
+  }
+
+  def typeOf(e: Ast.Node, environment: Environment = BuiltinEnvironment, records: RecordEnvironment = BuiltinRecordEnvironment, modules: ModuleEnvironment = BuiltinModuleEnvironment): Type = {
     val a = newTypeVariable()
     val r = new SyntaxRewriter
-    val (typedE, s) = doType(r.doRewrite(e), TypeEnvironment(environment, Set.empty, modules, None), a, EmptySubstitution)
+    val (typedE, s) = doType(r.doRewrite(e), TypeEnvironment(variables=environment, immutableVariables=Set.empty, records=records, modules=modules, parent=None), a, EmptySubstitution)
     s.replace(a)
   }
 
   var current: Ast.Node = null
+  var recordEnvironment: RecordEnvironment = null
   def doType(e: Ast.Node, env: TypeEnvironment, t: Type, s0: Substitution): (TypedNode, Substitution) = {
     current = e
     e match {
@@ -635,6 +671,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         }
         val resultType = s.replace(t)
         (TypedAst.Selector(resultType, location, module, name), s)
+      case node@Ast.RecordSelect(_, _, _) =>
+        doTypeRecordSelect(node, env, t, s0)
       case Ast.Lambda(location, params, optionalType, body) =>
         val b = optionalType.getOrElse(newTypeVariable())
         val ts = params.map{p => p.optionalType.getOrElse(newTypeVariable())}
@@ -647,7 +685,17 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         if(env.variables.contains(variable)) {
           typeError(location, s"variable $variable is already defined")
         }
-        val a = newTypeVariable()
+        val a = optionalType.map {
+          case TRecordReference(name, _) =>
+            env.records.get(name) match {
+              case Some(record) =>
+                record
+              case None =>
+                typeError(location, s"record named ${name} is not found")
+            }
+          case otherwise =>
+            otherwise
+        }.getOrElse(newTypeVariable())
         val (typedValue, s1) = doType(value, env, a, s0)
         val s2 = unify(s1.replace(a), typedValue.type_, s1)
         val gen = generalize(s2.replace(a), env.variables)
@@ -720,6 +768,30 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         }
         val s = unify(TDynamic, t, sx)
         (TypedAst.ObjectNew(TDynamic, location, className, tes.reverse), s)
+      case Ast.RecordNew(location, recordName, params) =>
+        val ts = params.map { _ => newTypeVariable() }
+        val (tes1, sx) = (params zip ts).foldLeft((Nil: List[TypedNode], s0)) { case ((tes, s), (e, t)) =>
+          val (te, sx) = doType(e, env, t, s)
+          (te :: tes, sx)
+        }
+        val tes2 = tes1.reverse
+        env.records.get(recordName) match {
+          case Some(record) =>
+            val xts = record.ts
+            val (members, rv) = toList(record.row)
+            val sy = xts.foldLeft(sx) { case (s, t) => s.remove(t) }
+            if (members.length != ts.length) {
+              typeError(location, s"length mismatch: required: ${members.length}, actual: ${ts.length}")
+            }
+            val memberTypes = members.map { case (_, t) => t }
+            val parameterTypes = tes2.map { case te => te.type_ }
+            val sn = (memberTypes zip parameterTypes).foldLeft(sy) { case (s, (m, p)) => unify(m, p, s) }
+            var recordType: TRecord = env.records(recordName)
+            val s = unify(t, recordType, sn)
+            (TypedAst.RecordNew(recordType, location, recordName, tes2), s)
+          case None =>
+            typeError(location, s"record '$recordName' is not found")
+        }
       case Ast.Casting(location, target, to) =>
         val a = newTypeVariable()
         val (typedTarget, s1) = doType(target, env, a, s0)
@@ -741,6 +813,85 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
     }
   }
 
+  private def doTypeRecordSelect(node: Ast.RecordSelect, environment: TypeEnvironment, t: Type, s0: Substitution): (TypedNode, Substitution) = {
+    def insert(record: TRecord, l1: Label, l1Type: Type, rowVariable: TVariable, s: Substitution): (TRecord, Substitution) = {
+      def go(row: Type): (TRowExtend, Substitution) = row match {
+        case r@TRowExtend(l2, l2Type, rowTail) if l1 == l2 =>
+          val (r, sx) = go(rowTail)
+          val sy = unify(l1Type, l2Type, sx)
+          (TRowExtend(l1, sy.replace(l2Type), r), sy)
+        case TRowExtend(l2, l2Type, rowTail) =>
+          val (r, sx) = go(rowTail)
+          (TRowExtend(l2, l2Type, r), sx)
+        case tv@TVariable(_) =>
+          (TRowExtend(l1, l1Type, rowVariable), s)
+        case t =>
+          sys.error("cannot reach here in insert: " + t)
+      }
+
+      val (r, sx) = go(record.row)
+      (TRecord(record.ts, r), sx)
+    }
+
+    val location = node.location
+    val expression = node.record
+    val memberName = node.label
+    val t0 = newTypeVariable()
+    val (te, s1) = doType(expression, environment, t0, s0)
+    te.type_ match {
+      case TRecordReference(recordName, paramTypes) =>
+        environment.records.get(recordName) match {
+          case None =>
+            typeError(location, s"record ${recordName} is not found")
+          case Some(record) =>
+            toList(record.row) match {
+              case (members, Some(_)) =>
+                val a = newTypeVariable("a")
+                val r = newTypeVariable("r")
+                val (newRecord, s2) = insert(record, memberName, a, r, s1)
+                val s3 = unify(record, newRecord, s2)
+                val s4 = unify(t, a, s3)
+                (TypedAst.RecordSelect(s4.replace(a), location, te, memberName), s4)
+              case (members, None) =>
+                members.find { case (mname, mtype) => memberName == mname } match {
+                  case None =>
+                    throw typeError(location, s"member ${memberName} is not found in record ${recordName}")
+                  case Some((mname, mtype)) =>
+                    val s = unify(mtype, t, s1)
+                    (TypedAst.RecordSelect(s.replace(t), location, te, mname), s)
+                }
+            }
+        }
+      case tv@(TVariable(_)) =>
+        val a = newTypeVariable("a")
+        val r = newTypeVariable("r")
+        val (record, s2) = insert(TRecord(Nil, r), memberName, a, r, s1)
+        val s3 = unify(tv, record, s2)
+        val s = unify(t, a, s3)
+        (TypedAst.RecordSelect(s.replace(a), location, te, memberName), s)
+      case record@TRecord(ts, row) =>
+        toList(row) match {
+          case (members, None) =>
+            members.find { case (mname, mtype) => memberName == mname } match {
+              case None =>
+                throw typeError(location, s"member ${memberName} is not found in record ${record}")
+              case Some((mname, mtype)) =>
+                val s = unify(mtype, t, s1)
+                (TypedAst.RecordSelect(s.replace(t), location, te, mname), s)
+            }
+          case (members, Some(_)) =>
+            val a = newTypeVariable("a")
+            val r = newTypeVariable("r")
+            val (newRecord, s2) = insert(record, memberName, a, r, s1)
+            val s3 = unify(record, newRecord, s2)
+            val s = unify(t, a, s3)
+            (TypedAst.RecordSelect(s.replace(a), location, te, memberName), s)
+        }
+      case _ =>
+        typeError(location, s"${t} is not record type")
+    }
+  }
+
   def typeError(location: Location, message: String): Nothing = {
     throw TyperException(s"${location.format} ${message}")
   }
@@ -748,8 +899,10 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
   def transform(program: Ast.Program): TypedAst.Program = {
     val tv = newTypeVariable()
     val s: Substitution = EmptySubstitution
-    val (typedExpression, _) = doType(program.block, TypeEnvironment(BuiltinEnvironment, Set.empty, BuiltinModuleEnvironment, None), tv, EmptySubstitution)
-    TypedAst.Program(program.location, Nil, typedExpression.asInstanceOf[TypedAst.Block])
+    val recordEnvironment = doTypeRecords(program.records)
+    this.recordEnvironment = recordEnvironment
+    val (typedExpression, _) = doType(program.block, TypeEnvironment(BuiltinEnvironment, Set.empty, BuiltinRecordEnvironment ++ recordEnvironment, BuiltinModuleEnvironment, None), tv, EmptySubstitution)
+    TypedAst.Program(program.location, Nil, typedExpression.asInstanceOf[TypedAst.Block], recordEnvironment)
   }
 
   override final val name: String = "Typer"

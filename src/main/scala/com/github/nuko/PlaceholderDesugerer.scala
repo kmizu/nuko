@@ -65,6 +65,14 @@ class PlaceholderDesugerer extends Processor[Ast.Program, Ast.Program, Interacti
       IfExpression(location, doRewrite(cond), doRewrite(pos), doRewrite(neg))
     case WhileExpression(location, condition, body: Ast.Node) =>
       WhileExpression(location, doRewrite(condition), doRewrite(body))
+    case RecordSelect(location, expression, member) =>
+      RecordSelect(location, doRewrite(expression), member)
+    case RecordCall(location, self, name, params) =>
+      RecordCall(location, doRewrite(self), name, params.map {
+        doRewrite
+      })
+    case RecordNew(location, name, members) =>
+      RecordNew(location, name, members.map(doRewrite))
     case e@ForeachExpression(location, name, collection, body) =>
       ForeachExpression(location, name, doRewrite(collection), doRewrite(body))
     case x@BinaryExpression(location, _, _, _) =>

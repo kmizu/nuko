@@ -3,7 +3,7 @@ package com.github.nuko
 import com.github.nuko.Type._
 import scala.collection.mutable
 
-case class TypeEnvironment(variables: Map[String, TScheme], immutableVariables: Set[String], modules: Map[String, Map[String, TScheme]], parent: Option[TypeEnvironment]) {
+case class TypeEnvironment(variables: Map[String, TScheme], immutableVariables: Set[String], records: Map[String, TRecord], modules: Map[String, Map[String, TScheme]], parent: Option[TypeEnvironment]) {
   def lookup(name: String): Option[TScheme] = {
     val result1 = variables.get(name)
     val result2  = result1.orElse(parent.flatMap{p => p.lookup(name)})
@@ -18,6 +18,9 @@ case class TypeEnvironment(variables: Map[String, TScheme], immutableVariables: 
   def updateMutableVariable(name: String, scheme: TScheme): TypeEnvironment = {
     this.copy(variables = this.variables + (name -> scheme))
   }
+  def updateRecord(recordName: String, recordBody: TRecord): TypeEnvironment = {
+    this.copy(records = this.records + (recordName -> recordBody))
+  }
   def updateModule(moduleName: String, members: Map[String, TScheme]): TypeEnvironment = {
     this.copy(modules = this.modules + (moduleName -> members))
   }
@@ -27,6 +30,6 @@ case class TypeEnvironment(variables: Map[String, TScheme], immutableVariables: 
 }
 object TypeEnvironment {
   def apply(variables: Map[String, TScheme]): TypeEnvironment = {
-    TypeEnvironment(variables, Set.empty[String], Map.empty, None)
+    TypeEnvironment(variables=variables, immutableVariables=Set.empty, records=Map.empty, modules=Map.empty, parent=None)
   }
 }

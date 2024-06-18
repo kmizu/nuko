@@ -11,9 +11,11 @@ object Ast {
 
   case object ByteSuffix extends IntegerSuffix
 
-  case class Program(location: Location, imports: List[Import], block: Block)
+  case class Program(location: Location, imports: List[Import], records: List[RecordDeclaration], block: Block)
 
   case class Import(location: Location, simpleName: String, fqcn: String)
+
+  case class RecordDeclaration(location: Location, name: String, ts: List[TVariable], members: List[(String, Type)], methods: List[MethodDefinition])
 
   case class EnumDeclaration(location: Location, id: String, params: List[Type], constructors: List[DataConstructor]) extends Node
 
@@ -74,6 +76,10 @@ object Ast {
 
   case class EnumIn(location: Location, variant: EnumDeclaration, body: Ast.Node) extends Node
 
+  case class RecordSelect(location: Location, record: Ast.Node, label: String) extends Node
+
+  case class RecordCall(location: Location, self: Ast.Node, name: String, params: List[Ast.Node]) extends Node
+
   case class Let(location: Location, variable: String, type_ : Option[Type], value: Ast.Node, body: Ast.Node, immutable: Boolean) extends Node
   object Let {
     def apply(variable: String, type_ :Option[Type], value: Ast.Node, body: Ast.Node): Let = {
@@ -109,9 +115,13 @@ object Ast {
 
   case class ObjectNew(location: Location, className: String, params: List[Ast.Node]) extends Node
 
+  case class RecordNew(location: Location, recordName: String, params: List[Ast.Node]) extends Node
+
   case class MethodCall(location: Location, self: Ast.Node, name: String, params: List[Ast.Node]) extends Node
 
   case class Casting(location: Location, target: Ast.Node, to: Type) extends Node
 
   case class Show(location: Location, target: Ast.Node) extends Node
+
+
 }

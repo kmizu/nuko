@@ -38,6 +38,20 @@ class SyntaxRewriter extends Processor[Ast.Program, Ast.Program, InteractiveSess
       IfExpression(location, doRewrite(cond), doRewrite(pos), doRewrite(neg))
     case WhileExpression(location, condition, body: Ast.Node) =>
       WhileExpression(location, doRewrite(condition), doRewrite(body))
+    case RecordSelect(location, expression, member) =>
+      RecordSelect(location, doRewrite(expression), member)
+    case RecordCall(location, self, name, params) =>
+      val selfVar = symbol()
+      val result = Let(
+        location, selfVar, None, self,
+        FunctionCall(location, RecordSelect(location, Id(location, selfVar), name), Casting(location, Id(location, selfVar), TDynamic) :: (params.map {
+          doRewrite
+        })),
+        true
+      )
+      result
+    case RecordNew(location, name, members) =>
+      RecordNew(location, name, members.map({ case e => doRewrite(e) }))
     case e@ForeachExpression(location, name, collection, body) =>
       val itVariable = symbol()
       val location = e.location
