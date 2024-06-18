@@ -5,6 +5,7 @@ import com.github.nuko._
 import com.github.nuko.Type._
 import com.github.nuko.TypedAst.{FunctionLiteral, TypedNode, ValueNode}
 
+import java.net.http.HttpClient
 import java.net.{URI, URL}
 import java.nio.file.{Files, Path}
 import scala.runtime.BoxedUnit
@@ -238,6 +239,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
     private final val DICTIONARY = "辞書"
     private final val SET = "Set"
     private final val FILE = "ファイル"
+    private final val WEB = "ウェブ"
     enter(LIST) {
       define("head") { case List(ObjectValue(list: java.util.List[_])) =>
         println("list: " + list)
@@ -314,6 +316,11 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           Files.writeString(Path.of(path), content)
           UnitValue
         }
+      }
+    }
+    enter(WEB) {
+      define("読み込む") { case List(ObjectValue(url: String)) =>
+        ObjectValue(scala.io.Source.fromURL(url).mkString)
       }
     }
     enter(DICTIONARY) {

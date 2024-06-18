@@ -88,6 +88,9 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         "読み込む" -> TScheme(Nil, TString ==> TString),
         "書き込む" -> TScheme(Nil, TString ==> TString ==> TUnit),
       ),
+      "ウェブ" -> Map(
+       "読み込む" -> TScheme(Nil, TString ==> TString)
+      ),
       "Set" -> Map(
         "add" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),
         "remove" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),

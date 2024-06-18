@@ -1,0 +1,2 @@
+変数 コンテンツ は ウェブ#読み込む("https://kmizu.github.io/txt/index.txt")
+一致を確認（"こんにちは\n")(コンテンツ)
