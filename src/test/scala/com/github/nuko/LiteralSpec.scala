@@ -23,6 +23,24 @@ class LiteralSpec extends SpecHelper {
     }
   }
 
+  describe("全角の整数と半角の整数が同じ") {
+    it("全角０") {
+      assert(E("0") == E("０"))
+    }
+    it("全角１") {
+      assert(E("1") == E("１"))
+    }
+    it("全角２") {
+      assert(E("2") == E("２"))
+    }
+    it("全角１０") {
+      assert(E("10") == E("１０"))
+    }
+    it("全角１２３４５６７８９０") {
+      assert(E("1234567890") == E("１２３４５６７８９０"))
+    }
+  }
+
   describe("string literal with escape sequence") {
     val expectations = List[(String, Value)](
       """"\r\n"""" -> ObjectValue("\r\n"),

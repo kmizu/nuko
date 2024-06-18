@@ -426,13 +426,13 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
       }
 
       //integerLiteral ::= ["1"-"9"] {"0"-"9"}
-      lazy val integerLiteral: Parser[Ast.Node] = (%% ~ """[1-9][0-9]*|0""".r ~ ("BY" ^^ { _ => ByteSuffix }).?  ^^ {
-        case location ~ value ~ None => IntNode(location, value.toLong.toInt)
-        case location ~ value ~ Some(ByteSuffix) => ByteNode(location, value.toByte)
+      lazy val integerLiteral: Parser[Ast.Node] = (%% ~ """[1-9１-９][0-9０-９]*|0|０""".r ~ ("BY" ^^ { _ => ByteSuffix }).?  ^^ {
+        case location ~ value ~ None => IntNode(location, normalize(value).toLong.toInt)
+        case location ~ value ~ Some(ByteSuffix) => ByteNode(location, normalize(value).toByte)
       }) << SPACING_WITHOUT_LF
 
-      lazy val realLiteral: Parser[Ast.Node] = (%% ~ "([1-9][0-9]*|0)\\.[0-9]*".r  ^^ {
-        case location ~ value => RealNode(location, BigDecimal(value))
+      lazy val realLiteral: Parser[Ast.Node] = (%% ~ "([1-9０-９][0-9０-９]*|0|０)\\.[0-9０-９]*".r  ^^ {
+        case location ~ value => RealNode(location, BigDecimal(normalize(value)))
       }) << SPACING_WITHOUT_LF
 
       lazy val booleanLiteral: Parser[Ast.Node] = %% ~ (TRUE ^^ { _ => true } | FALSE ^^ { _ => false }) ^^ {
