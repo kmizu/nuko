@@ -68,13 +68,13 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
 
   val BuiltinModuleEnvironment: Map[String, Environment] = {
     Map(
-      "List" -> Map(
-        "cons" -> TScheme(List(tv("a")), TFunction(List(tv("a"), listOf(tv("a"))), listOf(tv("a")))),
-        "map" -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> ((tv("a") ==> tv("b"))  ==> listOf(tv("b")))),
-        "head" -> TScheme(List(tv("a")), listOf(tv("a")) ==> tv("a")),
-        "tail" -> TScheme(List(tv("a")), listOf(tv("a")) ==> listOf(tv("a"))),
-        "size" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TInt),
-        "isEmpty" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TBoolean)
+      "リスト" -> Map(
+        "構築" -> TScheme(List(tv("a")), TFunction(List(tv("a"), listOf(tv("a"))), listOf(tv("a")))),
+        "変換" -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> ((tv("a") ==> tv("b")) ==> listOf(tv("b")))),
+        "先頭" -> TScheme(List(tv("a")), listOf(tv("a")) ==> tv("a")),
+        "末尾" -> TScheme(List(tv("a")), listOf(tv("a")) ==> listOf(tv("a"))),
+        "サイズ" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TInt),
+        "空である" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TBoolean)
       ),
       "辞書" -> Map(
         "追加" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TFunction(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")))),
@@ -936,13 +936,13 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TypedAst.RecordSelect(s.replace(a), location, te, memberName), s)
         }
       case TConstructor(name, _) =>
-        MethodEnvironment.get(name) match {
+        environment.modules.get(name) match {
           case None =>
-            typeError(location, s"constructor ${name} is not found")
+            typeError(location, s"コンストラクタ ${name} が見つかりませんでした")
           case Some(map) =>
             map.get(memberName) match {
               case None =>
-                typeError(location, s"member ${memberName} is not found in constructor ${name}")
+                typeError(location, s"メンバー ${memberName} が コンストラクタ ${name} の中に見つかりませんでした")
               case Some(u) =>
                 val i = newInstanceFrom(u)
                 println("i = " + i)
