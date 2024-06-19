@@ -171,8 +171,8 @@ class ExpressionSpec extends SpecHelper {
         assertResult(
           E(
             """
-              |ブロック fact(n) は もし(n < 2) 1 でなければ (n * fact(n - 1))
-              |fact(4)
+              |ブロック 階乗(n) は もし(n < 2) 1 でなければ (n * 階乗(n - 1))
+              |階乗(4)
             """.stripMargin))(BoxedInt(24))
         assertResult(
           E(
