@@ -39,7 +39,7 @@ object Type {
 
   case object TRowEmpty extends Row("")
 
-  case class TRowExtend(l: String, t: Type, e: Type) extends Row(
+  case class TRowExtend(l: String, t: Type, e: Row) extends Row(
     e match {
       case TVariable(_) => s"${l}: ${t}; ..."
       case _ => s"${l}: ${t}; ${e}"

@@ -58,7 +58,7 @@ package object nuko {
       case TRowEmpty =>
         ty
       case tr@TRowExtend(l, t, r) =>
-        TRowExtend(l, replace(t), replace(r))
+        TRowExtend(l, replace(t), replace(r).asInstanceOf[Row])
       case TInt =>
         TInt
       case TByte =>

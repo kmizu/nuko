@@ -200,7 +200,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
     case otherwise => throw TyperPanic(None, "Unexpected: " + otherwise)
   }
 
-  def rewriteRow(row: Type, newLabel: Label, s: Substitution): (Type, Type, Substitution) = row match {
+  def rewriteRow(row: Type, newLabel: Label, s: Substitution): (Type, Row, Substitution) = row match {
     case TRowEmpty => typeError(current.location, s"label ${newLabel} cannot be inserted")
     case TRowExtend(label, labelType, rowTail) if newLabel == label =>
       (labelType, rowTail, s)
