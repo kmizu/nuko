@@ -160,30 +160,30 @@ class ExpressionSpec extends SpecHelper {
       }
     }
 
-    describe("ブロック定義") {
+    describe("関数定義") {
       it("が正しく評価されていること") {
         assertResult(
           E(
             """
-              |ブロック add(x, y) は x + y
+              |関数 add(x, y) は x + y
               |add(2, 3)
             """.stripMargin))(BoxedInt(5))
         assertResult(
           E(
             """
-              |ブロック 階乗(n) は もし(n < 2) 1 でなければ (n * 階乗(n - 1))
+              |関数 階乗(n) は もし(n < 2) 1 でなければ (n * 階乗(n - 1))
               |階乗(4)
             """.stripMargin))(BoxedInt(24))
         assertResult(
           E(
             """
-              |ブロック none() は 24
+              |関数 none() は 24
               |none()
             """.stripMargin))(BoxedInt(24))
         assertResult(
           E(
             """
-              |ブロック hello() は {
+              |関数 hello() は {
               |  "Hello"
               |  0
               |}

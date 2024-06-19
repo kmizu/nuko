@@ -192,7 +192,7 @@ object ASTVisualizer {
   // ASTノードを文字列に変換するヘルパー関数
   private def nodeToString(node: Ast.Node): String = {
     node match {
-      case Ast.Block(_, _) => "ブロック"
+      case Ast.Block(_, _) => "関数"
       case Ast.IfExpression(_, _, _, _) => "もし"
       case Ast.ForeachExpression(_, name, _, _) => s"ForeachExpression: $name"
       case Ast.BinaryExpression(_, operator, _, _) => s"${operator.descriptor}"

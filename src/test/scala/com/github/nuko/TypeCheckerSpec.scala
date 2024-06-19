@@ -29,10 +29,10 @@ class TypeCheckerSpec extends SpecHelper {
     }
   }
 
-  describe("ブロックの型検査は成功する") {
+  describe("関数の型検査は成功する") {
     val expectations: List[(String, Value)] = List(
       """
-        |ブロック 「加算」(x の種類は 整数, y の種類は 整数): 整数 は x + y
+        |関数 「加算」(x の種類は 整数, y の種類は 整数): 整数 は x + y
         |変数 f: (整数, 整数) => 整数 は 「加算」
         |f(2, 3)
       """.stripMargin -> BoxedInt(5))
@@ -47,7 +47,7 @@ class TypeCheckerSpec extends SpecHelper {
   describe("function type doesn't match ") {
     val illTypedPrograms: List[String] = List(
       """
-        |ブロック f(x, y) は x + y
+        |関数 f(x, y) は x + y
         |f(10)
       """.stripMargin
     )
