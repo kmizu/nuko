@@ -157,7 +157,7 @@ class FunctionSpec extends SpecHelper {
       assert(ObjectValue("O") == E("""文字を取得("FOO", 2)"""))
     }
   }
-  describe("正規表現を使ったマッチができる") {
+  describe("正規表現マッチができる") {
     it("正規表現 .*") {
       assert(BoxedBoolean(true) == E("""マッチする("FOO", ".*")"""))
     }
@@ -166,6 +166,17 @@ class FunctionSpec extends SpecHelper {
     }
     it("正規表現 FO") {
       assert(BoxedBoolean(false) == E("""マッチする("FOO", "FO")"""))
+    }
+  }
+  describe("中置記法を使った正規表現マッチができる") {
+    it("正規表現 .*") {
+      assert(BoxedBoolean(true) == E(""" "FOO" マッチする ".*" """))
+    }
+    it("正規表現 FOO") {
+      assert(BoxedBoolean(true) == E(""" "FOO" マッチする "FOO" """))
+    }
+    it("正規表現 FO") {
+      assert(BoxedBoolean(false) == E(""" "FOO" マッチする "FO" """))
     }
   }
   describe("平方根が計算できる") {

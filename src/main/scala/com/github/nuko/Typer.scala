@@ -3,7 +3,7 @@ package com.github.nuko
 import java.lang.reflect.TypeVariable
 import com.github.nuko.TypedAst.TypedNode
 import com.github.nuko.Ast.{Node, RecordDeclaration}
-import com.github.nuko.Type._
+import com.github.nuko.Type.{TInt, _}
 import com.github.nuko._
 
 import scala.collection.mutable
@@ -76,6 +76,12 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         "サイズ" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TInt),
         "空である" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TBoolean)
       ),
+      "整数" -> Map(
+        "構築" -> TScheme(List(tv("a")), (tv("a") ==> (listOf(tv("a")) ==> listOf(tv("a"))))),
+      ),
+      "文字列" -> Map(
+        "マッチする" -> TScheme(Nil, TString ==> (TString ==> TBoolean)),
+      ),
       "辞書" -> Map(
         "追加" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TFunction(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")))),
         "キーを含む" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("a") ==> TBoolean)),
@@ -89,7 +95,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         "書き込む" -> TScheme(Nil, TString ==> TString ==> TUnit),
       ),
       "ウェブ" -> Map(
-       "読み込む" -> TScheme(Nil, TString ==> TString)
+        "読み込む" -> TScheme(Nil, TString ==> TString)
       ),
       "集合" -> Map(
         "追加" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),
@@ -935,18 +941,17 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s = unify(t, a, s3)
             (TypedAst.RecordSelect(s.replace(a), location, te, memberName), s)
         }
-      case TConstructor(name, _) =>
+      case other =>
+        val name = other.raw
         environment.modules.get(name) match {
           case None =>
-            typeError(location, s"コンストラクタ ${name} が見つかりませんでした")
+            typeError(location, s"モジュール ${name} が見つかりませんでした")
           case Some(map) =>
             map.get(memberName) match {
               case None =>
-                typeError(location, s"メンバー ${memberName} が コンストラクタ ${name} の中に見つかりませんでした")
+                typeError(location, s"メンバー ${memberName} が モジュール ${name} の中に見つかりませんでした")
               case Some(u) =>
                 val i = newInstanceFrom(u)
-                println("i = " + i)
-                println("t = " + t)
                 val s = unify(i, t, s0)
                 (TypedAst.MemberSelect(s.replace(t), location, te, name, memberName), s)
             }

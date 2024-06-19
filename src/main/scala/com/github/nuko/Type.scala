@@ -4,6 +4,7 @@ sealed abstract class Type(val image: String) {
   def ==>(returnType: Type): Type.TFunction = {
     Type.TFunction(List(this), returnType)
   }
+  def raw: String = image
   override def toString: String = image
 }
 object Type {
@@ -52,5 +53,7 @@ object Type {
 
   case class TScheme(svariables: List[TVariable], stype: Type)
 
-  case class TConstructor(name: String, ts: List[Type]) extends Type(name + "<" + ts.mkString(", ") + ">")
+  case class TConstructor(name: String, ts: List[Type]) extends Type(name + "<" + ts.mkString(", ") + ">") {
+    override def raw: String = name
+  }
 }

@@ -240,15 +240,10 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
     private final val SET = "集合"
     private final val FILE = "ファイル"
     private final val WEB = "ウェブ"
-    enter(LIST) {
-      define("head") { case List(ObjectValue(list: java.util.List[_])) =>
-        println("list: " + list)
-        Value.toKlassic(list.get(0).asInstanceOf[AnyRef])
-      }
-      define("tail") { case List(ObjectValue(list: java.util.List[_])) =>
-        Value.toKlassic(list.subList(1, list.size()))
-      }
-      define("cons") { case List(value: Value) =>
+    private final val INT = "整数"
+    private final val STRING = "文字列"
+    enter(INT) {
+      define("構築") { case List(value: Value) =>
         NativeFunctionValue { case List(ObjectValue(list: java.util.List[_])) =>
           val newList = new java.util.ArrayList[Any]
           var i = 0
@@ -260,7 +255,35 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           Value.toKlassic(newList)
         }
       }
-      define("remove") { case List(ObjectValue(self: java.util.List[_])) =>
+    }
+    enter(STRING) {
+      define("マッチする") { case List(ObjectValue(s: String)) =>
+        NativeFunctionValue { case List(ObjectValue(regex: String)) =>
+          BoxedBoolean(s.matches(regex))
+        }
+      }
+    }
+    enter(LIST) {
+      define("先頭") { case List(ObjectValue(list: java.util.List[_])) =>
+        println("list: " + list)
+        Value.toKlassic(list.get(0).asInstanceOf[AnyRef])
+      }
+      define("末尾") { case List(ObjectValue(list: java.util.List[_])) =>
+        Value.toKlassic(list.subList(1, list.size()))
+      }
+      define("構築") { case List(value: Value) =>
+        NativeFunctionValue { case List(ObjectValue(list: java.util.List[_])) =>
+          val newList = new java.util.ArrayList[Any]
+          var i = 0
+          newList.add(Value.fromKlassic(value))
+          while (i < list.size()) {
+            newList.add(list.get(i))
+            i += 1
+          }
+          Value.toKlassic(newList)
+        }
+      }
+      define("削除") { case List(ObjectValue(self: java.util.List[_])) =>
         NativeFunctionValue{ case List(a: Value) =>
           val newList = new java.util.ArrayList[Any]
           for(v <- self.asScala) {
@@ -270,13 +293,13 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           ObjectValue(newList)
         }
       }
-      define("size") { case List(ObjectValue(list: java.util.List[_])) =>
+      define("サイズ") { case List(ObjectValue(list: java.util.List[_])) =>
         BoxedInt(list.size())
       }
-      define("isEmpty") { case List(ObjectValue(list: java.util.List[_])) =>
+      define("空である") { case List(ObjectValue(list: java.util.List[_])) =>
         BoxedBoolean(list.isEmpty)
       }
-      define("map") { case List(ObjectValue(list: java.util.List[_])) =>
+      define("変換") { case List(ObjectValue(list: java.util.List[_])) =>
         NativeFunctionValue{
           case List(fun: FunctionValue) =>
             val newList = new java.util.ArrayList[Any]
@@ -291,7 +314,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
             ObjectValue(newList)
         }
       }
-      define("foldLeft") { case List(ObjectValue(list: java.util.List[_])) =>
+      define("たたむ") { case List(ObjectValue(list: java.util.List[_])) =>
         NativeFunctionValue{ case List(init: Value) =>
           NativeFunctionValue { case List(fun: FunctionValue) =>
             val env = new RuntimeEnvironment(fun.environment)
@@ -371,161 +394,6 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
         NativeFunctionValue{ case List(a: Value) =>
           val newSet = new java.util.HashSet[Any]()
           for(v <- self.asScala) {
-            newSet.add(v)
-          }
-          newSet.remove(Value.fromKlassic(a))
-          ObjectValue(newSet)
-        }
-      }
-      define("要素を含む") { case List(ObjectValue(self: java.util.Set[_])) =>
-        NativeFunctionValue { case List(a: Value) =>
-          BoxedBoolean(self.contains(Value.fromKlassic(a)))
-        }
-      }
-      define("サイズ") { case List(ObjectValue(self: java.util.Set[_])) =>
-        BoxedInt(self.size())
-      }
-      define("空である") { case List(ObjectValue(self: java.util.Set[_])) =>
-        BoxedBoolean(self.isEmpty)
-      }
-    }
-  }
-
-  object BuiltinMethodEnvironment extends ModuleEnvironment() {
-    private final val LIST = "リスト"
-    private final val DICTIONARY = "辞書"
-    private final val SET = "集合"
-    private final val FILE = "ファイル"
-    private final val WEB = "ウェブ"
-    enter(LIST) {
-      define("head") { case List(ObjectValue(list: java.util.List[_])) =>
-        println("list: " + list)
-        Value.toKlassic(list.get(0).asInstanceOf[AnyRef])
-      }
-      define("tail") { case List(ObjectValue(list: java.util.List[_])) =>
-        Value.toKlassic(list.subList(1, list.size()))
-      }
-      define("cons") { case List(value: Value) =>
-        NativeFunctionValue { case List(ObjectValue(list: java.util.List[_])) =>
-          val newList = new java.util.ArrayList[Any]
-          var i = 0
-          newList.add(Value.fromKlassic(value))
-          while (i < list.size()) {
-            newList.add(list.get(i))
-            i += 1
-          }
-          Value.toKlassic(newList)
-        }
-      }
-      define("remove") { case List(ObjectValue(self: java.util.List[_])) =>
-        NativeFunctionValue { case List(a: Value) =>
-          val newList = new java.util.ArrayList[Any]
-          for (v <- self.asScala) {
-            newList.add(v)
-          }
-          newList.remove(Value.fromKlassic(a))
-          ObjectValue(newList)
-        }
-      }
-      define("size") { case List(ObjectValue(list: java.util.List[_])) =>
-        BoxedInt(list.size())
-      }
-      define("isEmpty") { case List(ObjectValue(list: java.util.List[_])) =>
-        BoxedBoolean(list.isEmpty)
-      }
-      define("map") { case List(ObjectValue(list: java.util.List[_])) =>
-        NativeFunctionValue {
-          case List(fun: FunctionValue) =>
-            val newList = new java.util.ArrayList[Any]
-            val env = new RuntimeEnvironment(fun.environment)
-            var i = 0
-            while (i < list.size()) {
-              val param: Value = Value.toKlassic(list.get(i).asInstanceOf[AnyRef])
-              val result: Value = performFunctionInternal(fun.value, List(ValueNode(param)), env)
-              newList.add(Value.fromKlassic(result))
-              i += 1
-            }
-            ObjectValue(newList)
-        }
-      }
-      define("foldLeft") { case List(ObjectValue(list: java.util.List[_])) =>
-        NativeFunctionValue { case List(init: Value) =>
-          NativeFunctionValue { case List(fun: FunctionValue) =>
-            val env = new RuntimeEnvironment(fun.environment)
-            var i = 0
-            var result: Value = init
-            while (i < list.size()) {
-              val params: List[TypedNode] = List(ValueNode(result), ValueNode(Value.toKlassic(list.get(i).asInstanceOf[AnyRef])))
-              result = performFunctionInternal(fun.value, params, env)
-              i += 1
-            }
-            result
-          }
-        }
-      }
-    }
-    enter(FILE) {
-      define("読み込む") { case List(ObjectValue(path: String)) =>
-        ObjectValue(Files.readString(Path.of(path)))
-      }
-      define("書き込む") { case List(ObjectValue(path: String)) =>
-        NativeFunctionValue { case List(ObjectValue(content: String)) =>
-          Files.writeString(Path.of(path), content)
-          UnitValue
-        }
-      }
-    }
-    enter(WEB) {
-      define("読み込む") { case List(ObjectValue(url: String)) =>
-        ObjectValue(scala.io.Source.fromURL(url).mkString)
-      }
-    }
-    enter(DICTIONARY) {
-      define("追加") { case List(ObjectValue(self: java.util.Map[_, _]), a: Value, b: Value) =>
-        val newMap = new java.util.HashMap[Any, Any]()
-        for ((k, v) <- self.asScala) {
-          newMap.put(k, v)
-        }
-        newMap.put(Value.fromKlassic(a), Value.fromKlassic(b))
-        ObjectValue(newMap)
-      }
-      define("キーを含む") { case List(ObjectValue(self: java.util.Map[_, _])) =>
-        NativeFunctionValue { case List(k: Value) =>
-          BoxedBoolean(self.containsKey(Value.fromKlassic(k)))
-        }
-      }
-      define("値を含む") { case List(ObjectValue(self: java.util.Map[_, _])) =>
-        NativeFunctionValue { case List(v: Value) =>
-          BoxedBoolean(self.containsValue(Value.fromKlassic(v)))
-        }
-      }
-      define("値を取得") { case List(ObjectValue(self: java.util.Map[_, _])) =>
-        NativeFunctionValue { case List(k: Value) =>
-          Value.toKlassic(self.get(Value.fromKlassic(k)).asInstanceOf[AnyRef])
-        }
-      }
-      define("サイズ") { case List(ObjectValue(self: java.util.Map[_, _])) =>
-        BoxedInt(self.size())
-      }
-      define("空である") { case List(ObjectValue(map: java.util.Map[_, _])) =>
-        BoxedBoolean(map.isEmpty)
-      }
-    }
-    enter(SET) {
-      define("追加") { case List(ObjectValue(self: java.util.Set[_])) =>
-        NativeFunctionValue { case List(a: Value) =>
-          val newSet = new java.util.HashSet[Any]()
-          for (v <- self.asScala) {
-            newSet.add(v)
-          }
-          newSet.add(Value.fromKlassic(a))
-          ObjectValue(newSet)
-        }
-      }
-      define("削除") { case List(ObjectValue(self: java.util.Set[_])) =>
-        NativeFunctionValue { case List(a: Value) =>
-          val newSet = new java.util.HashSet[Any]()
-          for (v <- self.asScala) {
             newSet.add(v)
           }
           newSet.remove(Value.fromKlassic(a))
@@ -830,7 +698,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           val receiver = evalRecursive(expression)
           BuiltinModuleEnvironment.modules.get(moduleName) match {
             case None =>
-              throw new IllegalArgumentException(s"module ${receiver} is not found")
+              throw new IllegalArgumentException(s"モジュール ${moduleName} が見つかりませんでした")
             case Some(module) =>
               module(memberName)
           }

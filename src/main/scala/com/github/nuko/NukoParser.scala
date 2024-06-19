@@ -290,8 +290,9 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
 
       lazy val infix: Parser[Ast.Node] = rule {
         chainl(logicalOr)(
-          (%% ~ CL(operator)) ^^ { case location ~ op => (lhs: Ast.Node, rhs: Ast.Node) => FunctionCall(location, FunctionCall(location, Id(location, op), List(lhs)), List(rhs)) }
-            | (%% ~ CL(selector)) ^^ { case location ~ sl => (lhs: Ast.Node, rhs: Ast.Node) => FunctionCall(location, FunctionCall(location, sl, List(lhs)), List(rhs)) }
+         (%% ~ CL(operator)) ^^ { case location ~ op => (lhs: Ast.Node, rhs: Ast.Node) =>
+           RecordCall(location, lhs, op, List(rhs))
+         }
         )
       }
 
@@ -513,7 +514,7 @@ class NukoParser extends Processor[String, Program, InteractiveSession] {
         !KEYWORDS(n)
       }) << SPACING_WITHOUT_LF
 
-      lazy val operator: Parser[String] = (("#" ~> component).filter { n =>
+      lazy val operator: Parser[String] = ((component).filter { n =>
         !KEYWORDS(n)
       }) << SPACING_WITHOUT_LF
 
