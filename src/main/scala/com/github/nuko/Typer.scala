@@ -77,7 +77,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
         "isEmpty" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TBoolean)
       ),
       "辞書" -> Map(
-        "追加" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (List(tv("a"), tv("b")) ==> dictionaryOf(tv("a"), tv("b")))),
+        "追加" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TFunction(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")))),
         "キーを含む" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("a") ==> TBoolean)),
         "値を含む" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("b") ==> TBoolean)),
         "値を取得" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("a") ==> tv("b"))),
@@ -90,6 +90,41 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       ),
       "ウェブ" -> Map(
        "読み込む" -> TScheme(Nil, TString ==> TString)
+      ),
+      "集合" -> Map(
+        "追加" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),
+        "削除" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),
+        "要素を含む" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> TBoolean)),
+        "サイズ" -> TScheme(List(tv("a")), setOf(tv("a")) ==> TInt),
+        "空である" -> TScheme(List(tv("a")), setOf(tv("a")) ==> TBoolean)
+      ),
+    )
+  }
+
+  val MethodEnvironment: Map[String, Environment] = {
+    Map(
+      "リスト" -> Map(
+        "構築" -> TScheme(List(tv("a")), TFunction(List(tv("a"), listOf(tv("a"))), listOf(tv("a")))),
+        "変換" -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> ((tv("a") ==> tv("b")) ==> listOf(tv("b")))),
+        "先頭" -> TScheme(List(tv("a")), listOf(tv("a")) ==> tv("a")),
+        "末尾" -> TScheme(List(tv("a")), listOf(tv("a")) ==> listOf(tv("a"))),
+        "サイズ" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TInt),
+        "空である" -> TScheme(List(tv("a")), listOf(tv("a")) ==> TBoolean)
+      ),
+      "辞書" -> Map(
+        "追加" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TFunction(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")))),
+        "キーを含む" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("a") ==> TBoolean)),
+        "値を含む" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("b") ==> TBoolean)),
+        "値を取得" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> (tv("a") ==> tv("b"))),
+        "サイズ" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TInt),
+        "空である" -> TScheme(List(tv("a"), tv("b")), dictionaryOf(tv("a"), tv("b")) ==> TBoolean)
+      ),
+      "ファイル" -> Map(
+        "読み込む" -> TScheme(Nil, TString ==> TString),
+        "書き込む" -> TScheme(Nil, TString ==> TString ==> TUnit),
+      ),
+      "ウェブ" -> Map(
+        "読み込む" -> TScheme(Nil, TString ==> TString)
       ),
       "集合" -> Map(
         "追加" -> TScheme(List(tv("a")), setOf(tv("a")) ==> (tv("a") ==> setOf(tv("a")))),
@@ -344,7 +379,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             (TBoolean, unify(x, y, s2))
           case (a@TConstructor(n1, ts1), b@TConstructor(n2, ts2)) if n2 == n2  && ts1.length == ts2.length =>
             val sx = (ts1 zip ts2).foldLeft(s0) { case (s, (t1, t2)) =>
-                unify(t1, t2, s)
+              unify(t1, t2, s)
             }
             (sx.replace(a), sx)
           case (a@TRecord(ts1, row1), b@TRecord(ts2, row2)) if ts1.length == ts2.length =>
@@ -899,6 +934,22 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s3 = unify(record, newRecord, s2)
             val s = unify(t, a, s3)
             (TypedAst.RecordSelect(s.replace(a), location, te, memberName), s)
+        }
+      case TConstructor(name, _) =>
+        MethodEnvironment.get(name) match {
+          case None =>
+            typeError(location, s"constructor ${name} is not found")
+          case Some(map) =>
+            map.get(memberName) match {
+              case None =>
+                typeError(location, s"member ${memberName} is not found in constructor ${name}")
+              case Some(u) =>
+                val i = newInstanceFrom(u)
+                println("i = " + i)
+                println("t = " + t)
+                val s = unify(i, t, s0)
+                (TypedAst.MemberSelect(s.replace(t), location, te, name, memberName), s)
+            }
         }
       case _ =>
         typeError(location, s"${t} is not record type")

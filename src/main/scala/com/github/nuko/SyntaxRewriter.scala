@@ -44,9 +44,11 @@ class SyntaxRewriter extends Processor[Ast.Program, Ast.Program, InteractiveSess
       val selfVar = symbol()
       val result = Let(
         location, selfVar, None, self,
-        FunctionCall(location, RecordSelect(location, Id(location, selfVar), name), Casting(location, Id(location, selfVar), TDynamic) :: (params.map {
-          doRewrite
-        })),
+        FunctionCall(
+          location,
+          FunctionCall(location, RecordSelect(location, Id(location, selfVar), name), List(Id(location, selfVar))),
+          params.map { doRewrite }
+        ),
         true
       )
       result

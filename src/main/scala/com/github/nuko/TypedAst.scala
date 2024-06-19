@@ -77,6 +77,8 @@ object TypedAst {
 
   case class RecordSelect(type_ : Type, location: Location, expression: TypedNode, member: String) extends TypedNode
 
+  case class MemberSelect(type_ : Type, location: Location, expression: TypedNode, moduleName: String, member: String) extends TypedNode
+
   case class ObjectNew(type_ : Type, location: Location, className: String, params: List[TypedNode]) extends TypedNode
 
   case class RecordNew(type_ : Type, location: Location, recordName: String, params: List[TypedNode]) extends TypedNode

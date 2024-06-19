@@ -235,7 +235,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
   }
 
   object BuiltinModuleEnvironment extends ModuleEnvironment() {
-    private final val LIST= "List"
+    private final val LIST= "リスト"
     private final val DICTIONARY = "辞書"
     private final val SET = "集合"
     private final val FILE = "ファイル"
@@ -391,6 +391,161 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
     }
   }
 
+  object BuiltinMethodEnvironment extends ModuleEnvironment() {
+    private final val LIST = "リスト"
+    private final val DICTIONARY = "辞書"
+    private final val SET = "集合"
+    private final val FILE = "ファイル"
+    private final val WEB = "ウェブ"
+    enter(LIST) {
+      define("head") { case List(ObjectValue(list: java.util.List[_])) =>
+        println("list: " + list)
+        Value.toKlassic(list.get(0).asInstanceOf[AnyRef])
+      }
+      define("tail") { case List(ObjectValue(list: java.util.List[_])) =>
+        Value.toKlassic(list.subList(1, list.size()))
+      }
+      define("cons") { case List(value: Value) =>
+        NativeFunctionValue { case List(ObjectValue(list: java.util.List[_])) =>
+          val newList = new java.util.ArrayList[Any]
+          var i = 0
+          newList.add(Value.fromKlassic(value))
+          while (i < list.size()) {
+            newList.add(list.get(i))
+            i += 1
+          }
+          Value.toKlassic(newList)
+        }
+      }
+      define("remove") { case List(ObjectValue(self: java.util.List[_])) =>
+        NativeFunctionValue { case List(a: Value) =>
+          val newList = new java.util.ArrayList[Any]
+          for (v <- self.asScala) {
+            newList.add(v)
+          }
+          newList.remove(Value.fromKlassic(a))
+          ObjectValue(newList)
+        }
+      }
+      define("size") { case List(ObjectValue(list: java.util.List[_])) =>
+        BoxedInt(list.size())
+      }
+      define("isEmpty") { case List(ObjectValue(list: java.util.List[_])) =>
+        BoxedBoolean(list.isEmpty)
+      }
+      define("map") { case List(ObjectValue(list: java.util.List[_])) =>
+        NativeFunctionValue {
+          case List(fun: FunctionValue) =>
+            val newList = new java.util.ArrayList[Any]
+            val env = new RuntimeEnvironment(fun.environment)
+            var i = 0
+            while (i < list.size()) {
+              val param: Value = Value.toKlassic(list.get(i).asInstanceOf[AnyRef])
+              val result: Value = performFunctionInternal(fun.value, List(ValueNode(param)), env)
+              newList.add(Value.fromKlassic(result))
+              i += 1
+            }
+            ObjectValue(newList)
+        }
+      }
+      define("foldLeft") { case List(ObjectValue(list: java.util.List[_])) =>
+        NativeFunctionValue { case List(init: Value) =>
+          NativeFunctionValue { case List(fun: FunctionValue) =>
+            val env = new RuntimeEnvironment(fun.environment)
+            var i = 0
+            var result: Value = init
+            while (i < list.size()) {
+              val params: List[TypedNode] = List(ValueNode(result), ValueNode(Value.toKlassic(list.get(i).asInstanceOf[AnyRef])))
+              result = performFunctionInternal(fun.value, params, env)
+              i += 1
+            }
+            result
+          }
+        }
+      }
+    }
+    enter(FILE) {
+      define("読み込む") { case List(ObjectValue(path: String)) =>
+        ObjectValue(Files.readString(Path.of(path)))
+      }
+      define("書き込む") { case List(ObjectValue(path: String)) =>
+        NativeFunctionValue { case List(ObjectValue(content: String)) =>
+          Files.writeString(Path.of(path), content)
+          UnitValue
+        }
+      }
+    }
+    enter(WEB) {
+      define("読み込む") { case List(ObjectValue(url: String)) =>
+        ObjectValue(scala.io.Source.fromURL(url).mkString)
+      }
+    }
+    enter(DICTIONARY) {
+      define("追加") { case List(ObjectValue(self: java.util.Map[_, _]), a: Value, b: Value) =>
+        val newMap = new java.util.HashMap[Any, Any]()
+        for ((k, v) <- self.asScala) {
+          newMap.put(k, v)
+        }
+        newMap.put(Value.fromKlassic(a), Value.fromKlassic(b))
+        ObjectValue(newMap)
+      }
+      define("キーを含む") { case List(ObjectValue(self: java.util.Map[_, _])) =>
+        NativeFunctionValue { case List(k: Value) =>
+          BoxedBoolean(self.containsKey(Value.fromKlassic(k)))
+        }
+      }
+      define("値を含む") { case List(ObjectValue(self: java.util.Map[_, _])) =>
+        NativeFunctionValue { case List(v: Value) =>
+          BoxedBoolean(self.containsValue(Value.fromKlassic(v)))
+        }
+      }
+      define("値を取得") { case List(ObjectValue(self: java.util.Map[_, _])) =>
+        NativeFunctionValue { case List(k: Value) =>
+          Value.toKlassic(self.get(Value.fromKlassic(k)).asInstanceOf[AnyRef])
+        }
+      }
+      define("サイズ") { case List(ObjectValue(self: java.util.Map[_, _])) =>
+        BoxedInt(self.size())
+      }
+      define("空である") { case List(ObjectValue(map: java.util.Map[_, _])) =>
+        BoxedBoolean(map.isEmpty)
+      }
+    }
+    enter(SET) {
+      define("追加") { case List(ObjectValue(self: java.util.Set[_])) =>
+        NativeFunctionValue { case List(a: Value) =>
+          val newSet = new java.util.HashSet[Any]()
+          for (v <- self.asScala) {
+            newSet.add(v)
+          }
+          newSet.add(Value.fromKlassic(a))
+          ObjectValue(newSet)
+        }
+      }
+      define("削除") { case List(ObjectValue(self: java.util.Set[_])) =>
+        NativeFunctionValue { case List(a: Value) =>
+          val newSet = new java.util.HashSet[Any]()
+          for (v <- self.asScala) {
+            newSet.add(v)
+          }
+          newSet.remove(Value.fromKlassic(a))
+          ObjectValue(newSet)
+        }
+      }
+      define("要素を含む") { case List(ObjectValue(self: java.util.Set[_])) =>
+        NativeFunctionValue { case List(a: Value) =>
+          BoxedBoolean(self.contains(Value.fromKlassic(a)))
+        }
+      }
+      define("サイズ") { case List(ObjectValue(self: java.util.Set[_])) =>
+        BoxedInt(self.size())
+      }
+      define("空である") { case List(ObjectValue(self: java.util.Set[_])) =>
+        BoxedBoolean(self.isEmpty)
+      }
+    }
+  }
+
   def toList(row: Type): List[(String, Type)] = row match {
     case tv@TVariable(_) => sys.error("cannot reach here")
     case TRowExtend(l, t, extension) => (l -> t) :: toList(extension)
@@ -430,7 +585,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           if(body.isDefinedAt(actualParams)) {
             body(params.map{p => evaluate(p, env)})
           } else {
-            reportError("parameters are not matched to the function's arguments")
+            reportError("parameters are not matched to the function's arguments: " + actualParams)
           }
         case _ =>
           reportError("unknown error")
@@ -670,6 +825,14 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
               }
             case v =>
               throw new IllegalArgumentException(s"value ${v} is not record")
+          }
+        case TypedAst.MemberSelect(type_, location, expression, moduleName, memberName) =>
+          val receiver = evalRecursive(expression)
+          BuiltinModuleEnvironment.modules.get(moduleName) match {
+            case None =>
+              throw new IllegalArgumentException(s"module ${receiver} is not found")
+            case Some(module) =>
+              module(memberName)
           }
         case call@TypedAst.FunctionCall(type_, location, function, params) =>
           performFunction(call, env)
