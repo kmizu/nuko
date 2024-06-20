@@ -54,6 +54,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
       "サイズ"         -> TScheme(List(tv("a")), listOf(tv("a")) ==> TInt),
       "たたむ"         -> TScheme(List(tv("a"), tv("b")), listOf(tv("a")) ==> (tv("b") ==> ((List(tv("b"), tv("a")) ==> tv("b")) ==> tv("b")))),
       "無"            -> TScheme(List(tv("a")), tv("a")),
+      "線をひく"       -> TScheme(Nil, TFunction(List(TInt, TInt, TInt, TInt), TUnit)),
     )
   }
 

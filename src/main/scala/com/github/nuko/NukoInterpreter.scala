@@ -5,9 +5,11 @@ import com.github.nuko._
 import com.github.nuko.Type._
 import com.github.nuko.TypedAst.{FunctionLiteral, TypedNode, ValueNode}
 
+import java.awt.Graphics
 import java.net.http.HttpClient
 import java.net.{URI, URL}
 import java.nio.file.{Files, Path}
+import javax.swing.WindowConstants
 import scala.runtime.BoxedUnit
 
 /**
@@ -218,6 +220,30 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
           result
         }
       }
+    }
+
+    val mainWindow = new javax.swing.JFrame("メインウィンドウ") {
+      val operations = scala.collection.mutable.Buffer.empty[Graphics => Unit]
+      setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
+      setSize(500, 500)
+      val content = new javax.swing.JPanel {
+        override def paintComponent(g: Graphics): Unit = {
+          super.paintComponent(g)
+          g.setColor(java.awt.Color.BLACK)
+          for(operation <- operations){
+            operation(g)
+          }
+        }
+      }
+      add(content)
+    }
+
+    define("線をひく") { case List(BoxedInt(x1), BoxedInt(y1), BoxedInt(x2), BoxedInt(y2)) =>
+      mainWindow.operations.append({g =>
+        g.drawLine(x1.toInt, y1.toInt, x2.toInt, y2.toInt)
+      })
+      mainWindow.setVisible(true)
+      UnitValue
     }
     define("desktop") { case Nil =>
       ObjectValue(java.awt.Desktop.getDesktop())
