@@ -21,8 +21,12 @@ object Main {
         if(line.stripLineEnd == ":exit") {
           nextLineIsRequested = false
         } else {
-          val value: Value = evaluator.evaluateString(line)
-          println(s"value = ${value}")
+          try {
+            val value: Value = evaluator.evaluateString(line)
+            println(s"value = ${value}")
+          } catch{ case e: LanguageException =>
+            Console.err.println(e.message)
+          }
         }
       }
     }
