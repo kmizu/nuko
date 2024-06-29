@@ -222,7 +222,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       }
     }
 
-    val mainWindow = new javax.swing.JFrame("メインウィンドウ") {
+    lazy val mainWindow = new javax.swing.JFrame("メインウィンドウ") {
       val operations = scala.collection.mutable.Buffer.empty[Graphics => Unit]
       setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
       setSize(500, 500)
