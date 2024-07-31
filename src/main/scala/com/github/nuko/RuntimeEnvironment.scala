@@ -1,6 +1,7 @@
 package com.github.nuko
 
 import scala.collection.mutable
+import com.github.nuko.Value.*
 
 /**
  * @author Kota Mizushima

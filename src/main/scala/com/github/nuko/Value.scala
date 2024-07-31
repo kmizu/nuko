@@ -2,45 +2,35 @@ package com.github.nuko
 
 import com.github.nuko.TypedAst.TypedNode
 
-sealed abstract class Value
-case class BoxedByte(value: Byte) extends Value {
-  override def toString = value.toString
-}
-case class BoxedInt(value: BigInt) extends Value {
-  override def toString = value.toString
-}
-case class BoxedBoolean(value: Boolean) extends Value {
-  override def toString = value.toString
-}
-case class BoxedReal(value: BigDecimal) extends Value {
-  override def toString = value.toString
-}
-case class FunctionValue(value: TypedAst.FunctionLiteral, environment: Option[RuntimeEnvironment]) extends Value {
-  override def toString = s"<function value>"
-}
-case class NativeFunctionValue(body: PartialFunction[List[Value], Value]) extends Value {
-  override def toString = s"<native function>"
-}
-case object UnitValue extends Value {
-  override def toString = "()"
-}
-case class ObjectValue(value: AnyRef) extends Value {
-  override def toString = if(value eq null) "null" else value.toString
-}
-case class RecordValue(name: String, members: List[(String, Value)]) extends Value {
-  override def toString =
-    s"""| record ${name} {
-        | ${members.map{ case (n, v) => s"\t${n} = ${v}"}.mkString("\n")}
-        | }
-    """.stripMargin
-}
-case class EnumValue(tag: String, items: List[Value]) extends Value {
-  override def toString: String = {
-    s"${tag}(${items.mkString(", ")})"
+enum Value {
+  override def toString = this match {
+    case BoxedByte(value) => value.toString
+    case BoxedInt(value) => value.toString()
+    case BoxedBoolean(value) => value.toString
+    case BoxedReal(value) => value.toString()
+    case FunctionValue(value: TypedAst.FunctionLiteral, environment: Option[RuntimeEnvironment]) => value.toString
+    case NativeFunctionValue(body: PartialFunction[List[Value], Value]) => s"<native function>"
+    case UnitValue => "()"
+    case ObjectValue(value: AnyRef) => if(value eq null) "null" else value.toString
+    case RecordValue(name: String, members: List[(String, Value)]) =>
+      s"""| record ${name} {
+          | ${members.map{ case (n, v) => s"\t${n} = ${v}"}.mkString("\n")}
+          | }
+     """.stripMargin
+    case EnumValue(tag, items) => s"${tag}(${items.mkString(", ")})"
   }
+  case BoxedByte(value: Byte)
+  case BoxedInt(value: BigInt)
+  case BoxedBoolean(value: Boolean)
+  case BoxedReal(value: BigDecimal)
+  case FunctionValue(value: TypedAst.FunctionLiteral, environment: Option[RuntimeEnvironment])
+  case NativeFunctionValue(body: PartialFunction[List[Value], Value])
+  case UnitValue
+  case ObjectValue(value: AnyRef)
+  case RecordValue(name: String, members: List[(String, Value)])
+  case EnumValue(tag: String, items: List[Value])
 }
 object Value {
-
   def classOfValue(value: Value): java.lang.Class[_]= value match {
     case BoxedBoolean(v) => classOf[Boolean]
     case BoxedByte(v) => classOf[Byte]

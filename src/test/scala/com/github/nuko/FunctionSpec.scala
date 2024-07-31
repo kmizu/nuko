@@ -1,5 +1,7 @@
 package com.github.nuko
 
+import com.github.nuko.Value.*
+
 class FunctionSpec extends SpecHelper {
   describe("切り上げが機能する") {
     val expectations: List[(String, Value)] = List(

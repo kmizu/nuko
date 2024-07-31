@@ -1,5 +1,7 @@
 package com.github.nuko
 
+import com.github.nuko.Value.*
+
 class CommentSpec extends SpecHelper {
   describe("line comments") {
     it("should be parsed correctly") {

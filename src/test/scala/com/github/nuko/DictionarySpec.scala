@@ -1,5 +1,7 @@
 package com.github.nuko
 
+import com.github.nuko.Value.*
+
 class DictionarySpec extends SpecHelper {
   describe("辞書がキーを含むことを判定できる") {
     it("キー「名前」") {

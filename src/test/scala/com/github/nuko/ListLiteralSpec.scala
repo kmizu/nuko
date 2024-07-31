@@ -1,5 +1,7 @@
 package com.github.nuko
 
+import com.github.nuko.Value.*
+
 class ListLiteralSpec extends SpecHelper {
   describe("リストリテラル") {
     val expectations = List[(String, Value)](
