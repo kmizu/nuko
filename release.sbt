@@ -44,7 +44,7 @@ releaseProcess := Seq[ReleaseStep](
     action = { state =>
       val extracted = Project extract state
       extracted.runAggregated(
-        extracted.get(thisProjectRef) / PgpKeys.publishSigned in Global, state
+        Global / (extracted.get(thisProjectRef) / PgpKeys.publishSigned), state
       )
     },
     enableCrossBuild = true
