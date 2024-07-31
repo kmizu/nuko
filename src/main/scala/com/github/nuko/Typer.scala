@@ -400,7 +400,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s4 = unify(TInt, rtype, s3)
             (TBoolean, s4)
         }
-        val s4 = unify(TBoolean, t, s3)
+        val s4: Substitution = unify(TBoolean, t, s3)
         (TypedAst.BinaryExpression(resultType, location, Operator.EQUAL, typedLhs, typedRhs), s4)
       case Ast.BinaryExpression(location, Operator.LESS_THAN, lhs, rhs) =>
         val a, b = newTypeVariable()
@@ -424,7 +424,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s4 = unify(TInt, rtype, s3)
             (TBoolean, s4)
         }
-        val s4 = unify(TBoolean, t, s3)
+        val s4: Substitution = unify(TBoolean, t, s3)
         (TypedAst.BinaryExpression(resultType, location, Operator.LESS_THAN, typedLhs, typedRhs), s4)
       case Ast.BinaryExpression(location, Operator.GREATER_THAN, lhs, rhs) =>
         val a, b = newTypeVariable()
@@ -448,7 +448,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s4 = unify(TInt, rtype, s3)
             (TBoolean, s4)
         }
-        val s4 = unify(TBoolean, t, s3)
+        val s4: Substitution = unify(TBoolean, t, s3)
         (TypedAst.BinaryExpression(resultType, location, Operator.GREATER_THAN, typedLhs, typedRhs), s4)
       case Ast.BinaryExpression(location, Operator.LESS_OR_EQUAL, lhs, rhs) =>
         val a, b = newTypeVariable()
@@ -472,7 +472,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s4 = unify(TInt, rtype, s3)
             (TBoolean, s4)
         }
-        val s4 = unify(TBoolean, t, s3)
+        val s4: Substitution = unify(TBoolean, t, s3)
         (TypedAst.BinaryExpression(resultType, location, Operator.LESS_OR_EQUAL, typedLhs, typedRhs), s4)
       case Ast.BinaryExpression(location, Operator.GREATER_EQUAL, lhs, rhs) =>
         val a, b = newTypeVariable()
@@ -496,7 +496,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s4 = unify(TInt, rtype, s3)
             (TBoolean, s4)
         }
-        val s4 = unify(TBoolean, t, s3)
+        val s4: Substitution = unify(TBoolean, t, s3)
         (TypedAst.BinaryExpression(resultType, location, Operator.GREATER_EQUAL, typedLhs, typedRhs), s4)
       case Ast.BinaryExpression(location, Operator.ADD, lhs, rhs) =>
         val a, b = newTypeVariable()
@@ -528,7 +528,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s4 = unify(TInt, rtype, s3)
             (TInt, s4)
         }
-        val s4 = unify(resultType, t, s3)
+        val s4: Substitution = unify(resultType, t, s3)
         (TypedAst.BinaryExpression(resultType, location, Operator.ADD, typedLhs, typedRhs), s4)
       case Ast.BinaryExpression(location, Operator.SUBTRACT, lhs, rhs) =>
         val a, b = newTypeVariable()
@@ -552,7 +552,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s4 = unify(TInt, rtype, s3)
             (TInt, s4)
         }
-        val s4 = unify(resultType, t, s3)
+        val s4: Substitution = unify(resultType, t, s3)
         (TypedAst.BinaryExpression(resultType, location, Operator.SUBTRACT, typedLhs, typedRhs), s4)
       case Ast.BinaryExpression(location, Operator.MULTIPLY, lhs, rhs) =>
         val a, b = newTypeVariable()
@@ -576,9 +576,10 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s4 = unify(TInt, rtype, s3)
             (TInt, s4)
         }
-        val s4 = unify(resultType, t, s3)
+        val s4: Substitution = unify(resultType, t, s3)
         (TypedAst.BinaryExpression(resultType, location, Operator.MULTIPLY, typedLhs, typedRhs), s4)
-      case Ast.BinaryExpression(location, Operator.DIVIDE, lhs, rhs) => val a, b = newTypeVariable()
+      case Ast.BinaryExpression(location, Operator.DIVIDE, lhs, rhs) =>
+        val a, b = newTypeVariable()
         val (typedLhs, s1) = doType(lhs, env, a, s0)
         val (typedRhs, s2) = doType(rhs, env, b, s1)
         val (resultType, s3) = (s2.replace(a), s2.replace(b)) match {
@@ -599,7 +600,7 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s4 = unify(TInt, rtype, s3)
             (TInt, s4)
         }
-        val s4 = unify(resultType, t, s3)
+        val s4: Substitution = unify(resultType, t, s3)
         (TypedAst.BinaryExpression(resultType, location, Operator.DIVIDE, typedLhs, typedRhs), s4)
       case Ast.BinaryExpression(location, Operator.AND, lhs, rhs) => val a, b = newTypeVariable()
         val (typedLhs, s1) = doType(lhs, env, a, s0)
@@ -620,8 +621,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s4 = unify(TInt, rtype, s3)
             (TInt, s4)
         }
-        val s4 = unify(resultType, t, s3)
-        (TypedAst.BinaryExpression(resultType, location, Operator.AND, typedLhs, typedRhs), s4)
+        val s4: Substitution = unify(resultType, t, s3)
+        return (TypedAst.BinaryExpression(resultType, location, Operator.AND, typedLhs, typedRhs), s4)
       case Ast.BinaryExpression(location, Operator.OR, lhs, rhs) => val a, b = newTypeVariable()
         val (typedLhs, s1) = doType(lhs, env, a, s0)
         val (typedRhs, s2) = doType(rhs, env, b, s1)
@@ -641,8 +642,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s4 = unify(TInt, rtype, s3)
             (TInt, s4)
         }
-        val s4 = unify(resultType, t, s3)
-        (TypedAst.BinaryExpression(resultType, location, Operator.OR, typedLhs, typedRhs), s4)
+        val s4: Substitution = unify(resultType, t, s3)
+        return (TypedAst.BinaryExpression(resultType, location, Operator.OR, typedLhs, typedRhs), s4)
       case Ast.BinaryExpression(location, Operator.XOR, lhs, rhs) => val a, b = newTypeVariable()
         val (typedLhs, s1) = doType(lhs, env, a, s0)
         val (typedRhs, s2) = doType(rhs, env, b, s1)
@@ -662,8 +663,8 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
             val s4 = unify(TInt, rtype, s3)
             (TInt, s4)
         }
-        val s4 = unify(resultType, t, s3)
-        (TypedAst.BinaryExpression(resultType, location, Operator.XOR, typedLhs, typedRhs), s4)
+        val s4: Substitution = unify(resultType, t, s3)
+        return (TypedAst.BinaryExpression(resultType, location, Operator.XOR, typedLhs, typedRhs), s4)
       case Ast.MinusOp(location, operand) =>
         val a = newTypeVariable()
         val (typedOperand, s1) = doType(operand, env, a, s0)
@@ -957,8 +958,6 @@ class Typer extends Processor[Ast.Program, TypedAst.Program, InteractiveSession]
                 (TypedAst.MemberSelect(s.replace(t), location, te, name, memberName), s)
             }
         }
-      case _ =>
-        typeError(location, s"${t} is not record type")
     }
   }
 
