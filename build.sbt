@@ -4,7 +4,7 @@ name := "nuko"
 
 version := "0.0.1-SNAPSHOT"
 
-scalaVersion := "2.13.14"
+scalaVersion := "3.3.3"
 
 publishMavenStyle := true
 
@@ -35,11 +35,11 @@ resolvers ++= Seq(
 javaOptions += "--add-opens=java.base/java.util=ALL-UNNAMED"
 
 libraryDependencies ++= Seq(
-  "com.github.scaruby" %% "scaruby" % "0.6",
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "2.4.0",
+  "com.github.scaruby" % "scaruby_2.13" % "0.6",
+  "org.scala-lang.modules" % "scala-parser-combinators_2.13" % "2.4.0",
   "org.ow2.asm" % "asm" % "5.0.4",
   "junit" % "junit" % "4.13" % "test",
-  "org.scalatest" %% "scalatest" %  "3.1.1"
+  "org.scalatest" %% "scalatest" %  "3.2.19"
 )
 
 assembly / assemblyJarName := "nuko.jar"

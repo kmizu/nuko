@@ -11,11 +11,11 @@ object Ast {
 
   case object ByteSuffix extends IntegerSuffix
 
-  case class Program(location: Location, imports: List[Import], records: List[RecordDeclaration], block: Block)
+  case class Program(location: Location, imports: List[Import], records: List[RecordDeclaration], block: Block) extends Node
 
-  case class Import(location: Location, simpleName: String, fqcn: String)
+  case class Import(location: Location, simpleName: String, fqcn: String) extends Node
 
-  case class RecordDeclaration(location: Location, name: String, ts: List[TVariable], members: List[(String, Type)], methods: List[MethodDefinition])
+  case class RecordDeclaration(location: Location, name: String, ts: List[TVariable], members: List[(String, Type)], methods: List[MethodDefinition]) extends Node
 
   case class EnumDeclaration(location: Location, id: String, params: List[Type], constructors: List[DataConstructor]) extends Node
 

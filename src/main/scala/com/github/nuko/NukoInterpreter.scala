@@ -117,10 +117,10 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
     }
 
     define("スレッド開始") { case List(fun: FunctionValue) =>
-      new Thread({() =>
+      new Thread((() => {
           val env = new RuntimeEnvironment(fun.environment)
           interpreter.evaluate(TypedAst.FunctionCall(TDynamic, NoLocation, fun.value, Nil), env)
-      }).start()
+      }):Runnable).start()
       UnitValue
     }
 
@@ -222,7 +222,7 @@ class NukoInterpreter extends Processor[TypedAst.Program, Value, InteractiveSess
       }
     }
 
-    lazy val mainWindow = new javax.swing.JFrame("メインウィンドウ") {
+    object mainWindow extends javax.swing.JFrame("メインウィンドウ") {
       val operations = scala.collection.mutable.Buffer.empty[Graphics => Unit]
       setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
       setSize(500, 500)
