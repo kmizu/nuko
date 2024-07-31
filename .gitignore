@@ -16,3 +16,9 @@ dist
 .bin
 *.swp
 .cache-main
+.bloop/
+psroject/project/.bloop
+project/metals.sbt
+.metals/
+.vscode/
+project/project
