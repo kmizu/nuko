@@ -4,6 +4,7 @@ import scala.jdk.CollectionConverters._
 import com.github.nuko._
 import com.github.nuko.Type._
 import com.github.nuko.TypedAst.{FunctionLiteral, TypedNode, ValueNode}
+import com.github.nuko.Value.*
 
 import java.awt.Graphics
 import java.net.http.HttpClient

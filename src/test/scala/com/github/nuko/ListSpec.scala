@@ -1,5 +1,7 @@
 package com.github.nuko
 
+import com.github.nuko.Value.*
+
 class ListSpec extends SpecHelper {
   describe("先頭") {
     val expectations: List[(String, Value)] = List(

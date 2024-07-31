@@ -2,6 +2,8 @@ package com.github.nuko
 
 import java.util.ArrayList
 
+import com.github.nuko.Value.*
+
 class LiteralSpec extends SpecHelper {
   describe("integer literal") {
     val expectations = List[(String, Value)](

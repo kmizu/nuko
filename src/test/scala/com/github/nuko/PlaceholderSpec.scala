@@ -1,5 +1,6 @@
 package com.github.nuko
 
+import com.github.nuko.Value.*
 
 /**
   * Created by Mizushima on 2016/05/30.

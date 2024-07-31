@@ -31,7 +31,7 @@ class ModuleEnvironment(val modules: mutable.Map[String, mutable.Map[String, Val
     value
   }
   def define(name: String)(body: PartialFunction[List[Value], Value]): Value = {
-    update(name, NativeFunctionValue(body))
+    update(name, Value.NativeFunctionValue(body))
   }
   override def toString: String = s"ModuleEnvironment(${modules})"
 }

@@ -58,7 +58,7 @@ object ASTVisualizer {
     // フレームを表示
     frame.setVisible(true)
 
-    UnitValue
+    Value.UnitValue
   }
 
   // ASTノードをJTreeノードに変換するヘルパー関数

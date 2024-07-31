@@ -1,5 +1,7 @@
 package com.github.nuko
 
+import com.github.nuko.Value.*
+
 class RealSpec extends SpecHelper {
   describe("real literal") {
     val expectations = List[(String, Value)](

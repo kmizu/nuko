@@ -1,5 +1,6 @@
 package com.github.nuko
-import com.github.nuko.Value.fromKlassic
+
+import com.github.nuko.Value.*
 
 import java.util.{Set => JSet}
 
